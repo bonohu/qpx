@@ -1,0 +1,151 @@
+<!--simple_scatter.html-->
+
+<head>
+    <meta charset="UTF-8">
+<style>
+    #chart{
+      margin: 4px;
+      box-shadow: 0px 0px 4px lightgray;
+      background-color: white;
+      border-radius: 10px;
+    }
+    .d3tip{
+        position: absolute;
+        text-align: center;
+        width: auto;
+        height: auto;
+        padding: 5px;
+        font-size: 10px;
+        background: white;
+        box-shadow: 0px 0px 10px lightgray;
+        visibility: hidden;
+      }
+</style>
+</head>
+
+<body>
+<div id="chart"></div>
+
+<script src="https://d3js.org/d3.v5.js"></script>
+<script>
+
+    var width = {{ WIDTH }};
+    var height= {{ HEIGHT }};
+    var margin = {top: 40, right: 40, bottom: 40, left: 40};
+    var RADIUS = {{ MARKER_SIZE }};
+
+    var chart_width = width - margin.left - margin.right;
+    var chart_height = height- margin.top - margin.bottom;
+
+    var fontsize = 10;
+    var fontfamily = "Meiryo UI";
+
+    var DATASET = {{ DATASET }}
+    var XNAME = "sepal_length" //
+    var YNAME = "sepal_width"  //
+    var TITLE = "ScatterPlot"
+
+
+    var tooltip = d3.select("body").append("div").attr("class", "d3tip");
+
+    var svg = d3.select("#chart")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+    // chart title
+    svg.append("text")
+            .attr("x", (width/ 2) - margin.left)
+            .attr("y", 0 - (margin.top/4))
+            .attr("text-anchor", "middle")
+            .style("font-size", "16px")
+            .style("fill", "dimgray")
+            .style("font-weight", "bold")
+            .style("text-decoration", "underline")
+            .text(`${TITLE}`);
+    var x_scale = d3.scaleLinear()
+        .domain(getScaleMargin(
+                 min=d3.min(DATASET.map((o)=>{return o[XNAME]})),
+                 max=d3.max(DATASET.map((o)=>{return o[XNAME]})),
+                ))
+        .range([0, chart_width]);
+
+    var y_scale = d3.scaleLinear()
+        .domain(getScaleMargin(
+                  min=d3.min(DATASET.map((o)=>{return o[YNAME]})),
+                  max=d3.max(DATASET.map((o)=>{return o[YNAME]})),
+                 ))
+        .range([0, chart_height]);
+
+    var x_axis = d3.axisBottom(x_scale);
+    var y_axis = d3.axisLeft(y_scale);
+
+    svg.append("g")
+        .attr("class", "xaxis")
+        .attr("transform", `translate(0, ${chart_height})`)
+        .call(x_axis)
+        .append("g")
+        .attr("class", "xlabel")
+        .append("text")
+        .attr("fill", "dimgrey")
+        .style("font-size", "16px")
+        .style('font-weight', 'bold')
+        .attr("x", chart_width)
+        .attr("y", -6)
+        .style("text-anchor", "end")
+        .text(`${XNAME}`);
+
+
+    svg.append("g")
+        .attr("class", "yaxis")
+        .call(y_axis)
+        .append("g")
+        .attr("class", "ylabel")
+        .append("text")
+        .attr("fill", "dimgrey")
+        .style("font-size", "16px")
+        .style('font-weight', 'bold')
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text(`${YNAME}`);
+
+
+    svg.selectAll(".circle")
+        .data(DATASET)
+        .enter()
+        .append("circle")
+        .attr("class", "circle")
+        .attr("cx", (d) => {
+            return x_scale(d[XNAME]);
+        })
+        .attr("cy", (d) => {
+            return y_scale(d[YNAME]);
+        })
+        .attr("fill", "steelblue")
+        .attr("r", RADIUS)
+        .on("mouseover", function(d) {
+          tooltip
+          .style("visibility", "visible")
+          .html(`x: ${d[XNAME]}<br>y: ${d[YNAME]}`);
+        })
+        .on("mousemove", function(d) {
+            tooltip
+            .style("top", (d3.event.pageY - 20) + "px")
+            .style("left", (d3.event.pageX + 10) + "px");
+        })
+        .on("mouseout", function(d) {
+            tooltip.style("visibility", "hidden");
+        });
+
+
+    function getScaleMargin(min, max){
+        let mergin = (max - min) * 0.1;
+        return [min - mergin, max + mergin];
+    };
+
+</script>
+</body>

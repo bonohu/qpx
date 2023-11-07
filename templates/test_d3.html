@@ -1,0 +1,71 @@
+
+
+<div id="chart"></div>
+
+<script src="https://d3js.org/d3.v3.js"></script>
+<svg id="svg2" style="margin: 0 auto; display: block;"></svg>
+<script type="text/javascript">
+var node_width = 80;
+var node_height = 30;
+
+var DATASET = {{ DATASET }}
+var nodes = DATASET["nodes"]
+var links = DATASET["links"]
+    
+var svg = d3.select("#svg2")
+    .attr("width", 600)
+    .attr("height", 200)
+    .style("background-color", "#fff");
+    
+svg.selectAll("line")
+    .data(links)
+    .enter().append("line")
+    .attr("x1", function(d,i){return d[0][0] + node_width/2})
+    .attr("y1", function(d,i){return d[0][1] + node_height/2})
+    .attr("x2", function(d,i){return d[1][0] + node_width/2})
+    .attr("y2", function(d,i){return d[1][1] + node_height/2})   
+    .attr('stroke', 'black')
+    .attr('fill', 'none');
+
+svg.selectAll("rect")
+    .data(nodes)
+    .enter().append("rect")
+    .attr("x", (d) => d[0])
+    .attr("y", (d) => d[1])
+    .attr("width", node_width)
+    .attr("height", node_height)
+    .attr("fill", "white")
+    .style("stroke", "green")
+    .on("click", function(d){
+        testtest(d[2])
+    });
+
+
+svg.selectAll("text")
+    .data(nodes)
+    .enter().append("text")
+    .attr("x", (d) => d[0] + 4)
+    .attr("y", (d) => d[1] + 20)
+    .text(function(d) {return d[2];})
+    .on("click", function(d){
+        testtest(d[2])
+    });
+
+function testtest(gid){
+    alert(gid)
+    // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
+    //Jupyter.notebook.kernel.execute("gid='AT5G23350'");
+    //kernel.execute('graphId=10');
+    Jupyter.notebook.kernel.execute(`gid='${gid}'`);
+    
+    // cellを指定しcellを実行する
+    var cell = Jupyter.notebook.select_next().get_selected_cell()
+    setTimeout(cell.execute(), 5000);
+    //cell.execute()
+
+    
+}
+</script>
+
+
+    

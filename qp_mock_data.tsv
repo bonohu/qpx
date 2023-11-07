@@ -1,0 +1,256 @@
+Description	Expression	Age	Developmental stage	Organism part	Treatment	Label
+Anthers of the young flower (F.AN.y)	5.02436	NA	stage 9	Young anther	NA	AT5G23350
+Petals of the mature flower (F.PT.ad)	4.86139	NA	anthesis of the first flower	Petal	NA	AT5G23350
+Internode (IN)	4.80015	NA	anthesis of the first flower	Internode	NA	AT5G23350
+Flowers 9-11 (F9-11)	4.33681	NA	anthesis of the first flower	Flower 9-11	NA	AT5G23350
+Silique 8 (SL8)	4.29526	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 8	NA	AT5G23350
+Stamen filaments of the mature flower (F.FM.ad)	4.28343	NA	anthesis of the first flower	Stamen filament	NA	AT5G23350
+Carpel of 6th and 7th flowers (POD.y6-7)	4.11597	NA	abscission of the first flower	Carpel	NA	AT5G23350
+Pedicel (PED)	4.07322	NA	anthesis of the first flower	Pedicel	NA	AT5G23350
+Pod of the silique 7 (POD7)	3.94508	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 7	NA	AT5G23350
+Young seeds 3 (SD.y3)	3.89969	NA	abscission of the first flower	Seed from silique 3	NA	AT5G23350
+Sepals of the young flower (F.SP.y)	3.86647	NA	stage 9	Young sepal	NA	AT5G23350
+"Leaf Petiole, intermediate 2 (L.PET.i2)"	3.86401	12 day	NA	Leaf petiole	NA	AT5G23350
+Axis of the inflorescence (AX)	3.83139	NA	anthesis of the first flower	Inflorescence axis	NA	AT5G23350
+Flowers 6-8 (F6-8)	3.82058	NA	anthesis of the first flower	Flower 6-8	NA	AT5G23350
+Root Apex (R.A)	3.77021	7 day	NA	Root Apex	NA	AT5G23350
+Young seeds 5 (SD.y5)	3.75153	NA	abscission of the first flower	Seed from silique 5	NA	AT5G23350
+Silique 6 (SL6)	3.73239	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 6	NA	AT5G23350
+Carpels of the mature flower (F.CA.ad)	3.59363	NA	anthesis of the first flower	Carpel	NA	AT5G23350
+Flowers 12-14 (F12-14)	3.57823	NA	anthesis of the first flower	Flower 12-14	NA	AT5G23350
+Seedling Root (S.R)	3.5305	1 day	NA	Root	NA	AT5G23350
+Pod of the silique 5 (POD5)	3.49143	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 5	NA	AT5G23350
+Flower 3 (F3)	3.42257	NA	anthesis of the first flower	Flower 3	NA	AT5G23350
+Young seeds 2 (SD.y2)	3.40438	NA	abscission of the first flower	Seed from silique 2	NA	AT5G23350
+Heat 1 hour	3.383	21 day	NA	Leaf Heat 1 hour	heat	AT5G23350
+Dry Seeds (SD.d)	3.26836	NA	Dry seeds	Seed	NA	AT5G23350
+Flower 5 (F5)	3.26683	NA	anthesis of the first flower	Flower 5	NA	AT5G23350
+Ovules from 6th and 7th flowers (OV.y6-7)	3.25779	NA	abscission of the first flower	Ovule	NA	AT5G23350
+Germinating seeds 3 (SD.g3)	3.23325	3 day after soaking	NA	Seed	NA	AT5G23350
+Stigmatic tissue (STI)	3.20885	NA	abscission of the first flower	Stigma	NA	AT5G23350
+Flower 4 (F4)	3.14996	NA	anthesis of the first flower	Flower 4	NA	AT5G23350
+Heat 6 hours	3.09413	21 day	NA	Leaf Heat 6 hours	heat	AT5G23350
+Young seeds 4 (SD.y4)	3.05108	NA	abscission of the first flower	Seed from silique 4	NA	AT5G23350
+Flowers 19 and following (F19+)	2.96516	NA	anthesis of the first flower	Inflorescence	NA	AT5G23350
+Flowers 15-18 (F15-18)	2.91331	NA	anthesis of the first flower	Flower 15-18	NA	AT5G23350
+"Leaf Petiole, intermediate 1 (L.PET.i1)"	2.9026	9 day	NA	Leaf petiole	NA	AT5G23350
+Flower 2 (F2)	2.8479	NA	anthesis of the first flower	Flower 2	NA	AT5G23350
+Cold 6 hours	2.78171	21 day	NA	Leaf Cold 6 hours	cold	AT5G23350
+Seedling Hypocotyl (S.H)	2.77844	1 day	NA	Hypocotyl	NA	AT5G23350
+Heat 24 hours	2.75033	21 day	NA	Leaf Heat 24 hours	heat	AT5G23350
+Heat 3 hours	2.74914	21 day	NA	Leaf Heat 3 hours	heat	AT5G23350
+Root (R )	2.74295	7 day	NA	Root	NA	AT5G23350
+Silique 4 (SL4)	2.71813	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 4	NA	AT5G23350
+Carpels of the young flower (F.CA.y)	2.65715	NA	stage 9	Young carpel	NA	AT5G23350
+Pod of the silique 3 (POD3)	2.61254	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 3	NA	AT5G23350
+"Leaf Vein, intermediate 2 (L.VN.i2)"	2.60869	12 day	NA	Leaf midrib	NA	AT5G23350
+Seeds 7 (SD7)	2.60008	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 7	NA	AT5G23350
+Cold 1 hour	2.57526	21 day	NA	Leaf Cold 1 hour	cold	AT5G23350
+Flower 1 (F1)	2.48409	NA	anthesis of the first flower	Flower 1	NA	AT5G23350
+Heat 12 hours	2.31337	21 day	NA	Leaf Heat 12 hours	heat	AT5G23350
+Germinating seeds 2 (SD.g2)	2.31097	2 day after soaking	NA	Seed	NA	AT5G23350
+Wounding 1 hour	2.25152	21 day	NA	Leaf Wounding 1 hour	wounding	AT5G23350
+Young seeds 1 (SD.y1)	2.23649	NA	abscission of the first flower	Seed from silique 1	NA	AT5G23350
+"Leaf Lamina, intermediate 1 (L.LAM.i1)"	2.13403	9 day	NA	Leaf blade	NA	AT5G23350
+Seedling Meristem (S.M)	2.11014	1 day	NA	Shoot apical meristem	NA	AT5G23350
+Leaf Vein of the mature leaf (L.VN.lg)	2.03668	NA	anthesis of the first flower	Leaf midrib	NA	AT5G23350
+Cold 3 hours	2.00086	21 day	NA	Leaf Cold 3 hours	cold	AT5G23350
+Cold 12 hours	1.99811	21 day	NA	Leaf Cold 12 hours	cold	AT5G23350
+Leaf Lamina of the young leaf (L.LAM.y)	1.97312	7 day	NA	Leaf blade	NA	AT5G23350
+Wounding 3 hours	1.96797	21 day	NA	Leaf Wounding 3 hours	wounding	AT5G23350
+Leaf Petiole of the mature leaf (L.PET.lg)	1.93225	NA	anthesis of the first flower	Leaf petiole	NA	AT5G23350
+Wounding 48 hours	1.8658	21 day	NA	Leaf Wounding 48 hours	wounding	AT5G23350
+Pod of the silique 1 (POD1)	1.86261	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 1	NA	AT5G23350
+Leaf Petiole of the young leaf (L.PET.y)	1.84119	7 day	NA	Leaf petiole	NA	AT5G23350
+Silique 2 (SL2)	1.79771	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 2	NA	AT5G23350
+Wounding 12 hours	1.7383	21 day	NA	Leaf Wounding 12 hours	wounding	AT5G23350
+Wounding 24 hours	1.66824	21 day	NA	Leaf Wounding 24 hours	wounding	AT5G23350
+Seedling Cotyledons (S.C)	1.59395	1 day	NA	Cotyledon	NA	AT5G23350
+"Leaf Lamina, intermediate 2 (L.LAM.i2)"	1.58398	12 day	NA	Leaf blade	NA	AT5G23350
+Seeds 5 (SD5)	1.50638	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 5	NA	AT5G23350
+Cold 24 hours	1.49292	21 day	NA	Leaf Cold 24 hours	cold	AT5G23350
+Germinating seeds 1 (SD.g1)	1.42786	1 day after soaking	NA	Seed	NA	AT5G23350
+Wounding 6 hours	1.42119	21 day	NA	Leaf Wounding 6 hours	wounding	AT5G23350
+Anthers of the mature flower (F.AN.ad)	1.10808	NA	anthesis of the first flower	Anther before opening	NA	AT5G23350
+Opened Anthers (F.AN)	1.0882	NA	anthesis of the first flower	Opened Anther	NA	AT5G23350
+Leaf Vein of the senescent leaf (L.VN.sn)	0.910549	NA	first silique was yellow and ready to open	Leaf midrib	NA	AT5G23350
+Leaf Lamina of the mature leaf (L.LAM.lg)	0.904668	NA	anthesis of the first flower	Leaf blade	NA	AT5G23350
+Seeds 1 (SD1)	0.830619	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 1	NA	AT5G23350
+"Leaf, mature (L.lg)"	0.77655	NA	anthesis of the first flower	Leaf	NA	AT5G23350
+Seeds 3 (SD3)	0.754933	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 3	NA	AT5G23350
+Sepals of the mature flower (F.SP.ad)	0.6599	NA	anthesis of the first flower	Sepal	NA	AT5G23350
+Leaf Petiole of the senescent leaf (L.PET.sn)	0.65047	NA	first silique was yellow and ready to open	Leaf petiole	NA	AT5G23350
+Seeds from the senescent silique 1 (SD.sn1)	0.428397	NA	first silique was yellow and ready to open	Seed	NA	AT5G23350
+Senescent silique 2 (SL.sn2)	0.396531	NA	first silique was yellow and ready to open	Silique	NA	AT5G23350
+Senescent internode (IN.sn)	0.260647	NA	first silique was yellow and ready to open	Internode	NA	AT5G23350
+Pod of the senescent silique 1 (POD.sn1)	0.22231	NA	first silique was yellow and ready to open	Pod	NA	AT5G23350
+Pod of the senescent silique 1 (POD.sn1)	6.71214	NA	first silique was yellow and ready to open	Pod	NA	HAI2
+Senescent internode (IN.sn)	6.04815	NA	first silique was yellow and ready to open	Internode	NA	HAI2
+Senescent silique 2 (SL.sn2)	5.7967	NA	first silique was yellow and ready to open	Silique	NA	HAI2
+Leaf Vein of the senescent leaf (L.VN.sn)	5.78289	NA	first silique was yellow and ready to open	Leaf midrib	NA	HAI2
+Seeds from the senescent silique 1 (SD.sn1)	5.76728	NA	first silique was yellow and ready to open	Seed	NA	HAI2
+Leaf Petiole of the senescent leaf (L.PET.sn)	5.55991	NA	first silique was yellow and ready to open	Leaf petiole	NA	HAI2
+Pod of the silique 3 (POD3)	5.08576	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 3	NA	HAI2
+Cold 24 hours	4.87589	21 day	NA	Leaf Cold 24 hours	cold	HAI2
+Pod of the silique 1 (POD1)	4.84875	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 1	NA	HAI2
+"Leaf, mature (L.lg)"	4.83253	NA	anthesis of the first flower	Leaf	NA	HAI2
+Opened Anthers (F.AN)	4.73017	NA	anthesis of the first flower	Opened Anther	NA	HAI2
+Sepals of the mature flower (F.SP.ad)	4.6752	NA	anthesis of the first flower	Sepal	NA	HAI2
+Pod of the silique 5 (POD5)	4.64975	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 5	NA	HAI2
+Dry Seeds (SD.d)	4.59894	NA	Dry seeds	Seed	NA	HAI2
+Silique 2 (SL2)	4.55934	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 2	NA	HAI2
+Leaf Vein of the mature leaf (L.VN.lg)	4.54705	NA	anthesis of the first flower	Leaf midrib	NA	HAI2
+Cold 12 hours	4.4734	21 day	NA	Leaf Cold 12 hours	cold	HAI2
+Petals of the mature flower (F.PT.ad)	4.17673	NA	anthesis of the first flower	Petal	NA	HAI2
+Pod of the silique 7 (POD7)	4.1079	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 7	NA	HAI2
+Silique 4 (SL4)	4.10684	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 4	NA	HAI2
+Leaf Lamina of the mature leaf (L.LAM.lg)	4.03818	NA	anthesis of the first flower	Leaf blade	NA	HAI2
+Leaf Petiole of the mature leaf (L.PET.lg)	4.0251	NA	anthesis of the first flower	Leaf petiole	NA	HAI2
+Flower 1 (F1)	3.99522	NA	anthesis of the first flower	Flower 1	NA	HAI2
+Flower 2 (F2)	3.90788	NA	anthesis of the first flower	Flower 2	NA	HAI2
+Carpel of 6th and 7th flowers (POD.y6-7)	3.76718	NA	abscission of the first flower	Carpel	NA	HAI2
+Carpels of the mature flower (F.CA.ad)	3.6134	NA	anthesis of the first flower	Carpel	NA	HAI2
+Heat 24 hours	3.60994	21 day	NA	Leaf Heat 24 hours	heat	HAI2
+Pedicel (PED)	3.59424	NA	anthesis of the first flower	Pedicel	NA	HAI2
+Flower 3 (F3)	3.42611	NA	anthesis of the first flower	Flower 3	NA	HAI2
+Flower 5 (F5)	3.40056	NA	anthesis of the first flower	Flower 5	NA	HAI2
+Germinating seeds 1 (SD.g1)	3.31069	1 day after soaking	NA	Seed	NA	HAI2
+Flower 4 (F4)	3.24373	NA	anthesis of the first flower	Flower 4	NA	HAI2
+Silique 6 (SL6)	3.1352	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 6	NA	HAI2
+Flowers 12-14 (F12-14)	3.1026	NA	anthesis of the first flower	Flower 12-14	NA	HAI2
+Flowers 6-8 (F6-8)	3.09485	NA	anthesis of the first flower	Flower 6-8	NA	HAI2
+Axis of the inflorescence (AX)	3.0839	NA	anthesis of the first flower	Inflorescence axis	NA	HAI2
+Stamen filaments of the mature flower (F.FM.ad)	3.04222	NA	anthesis of the first flower	Stamen filament	NA	HAI2
+Sepals of the young flower (F.SP.y)	3.04148	NA	stage 9	Young sepal	NA	HAI2
+Internode (IN)	2.94204	NA	anthesis of the first flower	Internode	NA	HAI2
+Silique 8 (SL8)	2.89795	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 8	NA	HAI2
+Flowers 15-18 (F15-18)	2.60128	NA	anthesis of the first flower	Flower 15-18	NA	HAI2
+Wounding 1 hour	2.48957	21 day	NA	Leaf Wounding 1 hour	wounding	HAI2
+Flowers 9-11 (F9-11)	2.42838	NA	anthesis of the first flower	Flower 9-11	NA	HAI2
+Heat 12 hours	2.41716	21 day	NA	Leaf Heat 12 hours	heat	HAI2
+Cold 6 hours	2.34294	21 day	NA	Leaf Cold 6 hours	cold	HAI2
+Flowers 19 and following (F19+)	2.27286	NA	anthesis of the first flower	Inflorescence	NA	HAI2
+Wounding 12 hours	2.21594	21 day	NA	Leaf Wounding 12 hours	wounding	HAI2
+Anthers of the young flower (F.AN.y)	2.01617	NA	stage 9	Young anther	NA	HAI2
+Cold 1 hour	1.9857	21 day	NA	Leaf Cold 1 hour	cold	HAI2
+Cold 3 hours	1.9619	21 day	NA	Leaf Cold 3 hours	cold	HAI2
+Seedling Hypocotyl (S.H)	1.95876	1 day	NA	Hypocotyl	NA	HAI2
+Anthers of the mature flower (F.AN.ad)	1.94464	NA	anthesis of the first flower	Anther before opening	NA	HAI2
+Carpels of the young flower (F.CA.y)	1.86525	NA	stage 9	Young carpel	NA	HAI2
+Wounding 48 hours	1.81604	21 day	NA	Leaf Wounding 48 hours	wounding	HAI2
+Seedling Cotyledons (S.C)	1.81082	1 day	NA	Cotyledon	NA	HAI2
+Heat 3 hours	1.79649	21 day	NA	Leaf Heat 3 hours	heat	HAI2
+Heat 6 hours	1.77573	21 day	NA	Leaf Heat 6 hours	heat	HAI2
+Wounding 6 hours	1.67212	21 day	NA	Leaf Wounding 6 hours	wounding	HAI2
+Germinating seeds 2 (SD.g2)	1.56911	2 day after soaking	NA	Seed	NA	HAI2
+Heat 1 hour	1.54323	21 day	NA	Leaf Heat 1 hour	heat	HAI2
+Wounding 24 hours	1.50412	21 day	NA	Leaf Wounding 24 hours	wounding	HAI2
+Wounding 3 hours	1.47776	21 day	NA	Leaf Wounding 3 hours	wounding	HAI2
+Seeds 5 (SD5)	1.4642	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 5	NA	HAI2
+Germinating seeds 3 (SD.g3)	1.421	3 day after soaking	NA	Seed	NA	HAI2
+"Leaf Lamina, intermediate 2 (L.LAM.i2)"	1.31962	12 day	NA	Leaf blade	NA	HAI2
+Seeds 1 (SD1)	1.31318	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 1	NA	HAI2
+Seeds 7 (SD7)	1.27619	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 7	NA	HAI2
+Young seeds 3 (SD.y3)	1.25264	NA	abscission of the first flower	Seed from silique 3	NA	HAI2
+"Leaf Petiole, intermediate 2 (L.PET.i2)"	1.09787	12 day	NA	Leaf petiole	NA	HAI2
+"Leaf Vein, intermediate 2 (L.VN.i2)"	1.09182	12 day	NA	Leaf midrib	NA	HAI2
+Young seeds 2 (SD.y2)	1.08602	NA	abscission of the first flower	Seed from silique 2	NA	HAI2
+Ovules from 6th and 7th flowers (OV.y6-7)	1.07957	NA	abscission of the first flower	Ovule	NA	HAI2
+Stigmatic tissue (STI)	1.00455	NA	abscission of the first flower	Stigma	NA	HAI2
+Seeds 3 (SD3)	0.99119	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 3	NA	HAI2
+Young seeds 1 (SD.y1)	0.898269	NA	abscission of the first flower	Seed from silique 1	NA	HAI2
+Young seeds 4 (SD.y4)	0.845585	NA	abscission of the first flower	Seed from silique 4	NA	HAI2
+Seedling Meristem (S.M)	0.69395	1 day	NA	Shoot apical meristem	NA	HAI2
+Leaf Petiole of the young leaf (L.PET.y)	0.609104	7 day	NA	Leaf petiole	NA	HAI2
+Root (R )	0.583594	7 day	NA	Root	NA	HAI2
+Leaf Lamina of the young leaf (L.LAM.y)	0.565116	7 day	NA	Leaf blade	NA	HAI2
+Young seeds 5 (SD.y5)	0.532831	NA	abscission of the first flower	Seed from silique 5	NA	HAI2
+"Leaf Petiole, intermediate 1 (L.PET.i1)"	0.418574	9 day	NA	Leaf petiole	NA	HAI2
+Seedling Root (S.R)	0.360741	1 day	NA	Root	NA	HAI2
+"Leaf Lamina, intermediate 1 (L.LAM.i1)"	0.262409	9 day	NA	Leaf blade	NA	HAI2
+Root Apex (R.A)	0.159861	7 day	NA	Root Apex	NA	HAI2
+Petals of the mature flower (F.PT.ad)	5.35309	NA	anthesis of the first flower	Petal	NA	AREB3
+Stigmatic tissue (STI)	5.10907	NA	abscission of the first flower	Stigma	NA	AREB3
+Stamen filaments of the mature flower (F.FM.ad)	5.10846	NA	anthesis of the first flower	Stamen filament	NA	AREB3
+Seeds 1 (SD1)	5.08415	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 1	NA	AREB3
+Ovules from 6th and 7th flowers (OV.y6-7)	4.96902	NA	abscission of the first flower	Ovule	NA	AREB3
+Carpels of the young flower (F.CA.y)	4.82955	NA	stage 9	Young carpel	NA	AREB3
+Young seeds 4 (SD.y4)	4.81215	NA	abscission of the first flower	Seed from silique 4	NA	AREB3
+Young seeds 3 (SD.y3)	4.78975	NA	abscission of the first flower	Seed from silique 3	NA	AREB3
+Young seeds 2 (SD.y2)	4.70797	NA	abscission of the first flower	Seed from silique 2	NA	AREB3
+Young seeds 1 (SD.y1)	4.69876	NA	abscission of the first flower	Seed from silique 1	NA	AREB3
+Flowers 19 and following (F19+)	4.68494	NA	anthesis of the first flower	Inflorescence	NA	AREB3
+Carpel of 6th and 7th flowers (POD.y6-7)	4.6501	NA	abscission of the first flower	Carpel	NA	AREB3
+Silique 2 (SL2)	4.63029	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 2	NA	AREB3
+Young seeds 5 (SD.y5)	4.55149	NA	abscission of the first flower	Seed from silique 5	NA	AREB3
+Carpels of the mature flower (F.CA.ad)	4.52259	NA	anthesis of the first flower	Carpel	NA	AREB3
+Flower 2 (F2)	4.45233	NA	anthesis of the first flower	Flower 2	NA	AREB3
+Flowers 12-14 (F12-14)	4.44739	NA	anthesis of the first flower	Flower 12-14	NA	AREB3
+Seeds 5 (SD5)	4.39356	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 5	NA	AREB3
+Axis of the inflorescence (AX)	4.37372	NA	anthesis of the first flower	Inflorescence axis	NA	AREB3
+Flowers 15-18 (F15-18)	4.35329	NA	anthesis of the first flower	Flower 15-18	NA	AREB3
+Flowers 6-8 (F6-8)	4.32287	NA	anthesis of the first flower	Flower 6-8	NA	AREB3
+Root Apex (R.A)	4.30961	7 day	NA	Root Apex	NA	AREB3
+Seeds 3 (SD3)	4.30396	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 3	NA	AREB3
+Seedling Root (S.R)	4.30136	1 day	NA	Root	NA	AREB3
+Senescent internode (IN.sn)	4.29411	NA	first silique was yellow and ready to open	Internode	NA	AREB3
+Anthers of the young flower (F.AN.y)	4.26862	NA	stage 9	Young anther	NA	AREB3
+Root (R )	4.24325	7 day	NA	Root	NA	AREB3
+Pod of the silique 1 (POD1)	4.23582	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 1	NA	AREB3
+Germinating seeds 1 (SD.g1)	4.22471	1 day after soaking	NA	Seed	NA	AREB3
+Flower 5 (F5)	4.22374	NA	anthesis of the first flower	Flower 5	NA	AREB3
+Flower 4 (F4)	4.20652	NA	anthesis of the first flower	Flower 4	NA	AREB3
+Flowers 9-11 (F9-11)	4.17574	NA	anthesis of the first flower	Flower 9-11	NA	AREB3
+Leaf Petiole of the mature leaf (L.PET.lg)	4.15299	NA	anthesis of the first flower	Leaf petiole	NA	AREB3
+Leaf Vein of the mature leaf (L.VN.lg)	4.15236	NA	anthesis of the first flower	Leaf midrib	NA	AREB3
+Sepals of the mature flower (F.SP.ad)	4.15024	NA	anthesis of the first flower	Sepal	NA	AREB3
+Flower 3 (F3)	4.13981	NA	anthesis of the first flower	Flower 3	NA	AREB3
+Silique 4 (SL4)	4.13753	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 4	NA	AREB3
+Internode (IN)	4.09779	NA	anthesis of the first flower	Internode	NA	AREB3
+Leaf Lamina of the mature leaf (L.LAM.lg)	4.08673	NA	anthesis of the first flower	Leaf blade	NA	AREB3
+Leaf Petiole of the young leaf (L.PET.y)	4.08377	7 day	NA	Leaf petiole	NA	AREB3
+Pod of the silique 3 (POD3)	4.08084	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 3	NA	AREB3
+"Leaf, mature (L.lg)"	4.06104	NA	anthesis of the first flower	Leaf	NA	AREB3
+Flower 1 (F1)	4.05808	NA	anthesis of the first flower	Flower 1	NA	AREB3
+Pedicel (PED)	4.03078	NA	anthesis of the first flower	Pedicel	NA	AREB3
+Seeds 7 (SD7)	3.96609	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Seed 7	NA	AREB3
+Germinating seeds 2 (SD.g2)	3.93897	2 day after soaking	NA	Seed	NA	AREB3
+Leaf Petiole of the senescent leaf (L.PET.sn)	3.93296	NA	first silique was yellow and ready to open	Leaf petiole	NA	AREB3
+Sepals of the young flower (F.SP.y)	3.91895	NA	stage 9	Young sepal	NA	AREB3
+"Leaf Petiole, intermediate 1 (L.PET.i1)"	3.90349	9 day	NA	Leaf petiole	NA	AREB3
+Germinating seeds 3 (SD.g3)	3.89212	3 day after soaking	NA	Seed	NA	AREB3
+Pod of the senescent silique 1 (POD.sn1)	3.89048	NA	first silique was yellow and ready to open	Pod	NA	AREB3
+Silique 6 (SL6)	3.86945	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 6	NA	AREB3
+Silique 8 (SL8)	3.85952	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Silique 8	NA	AREB3
+Leaf Lamina of the young leaf (L.LAM.y)	3.84773	7 day	NA	Leaf blade	NA	AREB3
+Seedling Hypocotyl (S.H)	3.80795	1 day	NA	Hypocotyl	NA	AREB3
+Cold 24 hours	3.80291	21 day	NA	Leaf Cold 24 hours	cold	AREB3
+Leaf Vein of the senescent leaf (L.VN.sn)	3.79288	NA	first silique was yellow and ready to open	Leaf midrib	NA	AREB3
+"Leaf Petiole, intermediate 2 (L.PET.i2)"	3.77229	12 day	NA	Leaf petiole	NA	AREB3
+Pod of the silique 5 (POD5)	3.7431	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 5	NA	AREB3
+Pod of the silique 7 (POD7)	3.68125	NA	first silique is 1-1.5 cm long (abscission of the 8th flower)	Pod 7	NA	AREB3
+Wounding 48 hours	3.61441	21 day	NA	Leaf Wounding 48 hours	wounding	AREB3
+"Leaf Vein, intermediate 2 (L.VN.i2)"	3.50595	12 day	NA	Leaf midrib	NA	AREB3
+"Leaf Lamina, intermediate 1 (L.LAM.i1)"	3.50578	9 day	NA	Leaf blade	NA	AREB3
+Wounding 12 hours	3.46228	21 day	NA	Leaf Wounding 12 hours	wounding	AREB3
+Cold 1 hour	3.45049	21 day	NA	Leaf Cold 1 hour	cold	AREB3
+Cold 12 hours	3.44348	21 day	NA	Leaf Cold 12 hours	cold	AREB3
+Senescent silique 2 (SL.sn2)	3.34958	NA	first silique was yellow and ready to open	Silique	NA	AREB3
+Cold 3 hours	3.31094	21 day	NA	Leaf Cold 3 hours	cold	AREB3
+Heat 6 hours	3.29993	21 day	NA	Leaf Heat 6 hours	heat	AREB3
+Wounding 1 hour	3.28769	21 day	NA	Leaf Wounding 1 hour	wounding	AREB3
+Wounding 24 hours	3.28212	21 day	NA	Leaf Wounding 24 hours	wounding	AREB3
+Wounding 3 hours	3.28089	21 day	NA	Leaf Wounding 3 hours	wounding	AREB3
+"Leaf Lamina, intermediate 2 (L.LAM.i2)"	3.2709	12 day	NA	Leaf blade	NA	AREB3
+Wounding 6 hours	3.26375	21 day	NA	Leaf Wounding 6 hours	wounding	AREB3
+Cold 6 hours	3.23937	21 day	NA	Leaf Cold 6 hours	cold	AREB3
+Heat 12 hours	3.22128	21 day	NA	Leaf Heat 12 hours	heat	AREB3
+Heat 3 hours	3.21753	21 day	NA	Leaf Heat 3 hours	heat	AREB3
+Seeds from the senescent silique 1 (SD.sn1)	3.18562	NA	first silique was yellow and ready to open	Seed	NA	AREB3
+Seedling Cotyledons (S.C)	3.17472	1 day	NA	Cotyledon	NA	AREB3
+Dry Seeds (SD.d)	3.17395	NA	Dry seeds	Seed	NA	AREB3
+Heat 24 hours	2.9916	21 day	NA	Leaf Heat 24 hours	heat	AREB3
+Heat 1 hour	2.82275	21 day	NA	Leaf Heat 1 hour	heat	AREB3
+Seedling Meristem (S.M)	2.74766	1 day	NA	Shoot apical meristem	NA	AREB3
+Opened Anthers (F.AN)	2.4051	NA	anthesis of the first flower	Opened Anther	NA	AREB3
+Anthers of the mature flower (F.AN.ad)	2.33622	NA	anthesis of the first flower	Anther before opening	NA	AREB3
