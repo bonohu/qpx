@@ -24,6 +24,8 @@ Jupyter notebookでWikiPathwaysのパスウェイと選択したノードの属�
 
 - config.yamlを置き読み込むファイル等を記述するようにする
 - ノートブックを開いた状態で最初のcellを実行する機能（あるいは明示的に実行してもらうためのボタンwidgetの表示）
+- table表示はソート機能などを備えたholoview等を使った方が良さそう
 - よりよいJS-Python通信の方法検討
+
 
 
