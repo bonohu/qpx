@@ -22,10 +22,8 @@ Jupyter notebookでWikiPathwaysのパスウェイと選択したノードの属�
 
 # Todo
 
-- cellにフォーカスしないとJSからのcell.execute()が実行されない雰囲気。対応策を検討する。
 - config.yamlを置き読み込むファイル等を記述するようにする
 - ノートブックを開いた状態で最初のcellを実行する機能（あるいは明示的に実行してもらうためのボタンwidgetの表示）
 - よりよいJS-Python通信の方法検討
-- その他いろいろ
 
 
