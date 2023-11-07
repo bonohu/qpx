@@ -52,18 +52,18 @@ svg.selectAll("text")
     });
 
 function testtest(gid){
-    alert(gid)
     // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
     //Jupyter.notebook.kernel.execute("gid='AT5G23350'");
     //kernel.execute('graphId=10');
     Jupyter.notebook.kernel.execute(`gid='${gid}'`);
     
-    // cellを指定しcellを実行する
-    var cell = Jupyter.notebook.select_next().get_selected_cell()
-    setTimeout(cell.execute(), 5000);
+    
+    // 相対位置でcellを指定しcellを実行する場合。フォーカスが当たっていないと実行位置がずれるため使えない
+    //var cell = Jupyter.notebook.select_next().get_selected_cell()
     //cell.execute()
 
-    
+    // cellのindexを指定しtableのアップデートを実行する場合。設定で変更できると良いかも（必要ないかもだが）
+    Jupyter.notebook.execute_cells([2])
 }
 </script>
 
