@@ -19,7 +19,7 @@ qp_view.ipynbをJupyter notebook環境（classic環境）で開いて利用し�
 - ipywidgets                                8.1.1
 - notebook                                7.0.6
 - jupyterlab                                4.0.7　// notebookをインストールすると一緒に入ってしまうが現状使わない
-- d3.js                                // v3でmockは作っているが新しいほうがベターとは思う。load_d3v4_caseでv4以降の使い方は検討している
+- d3.js                                // v3でmockは作っているが新しいほうがベターとは思う。d3v4_case.ipynbでv4以降の使い方は確認している
 
 
 # Todo
