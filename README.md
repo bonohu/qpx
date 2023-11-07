@@ -1,6 +1,8 @@
 # qp
 Jupyter notebookでWikiPathwaysのパスウェイと選択したノードの属性テーブルを表示するツールです。
 
+qp_view.ipynbをJupyter notebook環境（classic環境）で開いて利用します。
+
 ## memo
 
 - メインのnotebookの名前をqp_view.ipynbに変更しました
