@@ -1,5 +1,5 @@
 # qp
-
+Jupyter notebookでWikiPathwaysのパスウェイと選択したノードの属性テーブルを表示するツールです。
 
 ## memo
 
