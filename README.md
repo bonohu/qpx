@@ -1,33 +1,43 @@
 # qp
 Jupyter notebookでWikiPathwaysのパスウェイと選択したノードの属性テーブルを表示するツールです。
 
-qp_view.ipynbをJupyter notebook環境（classic環境）で開いて利用します。
+qp_view.ipynbをJupyter notebook環境で開いて利用します。
 
 ## memo
 
-- メインのnotebookの名前をqp_view.ipynbに変更しました
-- メインのPythonファイルの名前をqp.pyに変更しました
-- htmlファイルは今のところtemplates/test_d3.htmlをjinja2に読み込んでレンダリングし使用しています
-- 本ツールは現状Jupyter notebookのclassicモード（version6エミュレート）で利用することを想定しています。エンドポイントの後に/nbclassic/をつけてnotebookを開いてください
+- メインのnotebookの名前をqp_view.ipynbに変更しました。
+- メインのPythonファイルの名前をqp.pyに変更しました。
+- htmlファイルは今のところtemplates/test_d3.htmlをjinja2に読み込んでレンダリングし使用しています。
+- 本ツールは現状Jupyter notebookのclassicモード（version6エミュレート）で利用することを想定しています。エンドポイントの後に/nbclassic/をつけてnotebookを開いてください。
 - htmlファイルはtemplatesにあります。htmlファイルを編集する際はclassicモードは使えないようです。
 
 
-## 環境
+## 環境構築
+
+本ツールは最新のnotebook (notebook 7.x.x)では利用できない機能やextensionが必要なため、現状notebook 6をインストールして環境を構築します。
 
 - Python                                3.9.x
-- ipython                                8.16.1
-- ipywidgets                                8.1.1
-- notebook                                7.0.6
-- jupyterlab                                4.0.7　// notebookをインストールすると一緒に入ってしまうが現状使わない
+- notebook                                6.x.x 
+    - install :  pip install notebook==6.5.6
+- nbextension
+    - pip install jupyter_contrib_nbextensions
+    - pip install jupyter_nbextensions_configurator
+- pandas
+    - pip install pandas
 - d3.js                                // v3でmockは作っているが新しいほうがベターとは思う。d3v4_case.ipynbでv4以降の使い方は確認している
+
+
+!!notebook 7環境で使いたい場合はエンドポイントに/nbclassic/を追加しclassicモード（notebook 6相当）で利用することは一応できますが
+nbextensionに対応できないため、セルの自動runなどを使うことができません。!!
 
 
 # Todo
 
 - config.yamlを置き読み込むファイル等を記述するようにする
-- ノートブックを開いた状態で最初のcellを実行する機能（あるいは明示的に実行してもらうためのボタンwidgetの表示）
+- nbextensionでセルの自動runを設定する
+- 必要であればセルを実行するようなボタンwidgetを追加する
 - table表示はソート機能などを備えたholoview等を使った方が良さそう
-- よりよいJS-Python通信の方法検討
+- よりよいJS-Python通信の方法を検討する（Javascriptからのグローバル変数設定、cellの実行）
 
 
 
