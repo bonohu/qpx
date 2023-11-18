@@ -13,6 +13,20 @@
     var height = "{{ height }}"
 
 
+    function arrowHeadType(gpmlArrowType) {
+        switch (gpmlArrowType) {
+            case "Arrow":
+            case "mim-conversion":
+                return "url(#marker-arrow)";
+            case "mim-catalysis":
+                return "url(#marker-circle)";
+            case "mim-inhibition":
+                return "url(#marker-pipe)";
+        }
+        return '';
+    }
+
+
     var svg = d3.select("#svg2")
         .attr("width", width)
         .attr("height", height)
@@ -26,8 +40,8 @@
         .attr("x2", function (d, i) { return d.points[1].X + d.points[1].RelX })
         .attr("y2", function (d, i) { return d.points[1].Y + d.points[1].RelY })
         .attr('stroke', 'black')
-        .attr("marker-start", d => d.points[0].ArrowHead ? "url(#arrow)" : '')
-        .attr("marker-end", d => d.points[1].ArrowHead ? "url(#arrow)" : '')
+        .attr("marker-start", d => arrowHeadType(d.points[0].ArrowHead))
+        .attr("marker-end", d => arrowHeadType(d.points[1].ArrowHead))
         .attr('fill', 'none');
 
     svg.selectAll("rect")
@@ -55,7 +69,7 @@
     svg
         .append("defs")
         .append("marker")
-        .attr("id", "arrow")
+        .attr("id", "marker-arrow")
         .attr("viewBox", [0, 0, markerBoxWidth, markerBoxHeight])
         .attr("refX", refX)
         .attr("refY", refY)
@@ -67,6 +81,24 @@
         .attr("fill", "#000000");
 
 
+    svg
+        .append("defs")
+        .append("marker")
+        .attr("id", "marker-circle")
+        .attr("viewBox", [0, 0, markerBoxWidth, markerBoxHeight])
+        .attr("refX", refX)
+        .attr("refY", refY)
+        .attr("markerWidth", markerBoxWidth)
+        .attr("markerHeight", markerBoxHeight)
+        .attr("orient", "auto-start-reverse")
+        .append('circle')
+        .attr('cx', markerBoxWidth / 2)
+        .attr('cy', markerBoxHeight / 2)
+        .attr('r', markerBoxWidth / 2)
+        .attr("stroke", "#000000")
+        .attr("fill", "white");
+
+
     console.log(nodes)
 
     svg.selectAll("text")
@@ -74,6 +106,7 @@
         .enter().append("text")
         .attr("x", (d) => d.CenterX)
         .attr("y", (d) => d.CenterY)
+        .attr("stroke", d => `#${d.Color}`)
         .text(d => d.TextLabel)
         .style("text-anchor", "middle")
         .style("dominant-baseline", "central")
