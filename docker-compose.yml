@@ -1,0 +1,12 @@
+version: "3.4"
+services:
+  notebook:
+    build: .
+    command:
+      - start-notebook.sh
+      - --NotebookApp.token='' # 認証を無効化
+      - --NotebookApp.disable_check_xsrf=True # CSRFチェックを無効化
+    ports:
+      - 8888:8888
+    volumes:
+      - ".:/home/jovyan/work"
