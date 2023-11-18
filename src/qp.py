@@ -1,10 +1,12 @@
 import pandas as pd
+import json
 
 
 class SimpleD3:
     def __init__(self, env):
         # for mock pathway
-        self.data ={ "nodes": [[20, 20, "AT5G23350"],[120,150,"HAI2"],[150, 100,"AREB3"]], "links":[[[20, 20],[120,150]],[[120,150],[150, 100]]]}
+        self.data = json.load(open("qp_mock_data.json"))
+        # self.data ={ "nodes": [[20, 20, "AT5G23350"],[120,150,"HAI2"],[150, 100,"AREB3"]], "links":[[[20, 20],[120,150]],[[120,150],[150, 100]]]}
         # self.data = df.to_json(orient="records")
         
         self.template = env.get_template("test_d3.html")
