@@ -1,0 +1,98 @@
+<div id="chart"></div>
+
+<script src="https://d3js.org/d3.v3.js"></script>
+<svg id="svg2" style="margin: 0 auto; display: block;"></svg>
+<script type="text/javascript">
+    var node_width = 80;
+    var node_height = 30;
+
+    var dataset = {{ dataset | tojson | safe }}
+    var nodes = dataset["nodes"]
+    var links = dataset["links"]
+    var width = "{{ width }}"
+    var height = "{{ height }}"
+
+
+    var svg = d3.select("#svg2")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background-color", "#fff");
+
+    svg.selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("x1", function (d, i) { return d.points[0].X + d.points[0].RelX })
+        .attr("y1", function (d, i) { return d.points[0].Y + d.points[0].RelY })
+        .attr("x2", function (d, i) { return d.points[1].X + d.points[1].RelX })
+        .attr("y2", function (d, i) { return d.points[1].Y + d.points[1].RelY })
+        .attr('stroke', 'black')
+        .attr("marker-start", d => d.points[0].ArrowHead ? "url(#arrow)" : '')
+        .attr("marker-end", d => d.points[1].ArrowHead ? "url(#arrow)" : '')
+        .attr('fill', 'none');
+
+    svg.selectAll("rect")
+        .data(nodes)
+        .enter().append("rect")
+        .attr("x", (d) => d.CenterX - d.Width / 2)
+        .attr("y", (d) => d.CenterY - d.Height / 2)
+        .attr("width", d => d.Width)
+        .attr("height", d => d.Height)
+        .attr("fill", "white")
+        .style("stroke", d => `#${d.Color}`)
+        .on("click", function (d) {
+            onIdClicked(d[2])
+        });
+
+    var markerBoxWidth = 10, markerBoxHeight = 10, refXFactor = 1, refYFactor = 0.5;
+    var arrowPoints = [
+        [markerBoxWidth, markerBoxHeight / 2],
+        [0, markerBoxHeight],
+        [0, 0]
+    ]
+    var refX = markerBoxWidth * refXFactor;
+    var refY = markerBoxHeight * refYFactor;
+
+    svg
+        .append("defs")
+        .append("marker")
+        .attr("id", "arrow")
+        .attr("viewBox", [0, 0, markerBoxWidth, markerBoxHeight])
+        .attr("refX", refX)
+        .attr("refY", refY)
+        .attr("markerWidth", markerBoxWidth)
+        .attr("markerHeight", markerBoxHeight)
+        .attr("orient", "auto-start-reverse")
+        .append("path")
+        .attr("d", `M ${markerBoxWidth} ${markerBoxHeight / 2} L 0 ${markerBoxHeight} L 0 0 z`)
+        .attr("fill", "#000000");
+
+
+    console.log(nodes)
+
+    svg.selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .attr("x", (d) => d.CenterX)
+        .attr("y", (d) => d.CenterY)
+        .text(d => d.TextLabel)
+        .style("text-anchor", "middle")
+        .style("dominant-baseline", "central")
+        .on("click", function (d) {
+            onIdClicked(d.TextLabel)
+        });
+
+    function onIdClicked(gid) {
+        // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
+        //Jupyter.notebook.kernel.execute("gid='AT5G23350'");
+        //kernel.execute('graphId=10');
+        Jupyter.notebook.kernel.execute(`gid='${gid}'`);
+
+
+        // 相対位置でcellを指定しcellを実行する場合。フォーカスが当たっていないと実行位置がずれるため使えない
+        //var cell = Jupyter.notebook.select_next().get_selected_cell()
+        //cell.execute()
+
+        // cellのindexを指定しtableのアップデートを実行する場合。設定で変更できると良いかも（必要ないかもだが）
+        Jupyter.notebook.execute_cells([2])
+    }
+</script>

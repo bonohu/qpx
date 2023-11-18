@@ -40,14 +40,20 @@ class GpmlParser:
         for node in root.findall('gpml:DataNode', namespace):
             graphics = node.find('gpml:Graphics', namespace)
             if graphics is not None:
-                node_data = {
-                    'CenterX': graphics.get('CenterX'),
-                    'CenterY': graphics.get('CenterY'),
-                    'Width': graphics.get('Width'),
-                    'Height': graphics.get('Height'),
-                    'Color': graphics.get('Color', '000000')  # デフォルトの色を黒とする
-                }
+                node_attributes = ["CenterX", "CenterY", "Width", "Height", "Color"]
+                node_data = {}
+                for attr in node_attributes:
+                    node_data[attr] = graphics.get(attr)
+                float_attributes = ["CenterX", "CenterY", "Width", "Height"]
+                for attr in float_attributes:
+                    if node_data[attr] is not None:
+                        node_data[attr] = float(node_data[attr])
+
+                if node_data["Color"] is None:
+                    node_data["Color"] = "000000"
+                node_data["TextLabel"] = node.get("TextLabel")
                 parsed_data['nodes'].append(node_data)
+            
 
         # Interactionタグからインタラクション情報を抽出
         for interaction in root.findall('gpml:Interaction', namespace):
@@ -59,14 +65,12 @@ class GpmlParser:
             }
 
             for point in interaction.findall('gpml:Graphics/gpml:Point', namespace):
-                point_data = {
-                    'GraphId': point.get('GraphId'),
-                    'X': point.get('X'),
-                    'Y': point.get('Y'),
-                    'RelX': point.get('RelX'),
-                    'RelY': point.get('RelY'),
-                    'ArrowHead': point.get('ArrowHead')
-                }
+                point_attributes = ["GraphId", "X", "Y", "RelX", "RelY", "ArrowHead"]
+                point_data = {attr: point.get(attr) for attr in point_attributes}
+                float_attributes = ["X", "Y", "RelX", "RelY"]
+                for attr in float_attributes:
+                    if point_data[attr] is not None:
+                        point_data[attr] = float(point_data[attr])
                 interaction_data['points'].append(point_data)
 
             # Anchor要素からアンカー情報を抽出
