@@ -28,7 +28,8 @@ class GpmlParser:
             "nodes": [],
             "interactions": [],
             "anchors": [],
-            "groups": []
+            "groups": [],
+            "shapes": []
         }
 
         # Pathwayタグの属性を抽出
@@ -84,6 +85,17 @@ class GpmlParser:
         for group in root.findall('gpml:Group', namespace):
             group_data = {'GroupId': group.get('GraphId')}
             parsed_data['groups'].append(group_data)
+
+        for shape in root.findall('gpml:Shape', namespace):
+            graphics = shape.find('gpml:Graphics', namespace)
+            if graphics is not None:
+                shape_attributes = ["CenterX", "CenterY", "Width", "Height", "Rotation", "ShapeType", "Color"]
+                shape_data = {attr: graphics.get(attr) for attr in shape_attributes}
+                float_attributes = ["CenterX", "CenterY", "Width", "Height", "Rotation"]
+                for attr in float_attributes:
+                    if shape_data[attr] is not None:
+                        shape_data[attr] = float(shape_data[attr])
+                parsed_data['shapes'].append(shape_data)
 
         self.data = parsed_data
 

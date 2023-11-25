@@ -46,7 +46,10 @@ class GpmlD3Visualizer:
         self.dataset = pd.read_table("qp_mock_data.tsv")
 
     def show(self, width=800, height=400):
-        html = self.template.render({"dataset": { "nodes": self.data["nodes"], "links": self.data["interactions"] },
+        html = self.template.render({"dataset": { "nodes": self.data["nodes"], 
+                                                 "links": self.data["interactions"],
+                                                   "shapes": self.data["shapes"],
+                                                    "pathway": self.data["pathway"] },
                                      "width": width,
                                      "height": height})
 

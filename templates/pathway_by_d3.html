@@ -9,6 +9,7 @@
     var dataset = {{ dataset | tojson | safe }}
     var nodes = dataset["nodes"]
     var links = dataset["links"]
+    var pathway = dataset["pathway"]
     var width = "{{ width }}"
     var height = "{{ height }}"
 
@@ -32,9 +33,12 @@
         .attr("height", height)
         .style("background-color", "#fff");
 
+    var titleOffset = 50;
+
     svg.selectAll("line")
         .data(links)
         .enter().append("line")
+        .attr("class", "element-in-body")
         .attr("x1", function (d, i) { return d.points[0].X + d.points[0].RelX })
         .attr("y1", function (d, i) { return d.points[0].Y + d.points[0].RelY })
         .attr("x2", function (d, i) { return d.points[1].X + d.points[1].RelX })
@@ -47,6 +51,7 @@
     svg.selectAll("rect")
         .data(nodes)
         .enter().append("rect")
+        .attr("class", "element-in-body")
         .attr("x", (d) => d.CenterX - d.Width / 2)
         .attr("y", (d) => d.CenterY - d.Height / 2)
         .attr("width", d => d.Width)
@@ -56,6 +61,16 @@
         .on("click", function (d) {
             onIdClicked(d[2])
         });
+
+    
+    var contentGroup = svg.append("g")
+        .attr("class", "content-group")
+        .attr("transform", "translate(0," + titleOffset + ")");
+
+    svg.selectAll(".element-in-body")
+    .each(function() {
+        contentGroup.node().appendChild(this);
+    });
 
     var markerBoxWidth = 10, markerBoxHeight = 10, refXFactor = 1, refYFactor = 0.5;
     var arrowPoints = [
@@ -99,13 +114,12 @@
         .attr("fill", "white");
 
 
-    console.log(nodes)
-
     svg.selectAll("text")
         .data(nodes)
         .enter().append("text")
+        .attr("class", "element-in-body")
         .attr("x", (d) => d.CenterX)
-        .attr("y", (d) => d.CenterY)
+        .attr("y", (d) => d.CenterY + titleOffset)
         .attr("stroke", d => `#${d.Color}`)
         .text(d => d.TextLabel)
         .style("text-anchor", "middle")
@@ -113,6 +127,60 @@
         .on("click", function (d) {
             onIdClicked(d.TextLabel)
         });
+
+
+
+    svg.append("text")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("class", "pathwayName")
+        .attr("stroke", "black")
+        .text(`Name:${pathway.Name}`);
+
+
+    svg.append("text")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("dy", "1.5em")
+        .attr("class", "pathwayVersion")
+        .attr("stroke", "black")
+        .text(`Last Modified: ${pathway.Version}`)
+
+    svg.append("text")
+        .attr("x", 10)
+        .attr("y", 10)
+        .attr("dy", "3em")
+        .attr("class", "pathwayOrganism")
+        .attr("stroke", "black")
+        .text(`Organism:${pathway.Organism}`)
+
+
+
+    var arcs = dataset["shapes"].filter(d => d.ShapeType == "Arc")
+
+
+    svg.selectAll("path.arc")
+        .data(arcs)
+        .enter().append("path")
+        .attr("class", "arc")   
+        // d3のArcでWidthとHeightを指定すると、楕円になるので、scaleで調整する
+        .attr("transform", d => { 
+            let scaleWidth = Math.max(d.Width / d.Height, 1);
+            let scaleHeight = Math.max(d.Height / d.Width, 1);
+            return `translate(${d.CenterX},${d.CenterY + titleOffset}) scale(${scaleWidth},${scaleHeight})`;
+        })
+        .attr("d", d => { 
+            let width = d.Width;
+            let height = d.Height;            
+            let radius = Math.min(width, height) / 2;
+            return d3.svg.arc()({
+                innerRadius: radius,
+                outerRadius: radius + 1,
+                startAngle: -Math.PI / 2,
+                endAngle: Math.PI / 2
+            })
+        });
+
 
     function onIdClicked(gid) {
         // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
