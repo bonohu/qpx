@@ -8,12 +8,14 @@ class SimpleD3:
         self.data = json.load(open("qp_mock_data.json"))
         # self.data ={ "nodes": [[20, 20, "AT5G23350"],[120,150,"HAI2"],[150, 100,"AREB3"]], "links":[[[20, 20],[120,150]],[[120,150],[150, 100]]]}
         # self.data = df.to_json(orient="records")
+        self.gene_attributes = json.load(open("data/test.json"))
         
         self.template = env.get_template("pathway_by_d3.html")
         self.dataset = pd.read_table("qp_mock_data.tsv")
         
     def show(self, width=400, height=400, marker_size=6):
         html = self.template.render({"DATASET": self.data,
+                                     "ATTRS": sel.attributes,
                                      "WIDTH": width,
                                      "HEIGHT": height,
                                     "MARKER_SIZE": marker_size})
