@@ -40,18 +40,22 @@ class SimpleD3:
     
 class GpmlD3Visualizer:
     def __init__(self, template, gpml):
-        self.data = GpmlParser(gpml).data
+        self.pathway_data = GpmlParser(gpml).data
         
         self.template = template
-        self.dataset = pd.read_table("qp_mock_data.tsv")
+        self.gene_data = pd.read_table("qp_mock_data.tsv")
 
     def show(self, width=800, height=400):
-        html = self.template.render({"dataset": { "nodes": self.data["nodes"], 
-                                                 "links": self.data["interactions"],
-                                                   "shapes": self.data["shapes"],
-                                                    "pathway": self.data["pathway"] },
+        # convert gene_data to dict
+        self.gene_data = self.gene_data.to_dict(orient="records")
+        html = self.template.render({"pathway_data": { "nodes": self.pathway_data["nodes"], 
+                                                 "links": self.pathway_data["interactions"],
+                                                   "shapes": self.pathway_data["shapes"],
+                                                    "pathway": self.pathway_data["pathway"] },
                                      "width": width,
-                                     "height": height})
+                                     "height": height,
+                                     "gene_data": self.gene_data
+                                     })
 
         return html
     
@@ -61,7 +65,7 @@ class GpmlD3Visualizer:
         args:  ID to identify genes, etc.
         return: filtered
         """
-        d = self.dataset
+        d = self.gene_data
         if gid:
             d_filtered = d[d["Label"] == gid]
             return d_filtered

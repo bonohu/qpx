@@ -2,14 +2,32 @@
 
 <script src="https://d3js.org/d3.v3.js"></script>
 <svg id="svg2" style="margin: 0 auto; display: block;"></svg>
+<style>
+    /* CSS設定 */
+    .d3-tooltip {
+      position: absolute;
+      text-align: center;
+      width: auto;
+      height: auto;
+      padding: 5px;
+      font: 12px;
+      background: white;
+      -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+      -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
+      visibility: hidden;
+      z-index: 100000;
+    }
+</style>  
 <script type="text/javascript">
     var node_width = 80;
     var node_height = 30;
 
-    var dataset = {{ dataset | tojson | safe }}
-    var nodes = dataset["nodes"]
-    var links = dataset["links"]
-    var pathway = dataset["pathway"]
+    var pathway_data = {{ pathway_data | tojson | safe }}
+    var gene_data = {{ gene_data | tojson | safe }}
+    var nodes = pathway_data["nodes"]
+    var links = pathway_data["links"]
+    var pathway = pathway_data["pathway"]
     var width = "{{ width }}"
     var height = "{{ height }}"
 
@@ -114,6 +132,9 @@
         .attr("fill", "white");
 
 
+        
+    var tooltip = d3.select("body").append("div").attr("class", "d3-tooltip");
+
     svg.selectAll("text")
         .data(nodes)
         .enter().append("text")
@@ -126,7 +147,22 @@
         .style("dominant-baseline", "central")
         .on("click", function (d) {
             onIdClicked(d.TextLabel)
-        });
+        })
+        .on("mouseover", function(d) {
+        tooltip
+            .style("visibility", "visible")
+            .html("Good description here");
+        })
+        .on("mousemove", function(d) {
+            console.log(d)
+            var svgRect = svg[0][0].getBoundingClientRect();
+            tooltip
+            .style("top", (d.CenterY + svgRect.y - 20) + "px")
+            .style("left", (d.CenterX + svgRect.x + 10) + "px");
+        })
+        .on("mouseout", function(d) {
+        tooltip.style("visibility", "hidden");
+        })
 
 
 
@@ -144,7 +180,7 @@
         .attr("dy", "1.5em")
         .attr("class", "pathwayVersion")
         .attr("stroke", "black")
-        .text(`Last Modified: ${pathway.Version}`)
+        .text(`Last Modified: ${pathway["Last-Modified"]}`)
 
     svg.append("text")
         .attr("x", 10)
@@ -156,7 +192,7 @@
 
 
 
-    var arcs = dataset["shapes"].filter(d => d.ShapeType == "Arc")
+    var arcs = pathway_data["shapes"].filter(d => d.ShapeType == "Arc")
 
 
     svg.selectAll("path.arc")

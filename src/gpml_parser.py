@@ -33,7 +33,7 @@ class GpmlParser:
         }
 
         # Pathwayタグの属性を抽出
-        pathway_attrs = ['Name', 'Organism', 'Version']
+        pathway_attrs = ['Name', 'Organism', 'Version', 'Last-Modified']
         for attr in pathway_attrs:
             parsed_data['pathway'][attr] = root.attrib.get(attr)
 
