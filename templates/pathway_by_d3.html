@@ -136,6 +136,8 @@
         .attr("marker-end", d => arrowHeadType(d.points[1].ArrowHead))
         .attr('fill', 'none');
 
+    var nodeRoundRadius = 10;
+
     svg.selectAll("rect.node-rect")
         .data(nodes)
         .enter().append("rect")
@@ -144,6 +146,8 @@
         .attr("y", (d) => d.CenterY - d.Height / 2)
         .attr("width", d => d.Width)
         .attr("height", d => d.Height)
+        .attr("rx", d => d.ShapeType === "RoundRectangle" ? nodeRoundRadius : 0)
+        .attr("ry", d => d.ShapeType === "RoundRectangle" ? nodeRoundRadius : 0)
         .attr("fill", "white")
         .style("stroke", d => `#${d.Color}`)
         .on("click", function (d) {
