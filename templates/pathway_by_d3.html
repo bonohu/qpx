@@ -280,7 +280,7 @@
         .attr("dy", "1.5em")
         .attr("class", "pathwayVersion")
         .attr("stroke", "black")
-        .text(`Last Modified: ${pathway["Last-Modified"]}`)
+        .text(`Last Modified: ${pathway["Last-Modified"] || "Unknown"}`)
 
     svg.append("text")
         .attr("x", 10)
