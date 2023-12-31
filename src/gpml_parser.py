@@ -40,9 +40,9 @@ class GpmlParser:
         # DataNodeタグからノード情報を抽出
         for node in root.findall('gpml:DataNode', namespace):
             graphics = node.find('gpml:Graphics', namespace)
+            node_data = {}
             if graphics is not None:
                 node_attributes = ["CenterX", "CenterY", "Width", "Height", "Color"]
-                node_data = {}
                 for attr in node_attributes:
                     node_data[attr] = graphics.get(attr)
                 float_attributes = ["CenterX", "CenterY", "Width", "Height"]
@@ -53,7 +53,8 @@ class GpmlParser:
                 if node_data["Color"] is None:
                     node_data["Color"] = "000000"
                 node_data["TextLabel"] = node.get("TextLabel")
-                parsed_data['nodes'].append(node_data)
+            node_data["GroupRef"] = node.get("GroupRef")
+            parsed_data['nodes'].append(node_data)
             
 
         # Interactionタグからインタラクション情報を抽出
@@ -83,7 +84,7 @@ class GpmlParser:
 
         # Groupタグからグループ情報を抽出
         for group in root.findall('gpml:Group', namespace):
-            group_data = {'GroupId': group.get('GraphId')}
+            group_data = {'GroupId': group.get('GroupId')}
             parsed_data['groups'].append(group_data)
 
         for shape in root.findall('gpml:Shape', namespace):

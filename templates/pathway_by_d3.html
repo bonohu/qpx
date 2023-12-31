@@ -26,6 +26,7 @@
     var nodes = pathway_data["nodes"]
     var links = pathway_data["links"]
     var pathway = pathway_data["pathway"]
+    var groups = pathway_data["groups"]
     var width = "{{ width }}"
     var height = "{{ height }}"
 
@@ -38,6 +39,30 @@
     ]
     var refX = markerBoxSize * refXFactor;
     var refY = markerBoxSize * refYFactor;
+
+    var nodeGroups = {}; // A map like { GroupId: {minX, minY, maxX, maxY} }
+
+    nodes.forEach(node => {
+        let groupId = node.GroupRef;
+        if (!groupId) {
+            return;
+        }
+        if (nodeGroups[groupId] === undefined) {
+            nodeGroups[groupId] = {
+                minX: node.CenterX - node.Width / 2,
+                minY: node.CenterY - node.Height / 2,
+                maxX: node.CenterX + node.Width / 2,
+                maxY: node.CenterY + node.Height / 2
+            }
+        } else {
+            nodeGroups[groupId].minX = Math.min(nodeGroups[groupId].minX, node.CenterX - node.Width / 2);
+            nodeGroups[groupId].minY = Math.min(nodeGroups[groupId].minY, node.CenterY - node.Height / 2);
+            nodeGroups[groupId].maxX = Math.max(nodeGroups[groupId].maxX, node.CenterX + node.Width / 2);
+            nodeGroups[groupId].maxY = Math.max(nodeGroups[groupId].maxY, node.CenterY + node.Height / 2);
+        }
+    });
+
+    var groupMargin = 10;
 
     function arrowHeadType(gpmlArrowType) {
         switch (gpmlArrowType) {
@@ -61,6 +86,23 @@
 
     var titleOffset = 50;
 
+
+    for (let group of groups) {
+        if (nodeGroups[group.GroupId]) {
+            let range = nodeGroups[group.GroupId];
+            svg.append("rect")
+                .attr("class", "group-rect")
+                .attr("x", range.minX - groupMargin)
+                .attr("y", range.minY - groupMargin + titleOffset)
+                .attr("width", range.maxX - range.minX + groupMargin * 2)
+                .attr("height", range.maxY - range.minY + groupMargin * 2)
+                .attr("fill", "#f6f6ee")
+                .attr("stroke", "gray")
+                .attr("stroke-width", 1)
+                .attr("stroke-dasharray", "5,5")
+        }
+    }
+
     links.forEach(link => {
         link.pointsAfterOffset = [
             { X: link.points[0].X + link.points[0].RelX, Y: link.points[0].Y + link.points[0].RelY },
@@ -71,7 +113,6 @@
             let cosine = (link.points[1].X - link.points[0].X) / length;
             let sine = (link.points[1].Y - link.points[0].Y) / length;
 
-            console.log({ cosine, sine });
             if (link.points[0].ArrowHead === "mim-inhibition") {
                 link.pointsAfterOffset[0].X += cosine * markerBoxSize / 2;
                 link.pointsAfterOffset[0].Y += sine * markerBoxSize / 2;
@@ -95,10 +136,10 @@
         .attr("marker-end", d => arrowHeadType(d.points[1].ArrowHead))
         .attr('fill', 'none');
 
-    svg.selectAll("rect")
+    svg.selectAll("rect.node-rect")
         .data(nodes)
         .enter().append("rect")
-        .attr("class", "element-in-body")
+        .attr("class", "element-in-body node-rect")
         .attr("x", (d) => d.CenterX - d.Width / 2)
         .attr("y", (d) => d.CenterY - d.Height / 2)
         .attr("width", d => d.Width)

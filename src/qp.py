@@ -45,12 +45,13 @@ class GpmlD3Visualizer:
         self.template = template
         self.gene_data = pd.read_table("qp_mock_data.tsv")
 
-    def show(self, width=800, height=400):
+    def show(self, width=800, height=1000):
         # convert gene_data to dict
         self.gene_data = self.gene_data.to_dict(orient="records")
         html = self.template.render({"pathway_data": { "nodes": self.pathway_data["nodes"], 
                                                  "links": self.pathway_data["interactions"],
                                                    "shapes": self.pathway_data["shapes"],
+                                                   "groups": self.pathway_data["groups"],
                                                     "pathway": self.pathway_data["pathway"] },
                                      "width": width,
                                      "height": height,
