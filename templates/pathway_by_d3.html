@@ -204,7 +204,7 @@
         addMarkers(svg, markerBoxSize, refX, refY);
     }
 
-    function drawNodes(nodes, svg, verticalOffset) {
+    function drawNodes(nodes, svg) {
         const nodeRoundRadius = 10;
         svg.selectAll("rect.node-rect")
             .data(nodes)
@@ -223,7 +223,7 @@
             });
     }
 
-    function drawNodeTexts(nodes, svg, verticalOffset) {
+    function drawNodeTexts(nodes, svg) {
         var tooltip = d3.select("body").append("div").attr("class", "d3-tooltip");
 
         svg.selectAll("text")
@@ -231,7 +231,7 @@
             .enter().append("text")
             .attr("class", "element-in-body")
             .attr("x", (d) => d.CenterX)
-            .attr("y", (d) => d.CenterY + verticalOffset)
+            .attr("y", (d) => d.CenterY)
             .attr("stroke", d => `#${d.Color}`)
             .text(d => d.TextLabel)
             .style("text-anchor", "middle")
@@ -318,6 +318,7 @@
     drawLinks(links, svg);
     drawNodes(nodes, svg, titleOffset);
     drawArcs(svg, pathway_data, titleOffset);
+    drawNodeTexts(nodes, svg);
 
     var contentGroup = svg.append("g")
         .attr("class", "content-group")
@@ -328,7 +329,6 @@
             contentGroup.node().appendChild(this);
         });
 
-    drawNodeTexts(nodes, svg, titleOffset);
     drawHeader(svg, pathway);
 
     function onIdClicked(gid) {
