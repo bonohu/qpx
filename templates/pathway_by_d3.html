@@ -30,19 +30,29 @@
     var height = "{{ height }}"
 
 
+    var markerBoxSize = 10, refXFactor = 1, refYFactor = 0.5;
+    var arrowPoints = [
+        [markerBoxSize, markerBoxSize / 2],
+        [0, markerBoxSize],
+        [0, 0]
+    ]
+    var refX = markerBoxSize * refXFactor;
+    var refY = markerBoxSize * refYFactor;
+
     function arrowHeadType(gpmlArrowType) {
         switch (gpmlArrowType) {
             case "Arrow":
             case "mim-conversion":
-                return "url(#marker-arrow)";
+                return "url(#marker-arrow)"; // -▶
             case "mim-catalysis":
-                return "url(#marker-circle)";
+                return "url(#marker-circle)"; // -◯
             case "mim-inhibition":
-                return "url(#marker-pipe)";
+                return "url(#marker-pipe)"; // -|
+            case "mim-modification":
+                return "url(#marker-open-arrow)"; // ->
         }
         return '';
     }
-
 
     var svg = d3.select("#svg2")
         .attr("width", width)
@@ -51,14 +61,35 @@
 
     var titleOffset = 50;
 
+    links.forEach(link => {
+        link.pointsAfterOffset = [
+            { X: link.points[0].X + link.points[0].RelX, Y: link.points[0].Y + link.points[0].RelY },
+            { X: link.points[1].X + link.points[1].RelX, Y: link.points[1].Y + link.points[1].RelY }
+        ];
+        if (link.points[0].ArrowHead === "mim-inhibition" || link.points[1].ArrowHead === "mim-inhibition") {
+            let length = Math.sqrt(Math.pow(link.points[1].X - link.points[0].X, 2) + Math.pow(link.points[1].Y - link.points[0].Y, 2));
+            let cosine = (link.points[1].X - link.points[0].X) / length;
+            let sine = (link.points[1].Y - link.points[0].Y) / length;
+
+            console.log({ cosine, sine });
+            if (link.points[0].ArrowHead === "mim-inhibition") {
+                link.pointsAfterOffset[0].X += cosine * markerBoxSize / 2;
+                link.pointsAfterOffset[0].Y += sine * markerBoxSize / 2;
+            } else {
+                link.pointsAfterOffset[1].X -= cosine * markerBoxSize / 2;
+                link.pointsAfterOffset[1].Y -= sine * markerBoxSize / 2;
+            }
+        }
+    })
+
     svg.selectAll("line")
         .data(links)
         .enter().append("line")
         .attr("class", "element-in-body")
-        .attr("x1", function (d, i) { return d.points[0].X + d.points[0].RelX })
-        .attr("y1", function (d, i) { return d.points[0].Y + d.points[0].RelY })
-        .attr("x2", function (d, i) { return d.points[1].X + d.points[1].RelX })
-        .attr("y2", function (d, i) { return d.points[1].Y + d.points[1].RelY })
+        .attr("x1", d => d.pointsAfterOffset[0].X)
+        .attr("y1", d => d.pointsAfterOffset[0].Y)
+        .attr("x2", d => d.pointsAfterOffset[1].X)
+        .attr("y2", d => d.pointsAfterOffset[1].Y)
         .attr('stroke', 'black')
         .attr("marker-start", d => arrowHeadType(d.points[0].ArrowHead))
         .attr("marker-end", d => arrowHeadType(d.points[1].ArrowHead))
@@ -88,27 +119,18 @@
             contentGroup.node().appendChild(this);
         });
 
-    var markerBoxWidth = 10, markerBoxHeight = 10, refXFactor = 1, refYFactor = 0.5;
-    var arrowPoints = [
-        [markerBoxWidth, markerBoxHeight / 2],
-        [0, markerBoxHeight],
-        [0, 0]
-    ]
-    var refX = markerBoxWidth * refXFactor;
-    var refY = markerBoxHeight * refYFactor;
-
     svg
         .append("defs")
         .append("marker")
         .attr("id", "marker-arrow")
-        .attr("viewBox", [0, 0, markerBoxWidth, markerBoxHeight])
+        .attr("viewBox", [0, 0, markerBoxSize, markerBoxSize])
         .attr("refX", refX)
         .attr("refY", refY)
-        .attr("markerWidth", markerBoxWidth)
-        .attr("markerHeight", markerBoxHeight)
+        .attr("markerWidth", markerBoxSize)
+        .attr("markerHeight", markerBoxSize)
         .attr("orient", "auto-start-reverse")
         .append("path")
-        .attr("d", `M ${markerBoxWidth} ${markerBoxHeight / 2} L 0 ${markerBoxHeight} L 0 0 z`)
+        .attr("d", `M ${markerBoxSize} ${markerBoxSize / 2} L 0 ${markerBoxSize} L 0 0 z`)
         .attr("fill", "#000000");
 
 
@@ -116,18 +138,36 @@
         .append("defs")
         .append("marker")
         .attr("id", "marker-circle")
-        .attr("viewBox", [0, 0, markerBoxWidth, markerBoxHeight])
+        .attr("viewBox", [0, 0, markerBoxSize, markerBoxSize])
         .attr("refX", refX)
         .attr("refY", refY)
-        .attr("markerWidth", markerBoxWidth)
-        .attr("markerHeight", markerBoxHeight)
+        .attr("markerWidth", markerBoxSize)
+        .attr("markerHeight", markerBoxSize)
         .attr("orient", "auto-start-reverse")
         .append('circle')
-        .attr('cx', markerBoxWidth / 2)
-        .attr('cy', markerBoxHeight / 2)
-        .attr('r', markerBoxWidth / 2)
+        .attr('cx', markerBoxSize / 2)
+        .attr('cy', markerBoxSize / 2)
+        .attr('r', markerBoxSize / 2)
         .attr("stroke", "#000000")
         .attr("fill", "white");
+
+    svg
+        .append("defs")
+        .append("marker")
+        .attr("id", "marker-pipe")
+        .attr("viewBox", [0, 0, markerBoxSize, markerBoxSize])
+        .attr("refX", refX)
+        .attr("refY", refY)
+        .attr("markerWidth", markerBoxSize)
+        .attr("markerHeight", markerBoxSize)
+        .attr("orient", "auto-start-reverse")
+        .append('line')
+        .attr('x1', markerBoxSize)
+        .attr('y1', 0)
+        .attr('x2', markerBoxSize)
+        .attr('y2', markerBoxSize)
+        .attr("stroke", "#000000")
+
 
 
 
