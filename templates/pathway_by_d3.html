@@ -169,6 +169,22 @@
         .attr("stroke", "#000000")
 
 
+    svg
+        .append("defs")
+        .append("marker")
+        .attr("id", "marker-open-arrow")
+        .attr("viewBox", [0, 0, markerBoxSize, markerBoxSize])
+        .attr("refX", refX)
+        .attr("refY", refY)
+        .attr("markerWidth", markerBoxSize)
+        .attr("markerHeight", markerBoxSize)
+        .attr("orient", "auto-start-reverse")
+        .append("polyline")
+        .attr("points", `0,0 ${markerBoxSize},${markerBoxSize / 2} 0,${markerBoxSize}`)
+        .attr("fill", "transparent")
+        .attr("stroke", "#000000");
+
+
 
 
     var tooltip = d3.select("body").append("div").attr("class", "d3-tooltip");
