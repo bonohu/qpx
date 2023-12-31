@@ -134,7 +134,9 @@
         .attr('stroke', 'black')
         .attr("marker-start", d => arrowHeadType(d.points[0].ArrowHead))
         .attr("marker-end", d => arrowHeadType(d.points[1].ArrowHead))
+        .attr("stroke-dasharray", d => d.Graphics?.LineStyle === "Broken" ? "5,5" : null)
         .attr('fill', 'none');
+
 
     var nodeRoundRadius = 10;
 

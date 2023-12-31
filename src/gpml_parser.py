@@ -42,7 +42,7 @@ class GpmlParser:
             graphics = node.find('gpml:Graphics', namespace)
             node_data = {}
             if graphics is not None:
-                node_attributes = ["CenterX", "CenterY", "Width", "Height", "Color"]
+                node_attributes = ["CenterX", "CenterY", "Width", "Height", "Color", "ShapeType"]
                 for attr in node_attributes:
                     node_data[attr] = graphics.get(attr)
                 float_attributes = ["CenterX", "CenterY", "Width", "Height"]
@@ -66,19 +66,25 @@ class GpmlParser:
                 'points': []
             }
 
-            for point in interaction.findall('gpml:Graphics/gpml:Point', namespace):
-                point_attributes = ["GraphId", "X", "Y", "RelX", "RelY", "ArrowHead"]
-                point_data = {attr: point.get(attr) for attr in point_attributes}
-                float_attributes = ["X", "Y", "RelX", "RelY"]
-                for attr in float_attributes:
-                    if point_data[attr] is not None:
-                        point_data[attr] = float(point_data[attr])
-                interaction_data['points'].append(point_data)
+            graphics = interaction.find('gpml:Graphics', namespace)
+            if graphics is not None:
+                interaction_attributes = ["LineStyle"]
+                for attr in interaction_attributes:
+                    interaction_data['Graphics'][attr] = graphics.get(attr)
 
-            # Anchor要素からアンカー情報を抽出
-            for anchor in interaction.findall('gpml:Graphics/gpml:Anchor', namespace):
-                anchor_data = {'GraphId': anchor.get('GraphId')}
-                parsed_data['anchors'].append(anchor_data)
+                for point in graphics.findall('gpml:Point', namespace):
+                    point_attributes = ["GraphId", "X", "Y", "RelX", "RelY", "ArrowHead"]
+                    point_data = {attr: point.get(attr) for attr in point_attributes}
+                    float_attributes = ["X", "Y", "RelX", "RelY"]
+                    for attr in float_attributes:
+                        if point_data[attr] is not None:
+                            point_data[attr] = float(point_data[attr])
+                    interaction_data['points'].append(point_data)
+
+                # Anchor要素からアンカー情報を抽出
+                for anchor in graphics.findall('gpml:Anchor', namespace):
+                    anchor_data = {'GraphId': anchor.get('GraphId')}
+                    parsed_data['anchors'].append(anchor_data)
 
             parsed_data['interactions'].append(interaction_data)
 
