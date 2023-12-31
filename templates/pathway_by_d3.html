@@ -5,20 +5,18 @@
 <style>
     /* CSS設定 */
     .d3-tooltip {
-      position: absolute;
-      text-align: center;
-      width: auto;
-      height: auto;
-      padding: 5px;
-      font: 12px;
-      background: white;
-      -webkit-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-      -moz-box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-      visibility: hidden;
-      z-index: 100000;
+        position: absolute;
+        text-align: center;
+        width: auto;
+        height: auto;
+        padding: 5px;
+        font: 12px;
+        background: white;
+        border: solid 1px #aaa;
+        visibility: hidden;
+        z-index: 100000;
     }
-</style>  
+</style>
 <script type="text/javascript">
     var node_width = 80;
     var node_height = 30;
@@ -80,15 +78,15 @@
             onIdClicked(d[2])
         });
 
-    
+
     var contentGroup = svg.append("g")
         .attr("class", "content-group")
         .attr("transform", "translate(0," + titleOffset + ")");
 
     svg.selectAll(".element-in-body")
-    .each(function() {
-        contentGroup.node().appendChild(this);
-    });
+        .each(function () {
+            contentGroup.node().appendChild(this);
+        });
 
     var markerBoxWidth = 10, markerBoxHeight = 10, refXFactor = 1, refYFactor = 0.5;
     var arrowPoints = [
@@ -132,7 +130,7 @@
         .attr("fill", "white");
 
 
-        
+
     var tooltip = d3.select("body").append("div").attr("class", "d3-tooltip");
 
     svg.selectAll("text")
@@ -148,20 +146,19 @@
         .on("click", function (d) {
             onIdClicked(d.TextLabel)
         })
-        .on("mouseover", function(d) {
-        tooltip
-            .style("visibility", "visible")
-            .html("Good description here");
+        .on("mouseover", function (d) {
+            tooltip
+                .style("visibility", "visible")
+                .html(d.TextLabel);
         })
-        .on("mousemove", function(d) {
-            console.log(d)
+        .on("mousemove", function (d) {
             var svgRect = svg[0][0].getBoundingClientRect();
             tooltip
-            .style("top", (d.CenterY + svgRect.y - 20) + "px")
-            .style("left", (d.CenterX + svgRect.x + 10) + "px");
+                .style("top", (d.CenterY + svgRect.y) + "px")
+                .style("left", (d.CenterX + svgRect.x + 10) + "px");
         })
-        .on("mouseout", function(d) {
-        tooltip.style("visibility", "hidden");
+        .on("mouseout", function (d) {
+            tooltip.style("visibility", "hidden");
         })
 
 
@@ -198,16 +195,16 @@
     svg.selectAll("path.arc")
         .data(arcs)
         .enter().append("path")
-        .attr("class", "arc")   
+        .attr("class", "arc")
         // d3のArcでWidthとHeightを指定すると、楕円になるので、scaleで調整する
-        .attr("transform", d => { 
+        .attr("transform", d => {
             let scaleWidth = Math.max(d.Width / d.Height, 1);
             let scaleHeight = Math.max(d.Height / d.Width, 1);
             return `translate(${d.CenterX},${d.CenterY + titleOffset}) scale(${scaleWidth},${scaleHeight})`;
         })
-        .attr("d", d => { 
+        .attr("d", d => {
             let width = d.Width;
-            let height = d.Height;            
+            let height = d.Height;
             let radius = Math.min(width, height) / 2;
             return d3.svg.arc()({
                 innerRadius: radius,
