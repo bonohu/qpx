@@ -237,12 +237,11 @@
             .style("text-anchor", "middle")
             .style("dominant-baseline", "central")
             .on("click", function (d) {
-                console.log(d.TextLabel)
                 onIdClicked(d.TextLabel)
             })
             .on("mouseover", function (d) {
                 tooltip
-                    .style("visibility", "visible")
+                    .style("visibility", "hidden") // Currently, the tooltip is not used.
                     .html(d.TextLabel);
             })
             .on("mousemove", function (d) {
