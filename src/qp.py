@@ -37,13 +37,14 @@ class GpmlD3VisualizerWidget:
 
 
     def show(self):
-        def get_gpml_files():
-            gpml_files = glob.glob("{}/*.gpml".format(self.gpml_dir_path))
-            gpml_files = [os.path.basename(gpml_file) for gpml_file in gpml_files]
-            return gpml_files
+        gpml_files = glob.glob("{}/*.gpml".format(self.gpml_dir_path))
+        gpml_files = [os.path.basename(gpml_file) for gpml_file in gpml_files]
+
+        if len(gpml_files) > 0:
+            self.selected_gpml_file = gpml_files[0]
 
         dropdown = widgets.Dropdown(
-            options=get_gpml_files(),
+            options=gpml_files,
             value=self.selected_gpml_file,
             style={'width': 'max-content'},
         )
@@ -55,13 +56,18 @@ class GpmlD3VisualizerWidget:
             ]       
         )
 
+        def visualize_gpml(gpml_file):
+            self.visualizer = GpmlD3Visualizer(gpml=os.path.join(self.gpml_dir_path, gpml_file))
+            clear_output(wait=True)
+            display(w)
+            display(HTML(self.visualizer.show()))
+
         def on_change(change):
             if change['type'] == 'change' and change['name'] == 'value':
                 self.selected_gpml_file = change['new']
-                self.visualizer = GpmlD3Visualizer(gpml=os.path.join(self.gpml_dir_path, self.selected_gpml_file))
-                clear_output(wait=True)
-                display(w)
-                display(HTML(self.visualizer.show()))
+                visualize_gpml(self.selected_gpml_file)
+
+        visualize_gpml(self.selected_gpml_file)
 
         dropdown.observe(on_change)
 
