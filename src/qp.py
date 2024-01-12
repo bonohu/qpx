@@ -50,7 +50,11 @@ class GpmlD3Visualizer:
             style={'width': 'max-content'},
         )
 
+        def selected_id_changed(change):
+            display(self.table(self.visualizer_widget.value))
+
         self.visualizer_widget = GpmlD3VisualizerWidget(gpml=os.path.join(self.gpml_dir_path, self.selected_gpml_file))
+        self.visualizer_widget.observe(selected_id_changed, names='value')
 
         self.widgets = widgets.Box(
             [
@@ -62,6 +66,8 @@ class GpmlD3Visualizer:
 
         def visualize_gpml(gpml_file):
             self.visualizer_widget = GpmlD3VisualizerWidget(gpml=os.path.join(self.gpml_dir_path, gpml_file))
+
+            self.visualizer_widget.observe(selected_id_changed, names='value')
             clear_output(wait=True)
             self.widgets = widgets.Box(
                 [
@@ -79,6 +85,7 @@ class GpmlD3Visualizer:
                 visualize_gpml(self.selected_gpml_file)
 
         dropdown.observe(on_change)
+
 
         display(HTML(self.d3_pathway_html))
         return display(self.widgets)

@@ -45,9 +45,9 @@
 
                 drawGroups(nodes, svg, groups, titleOffset);
                 drawLinks(links, svg);
-                drawNodes(nodes, svg, titleOffset);
+                drawNodes(nodes, svg, this);
                 drawArcs(svg, pathway_data, titleOffset);
-                drawNodeTexts(nodes, svg);
+                drawNodeTexts(nodes, svg, this);
 
                 let contentGroup = svg
                     .append("g")
@@ -285,7 +285,7 @@
         addMarkers(svg, markerBoxSize, refX, refY);
     }
 
-    function drawNodes(nodes, svg) {
+    function drawNodes(nodes, svg, view) {
         const nodeRoundRadius = 10;
         svg
             .selectAll("rect.node-rect")
@@ -306,11 +306,11 @@
             .attr("fill", "white")
             .style("stroke", (d) => `#${d.Color}`)
             .on("click", function (d) {
-                onIdClicked(d.TextLabel);
+                onIdClicked(view, d.TextLabel);
             });
     }
 
-    function drawNodeTexts(nodes, svg) {
+    function drawNodeTexts(nodes, svg, view) {
         svg
             .selectAll("text")
             .data(nodes)
@@ -324,7 +324,7 @@
             .style("text-anchor", "middle")
             .style("dominant-baseline", "central")
             .on("click", function (d) {
-                onIdClicked(d.TextLabel);
+                onIdClicked(view, d.TextLabel);
             })
     }
 
@@ -393,17 +393,8 @@
         svg.setAttribute("height", bbox.y + bbox.height + bbox.y + margin);
     }
 
-    function onIdClicked(gid) {
-        // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
-        //Jupyter.notebook.kernel.execute("gid='AT5G23350'");
-        //kernel.execute('graphId=10');
-        Jupyter.notebook.kernel.execute(`gid='${gid}'`);
-
-        // 相対位置でcellを指定しcellを実行する場合。フォーカスが当たっていないと実行位置がずれるため使えない
-        //let cell = Jupyter.notebook.select_next().get_selected_cell()
-        //cell.execute()
-
-        // cellのindexを指定しtableのアップデートを実行する場合。設定で変更できると良いかも（必要ないかもだが）
-        Jupyter.notebook.execute_cells([3]);
+    function onIdClicked(view, geneId) {
+        view.model.set('value', geneId);
+        view.touch();
     }
 </script>
