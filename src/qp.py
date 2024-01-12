@@ -1,52 +1,20 @@
-import pandas as pd
+
+import glob
 import json
+import os
+import pandas as pd
+from IPython.display import display, HTML, clear_output
+from ipywidgets import widgets
 from src.gpml_parser import GpmlParser
-
-class SimpleD3:
-    def __init__(self, env):
-        # for mock pathway
-        self.data = json.load(open("qp_mock_data.json"))
-        # self.data ={ "nodes": [[20, 20, "AT5G23350"],[120,150,"HAI2"],[150, 100,"AREB3"]], "links":[[[20, 20],[120,150]],[[120,150],[150, 100]]]}
-        # self.data = df.to_json(orient="records")
-        self.gene_attributes = json.load(open("data/test.json"))
-        
-        self.template = env.get_template("pathway_by_d3.html")
-        self.dataset = pd.read_table("qp_mock_data.tsv")
-        
-    def show(self, width=400, height=400, marker_size=6):
-        html = self.template.render({"DATASET": self.data,
-                                     "ATTRS": sel.attributes,
-                                     "WIDTH": width,
-                                     "HEIGHT": height,
-                                    "MARKER_SIZE": marker_size})
-
-        return html
-    
-    
-    def table(self, gid:str):
-        """
-        args:  ID to identify genes, etc.
-        return: filtered
-        """
-        d = self.dataset
-        if gid:
-            d_filtered = d[d["Label"] == gid]
-            return d_filtered
-        else:
-            return d
-        
-   
+from jinja2 import Environment, FileSystemLoader
  
     
 class GpmlD3Visualizer:
-    def __init__(self, template, gpml):
+    def __init__(self, gpml):
         self.pathway_data = GpmlParser(gpml).data
-        
-        self.template = template
-        self.gene_data = pd.read_table("qp_mock_data.tsv")
+        self.template = Environment(loader=FileSystemLoader("templates", encoding='utf-8')).get_template('pathway_by_d3.html')
 
     def show(self, width=800, height=1000):
-        # convert gene_data to dict
         html = self.template.render({"pathway_data": { "nodes": self.pathway_data["nodes"], 
                                                  "links": self.pathway_data["interactions"],
                                                    "shapes": self.pathway_data["shapes"],
@@ -58,6 +26,47 @@ class GpmlD3Visualizer:
 
         return html
     
+        
+
+class GpmlD3VisualizerWidget:
+    def __init__(self, gpml_dir_path, gene_data_path):
+        self.gpml_dir_path = gpml_dir_path
+        self.gene_data = pd.read_table(gene_data_path)
+        self.visualizer = None
+        self.selected_gpml_file = None
+
+
+    def show(self):
+        def get_gpml_files():
+            gpml_files = glob.glob("{}/*.gpml".format(self.gpml_dir_path))
+            gpml_files = [os.path.basename(gpml_file) for gpml_file in gpml_files]
+            return gpml_files
+
+        dropdown = widgets.Dropdown(
+            options=get_gpml_files(),
+            value=self.selected_gpml_file,
+            style={'width': 'max-content'},
+        )
+
+        w = widgets.Box(
+            [
+                widgets.Label(value='Select GPML file:'), 
+                dropdown
+            ]       
+        )
+
+        def on_change(change):
+            if change['type'] == 'change' and change['name'] == 'value':
+                self.selected_gpml_file = change['new']
+                self.visualizer = GpmlD3Visualizer(gpml=os.path.join(self.gpml_dir_path, self.selected_gpml_file))
+                clear_output(wait=True)
+                display(w)
+                display(HTML(self.visualizer.show()))
+
+        dropdown.observe(on_change)
+
+        return display(w)
+
     
     def table(self, gid:str):
         """
@@ -70,4 +79,3 @@ class GpmlD3Visualizer:
             return d_filtered
         else:
             return d
-        
