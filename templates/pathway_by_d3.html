@@ -18,14 +18,6 @@
     }
 </style>
 <script type="text/javascript">
-    var pathway_data = {{ pathway_data | tojson | safe }}
-    var nodes = pathway_data["nodes"]
-    var links = pathway_data["links"]
-    var pathway = pathway_data["pathway"]
-    var groups = pathway_data["groups"]
-    var width = "{{ width }}"
-    var height = "{{ height }}"
-
 
     function arrowHeadType(gpmlArrowType) {
         switch (gpmlArrowType) {
@@ -42,12 +34,6 @@
         return '';
     }
 
-    var svg = d3.select("#svg2")
-        .attr("width", width)
-        .attr("height", height)
-        .style("background-color", "#fff");
-
-    var titleOffset = 50;
 
     function drawGroups(nodes, svg, verticalOffset) {
         let nodeGroups = {}; // A map like { GroupId: {minX, minY, maxX, maxY} }
@@ -311,23 +297,13 @@
             .text(`Organism:${pathway.Organism}`)
     }
 
-
-    drawGroups(nodes, svg, titleOffset);
-    drawLinks(links, svg);
-    drawNodes(nodes, svg, titleOffset);
-    drawArcs(svg, pathway_data, titleOffset);
-    drawNodeTexts(nodes, svg);
-
-    var contentGroup = svg.append("g")
-        .attr("class", "content-group")
-        .attr("transform", "translate(0," + titleOffset + ")");
-
-    svg.selectAll(".element-in-body")
-        .each(function () {
-            contentGroup.node().appendChild(this);
-        });
-
-    drawHeader(svg, pathway);
+    function updateSvgSize() {
+        const margin = 50;
+        let svg = document.getElementById("svg2");
+        let bbox = svg.getBBox();
+        svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
+        svg.setAttribute("height", bbox.y + bbox.height + bbox.y + margin);
+    }
 
     function onIdClicked(gid) {
         // 下記の記述でグローバル変数をJupyterのPythonにわたすことはできる
@@ -343,4 +319,41 @@
         // cellのindexを指定しtableのアップデートを実行する場合。設定で変更できると良いかも（必要ないかもだが）
         Jupyter.notebook.execute_cells([2])
     }
+
+
+
+    var pathway_data = {{ pathway_data | tojson | safe }}
+    var nodes = pathway_data["nodes"]
+    var links = pathway_data["links"]
+    var pathway = pathway_data["pathway"]
+    var groups = pathway_data["groups"]
+    var width = "{{ width }}"
+    var height = "{{ height }}"
+    var svg = d3.select("#svg2")
+        .style("background-color", "#fff");
+
+    var titleOffset = 50;
+
+
+
+    drawGroups(nodes, svg, titleOffset);
+    drawLinks(links, svg);
+    drawNodes(nodes, svg, titleOffset);
+    drawArcs(svg, pathway_data, titleOffset);
+    drawNodeTexts(nodes, svg);
+
+
+    var contentGroup = svg.append("g")
+        .attr("class", "content-group")
+        .attr("transform", "translate(0," + titleOffset + ")");
+
+    svg.selectAll(".element-in-body")
+        .each(function () {
+            contentGroup.node().appendChild(this);
+        });
+
+    drawHeader(svg, pathway);
+    updateSvgSize();
+
+
 </script>
