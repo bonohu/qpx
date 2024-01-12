@@ -19,7 +19,6 @@
 </style>
 <script type="text/javascript">
     var pathway_data = {{ pathway_data | tojson | safe }}
-    var gene_data = {{ gene_data | tojson | safe }}
     var nodes = pathway_data["nodes"]
     var links = pathway_data["links"]
     var pathway = pathway_data["pathway"]
@@ -219,7 +218,7 @@
             .attr("fill", "white")
             .style("stroke", d => `#${d.Color}`)
             .on("click", function (d) {
-                onIdClicked(d[2])
+                onIdClicked(d.TextLabel)
             });
     }
 

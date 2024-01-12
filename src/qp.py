@@ -47,7 +47,6 @@ class GpmlD3Visualizer:
 
     def show(self, width=800, height=1000):
         # convert gene_data to dict
-        self.gene_data = self.gene_data.to_dict(orient="records")
         html = self.template.render({"pathway_data": { "nodes": self.pathway_data["nodes"], 
                                                  "links": self.pathway_data["interactions"],
                                                    "shapes": self.pathway_data["shapes"],
@@ -55,7 +54,6 @@ class GpmlD3Visualizer:
                                                     "pathway": self.pathway_data["pathway"] },
                                      "width": width,
                                      "height": height,
-                                     "gene_data": self.gene_data
                                      })
 
         return html
