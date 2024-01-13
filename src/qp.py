@@ -33,7 +33,7 @@ class GpmlD3Visualizer:
         self.visualizer = None
         self.selected_gpml_file = None
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.d3_pathway_html = open(os.path.join(current_dir, './templates/pathway_by_d3.html'), 'r').read()
+        self.pathway_d3_view_widget_definition = open(os.path.join(current_dir, './templates/pathway_d3_view_widget.html'), 'r').read()
     
 
     def show(self):
@@ -62,7 +62,7 @@ class GpmlD3Visualizer:
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
         self.dataframe_widget = widgets.interactive_output(display_gene_data, {'gid': self.visualizer_widget})
 
-        self.widgets = widgets.VBox(
+        self.widgets = widgets.VBox( 
             [
                 widgets.HBox([widgets.Label(value='Select GPML file:'), 
                     dropdown]),
@@ -71,5 +71,5 @@ class GpmlD3Visualizer:
             ]
         )
 
-        display(HTML(self.d3_pathway_html))
+        display(HTML(self.pathway_d3_view_widget_definition))
         return display(self.widgets)
