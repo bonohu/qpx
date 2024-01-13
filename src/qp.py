@@ -12,18 +12,17 @@ from src.gpml_parser import GpmlParser
 
 
 @register
-class GpmlD3VisualizerWidget(DOMWidget):
+class PathwayD3VisualizerWidget(DOMWidget):
     _view_name = Unicode('PathwayD3View').tag(sync=True)
     _view_module = Unicode('pathway_d3_view_widget').tag(sync=True)
     _view_module_version = Unicode('0.1.0').tag(sync=True)
 
     value = Unicode('', help="").tag(sync=True)
-    width = Unicode('', help="").tag(sync=True)
     pathway_data = Unicode('', help="").tag(sync=True)
     
-    def __init__(self, gpml):
+    def __init__(self, pathway_data):
         super().__init__()
-        self.pathway_data = json.dumps(GpmlParser(gpml).data)
+        self.pathway_data = pathway_data
 
 
 
@@ -47,58 +46,30 @@ class GpmlD3Visualizer:
         dropdown = widgets.Dropdown(
             options=gpml_files,
             value=self.selected_gpml_file,
-            style={'width': 'max-content'},
         )
 
-        def selected_id_changed(change):
-            display(self.table(self.visualizer_widget.value))
+        def display_gene_data(gid:str):
+            d = self.gene_data
+            if gid:
+                d = d[d["Label"] == gid]
+            display(d)
 
-        self.visualizer_widget = GpmlD3VisualizerWidget(gpml=os.path.join(self.gpml_dir_path, self.selected_gpml_file))
-        self.visualizer_widget.observe(selected_id_changed, names='value')
+        def visualize(gpml_file:str):
+            self.visualizer_widget.pathway_data = json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, gpml_file)).data)
+            display(self.visualizer_widget)
 
-        self.widgets = widgets.Box(
+        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
+        self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
+        self.dataframe_widget = widgets.interactive_output(display_gene_data, {'gid': self.visualizer_widget})
+
+        self.widgets = widgets.VBox(
             [
-                widgets.Label(value='Select GPML file:'), 
-                dropdown,
-                self.visualizer_widget
-            ]       
+                widgets.HBox([widgets.Label(value='Select GPML file:'), 
+                    dropdown]),
+                self.interactive_visualizer,      
+                self.dataframe_widget      
+            ]
         )
-
-        def visualize_gpml(gpml_file):
-            self.visualizer_widget = GpmlD3VisualizerWidget(gpml=os.path.join(self.gpml_dir_path, gpml_file))
-
-            self.visualizer_widget.observe(selected_id_changed, names='value')
-            clear_output(wait=True)
-            self.widgets = widgets.Box(
-                [
-                    widgets.Label(value='Select GPML file:'), 
-                    dropdown,
-                    self.visualizer_widget
-                ]       
-            )
-            display(HTML(self.d3_pathway_html))
-            display(self.widgets)
-
-        def on_change(change):
-            if change['type'] == 'change' and change['name'] == 'value':
-                self.selected_gpml_file = change['new']
-                visualize_gpml(self.selected_gpml_file)
-
-        dropdown.observe(on_change)
-
 
         display(HTML(self.d3_pathway_html))
         return display(self.widgets)
-
-    
-    def table(self, gid:str):
-        """
-        args:  ID to identify genes, etc.
-        return: filtered
-        """
-        d = self.gene_data
-        if gid:
-            d_filtered = d[d["Label"] == gid]
-            return d_filtered
-        else:
-            return d
