@@ -27,13 +27,11 @@ class PathwayD3VisualizerWidget(DOMWidget):
 
 
 class GpmlD3Visualizer:
-    def __init__(self, gpml_dir_path, gene_data_path):
+    def __init__(self, gene_data_path, gpml_dir_path="./gpml"):
         self.gpml_dir_path = gpml_dir_path
         self.gene_data = pd.read_table(gene_data_path)
         self.visualizer = None
         self.selected_gpml_file = None
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        self.pathway_d3_view_widget_definition = open(os.path.join(current_dir, './templates/pathway_d3_view_widget.html'), 'r').read()
     
 
     def show(self):
@@ -71,5 +69,4 @@ class GpmlD3Visualizer:
             ]
         )
 
-        display(HTML(self.pathway_d3_view_widget_definition))
         return display(self.widgets)
