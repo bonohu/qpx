@@ -30,6 +30,7 @@ class GpmlD3Visualizer:
     def __init__(self, gene_data_path, gpml_dir_path="./gpml"):
         self.gpml_dir_path = gpml_dir_path
         self.gene_data = pd.read_table(gene_data_path)
+        self.selected_gene_data = self.gene_data
         self.visualizer = None
         self.selected_gpml_file = None
     
@@ -50,6 +51,7 @@ class GpmlD3Visualizer:
             d = self.gene_data
             if gid:
                 d = d[d["Label"] == gid]
+            self.selected_gene_data = d
             display(d)
 
         def visualize(gpml_file:str):
