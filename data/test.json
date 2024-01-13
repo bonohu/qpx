@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "name": "a-gene",
+    "description": "gene that produces a-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 2,
+    "name": "b-gene",
+    "description": "gene that produces b-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 3,
+    "name": "c-gene",
+    "description": "gene that produces c-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 4,
+    "name": "d-gene",
+    "description": "gene that produces d-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 5,
+    "name": "e-gene",
+    "description": "gene that produces e-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 6,
+    "name": "f-gene",
+    "description": "gene that produces f-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 7,
+    "name": "g-gene",
+    "description": "gene that produces g-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 8,
+    "name": "h-gene",
+    "description": "gene that produces h-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 9,
+    "name": "i-gene",
+    "description": "gene that produces i-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  },
+  {
+    "id": 10,
+    "name": "j-gene",
+    "description": "gene that produces j-enzyme",
+    "organism": "canis familiaris",
+    "expression": 1,
+    "copy": 1
+  }
+]
+
