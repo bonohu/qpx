@@ -23,7 +23,7 @@ cd qp
 docker-compose up -d
 ```
 
-起動後、http://localhost:8888/nbclassic/notebooks/work/qp_view.ipynb にアクセスして、各セルを実行することで可視化を行えます。
+起動後、http://localhost:8888/notebooks/work/qp_view.ipynb にアクセスして、各セルを実行することで可視化を行えます。
 可視化対象の GPML ファイルを増やしたい場合は、gpml フォルダの中に、拡張子を「.gpml」にしたファイルを置いてください。
 
 # Todo
