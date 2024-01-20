@@ -216,7 +216,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
   function drawNodes(nodes, svg, view) {
     const nodeRoundRadius = 10;
-    svg
+    view.nodes = svg
       .selectAll("rect.node-rect")
       .data(nodes)
       .enter()
@@ -234,6 +234,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       )
       .attr("fill", "white")
       .style("stroke", (d) => `#${d.Color}`)
+      .style("cursor", "pointer")
       .on("click", function (d) {
         onIdClicked(view, d.TextLabel);
       });
@@ -252,6 +253,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .text((d) => d.TextLabel)
       .style("text-anchor", "middle")
       .style("dominant-baseline", "central")
+      .style("cursor", "pointer")
       .on("click", function (d) {
         onIdClicked(view, d.TextLabel);
       });
@@ -326,6 +328,12 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   function onIdClicked(view, geneId) {
     view.model.set("value", geneId);
     view.touch();
+
+    const defaultStrokeWidth = 1;
+    const selectedStrokeWidth = 3;
+    view.nodes.style("stroke-width", (d) => {
+      return d.TextLabel === geneId ? selectedStrokeWidth : defaultStrokeWidth;
+    });
   }
 
   let PathwayD3View = widgets.DOMWidgetView.extend({

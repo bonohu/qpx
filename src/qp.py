@@ -51,6 +51,9 @@ class GpmlD3Visualizer:
             d = self.gene_data
             if gid:
                 d = d[d["Label"] == gid]
+                print("Gene data for {}:".format(gid))
+            else:
+                print("Gene data:")
             self.selected_gene_data = d
             display(d)
 
