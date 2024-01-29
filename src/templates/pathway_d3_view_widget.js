@@ -237,7 +237,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("cursor", "pointer")
       .on("click", function (d) {
         console.log(d)
-        onIdClicked(view, d.TextLabel);
+        // onIdClicked(view, d.TextLabel);
+        // xref_idをフィルタに利用するため変更（2024_1）
+        onIdClicked(view, d.ID);
       });
   }
 
@@ -257,7 +259,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("cursor", "pointer")
       .on("click", function (d) {
         console.log(d)
-        onIdClicked(view, d.TextLabel);
+        // onIdClicked(view, d.TextLabel);
+        // xref_idをフィルタに利用するため変更（2024_1）
+        onIdClicked(view, d.ID);
       });
   }
 

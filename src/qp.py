@@ -49,11 +49,12 @@ class GpmlD3Visualizer:
 
         def display_gene_data(gid:str):
             d = self.gene_data
+            # xref_idでフィルターするように変更（2024/1/29oec）
             if gid:
                 # データテーブルでフィルターしたい属性を指定
                 #d = d[d["Label"] == gid]
-                d = d[d["Enzyme"] == gid]
-                print("Gene data for {}:".format(gid))
+                d = d[d["xref_id"] == int(gid)]
+                print("Xref ID {}:".format(gid))
             else:
                 print("Gene data:")
             self.selected_gene_data = d
