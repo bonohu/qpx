@@ -53,9 +53,24 @@ class GpmlParser:
                 if node_data["Color"] is None:
                     node_data["Color"] = "000000"
                 node_data["TextLabel"] = node.get("TextLabel")
+                
+            # xref情報の抽出. xrefをフィルターに利用するためにnodeのデータとして追加（2024/1/29oec）
+            xref = node.find('gpml:Xref', namespace)
+            xref_data = {}
+            if xref is not None:
+                xref_attributes = ["Database", "ID"]
+                for attr in xref_attributes:
+                    #xref_data [attr] = "test"
+                    node_data [attr] = xref.get(attr)          
+
+                
             node_data["GroupRef"] = node.get("GroupRef")
             parsed_data['nodes'].append(node_data)
             
+            
+
+
+                                            
 
         # Interactionタグからインタラクション情報を抽出
         for interaction in root.findall('gpml:Interaction', namespace):

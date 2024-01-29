@@ -50,7 +50,9 @@ class GpmlD3Visualizer:
         def display_gene_data(gid:str):
             d = self.gene_data
             if gid:
-                d = d[d["Label"] == gid]
+                # データテーブルでフィルターしたい属性を指定
+                #d = d[d["Label"] == gid]
+                d = d[d["Enzyme"] == gid]
                 print("Gene data for {}:".format(gid))
             else:
                 print("Gene data:")

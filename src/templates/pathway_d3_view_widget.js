@@ -236,6 +236,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("stroke", (d) => `#${d.Color}`)
       .style("cursor", "pointer")
       .on("click", function (d) {
+        console.log(d)
         onIdClicked(view, d.TextLabel);
       });
   }
@@ -255,6 +256,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("dominant-baseline", "central")
       .style("cursor", "pointer")
       .on("click", function (d) {
+        console.log(d)
         onIdClicked(view, d.TextLabel);
       });
   }
