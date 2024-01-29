@@ -46,7 +46,12 @@ $ conda install pandas
 
 # Todo
 
-- nbextension でセルの自動 run を設定する
+- テーブルwidgetの改良
+  - ソート機能のあるdata tableのwidgetがあれば利用する
+  - Descriptionなどの長い文字列があった場合クリックすると全文表示される、といったようなギミックがあると良い
+  - tabulatorのwidgetがあった気がする
+- ダイアグラムの改修
+  - パスウェイダイアグラムを拡大縮小できた方が良い
+  - WikiPathwaysからDLしたgpmlのノードのテキストが枠からハミだすので修正する
+- データテーブルのソースも選択できるようにすると便利？（複数のパスウェイを扱うケースが多いかまだよくわからない）
 - 必要であればセルを実行するようなボタン widget を追加する
-- table 表示はソート機能などを備えた holoview 等を使った方が良さそう
-- JupyterLab でも使用可能にする
