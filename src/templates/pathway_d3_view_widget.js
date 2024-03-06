@@ -25,7 +25,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     return "";
   }
 
-  function drawGroups(nodes, svg, groups, verticalOffset) {
+  function drawGroups(nodes, graphic, groups) {
     let nodeGroups = {}; // A map like { GroupId: {minX, minY, maxX, maxY} }
     nodes.forEach((node) => {
       let groupId = node.GroupRef;
@@ -63,11 +63,11 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     for (let group of groups) {
       if (nodeGroups[group.GroupId]) {
         let range = nodeGroups[group.GroupId];
-        svg
+        graphic
           .append("rect")
           .attr("class", "group-rect")
           .attr("x", range.minX - groupMargin)
-          .attr("y", range.minY - groupMargin + verticalOffset)
+          .attr("y", range.minY - groupMargin)
           .attr("width", range.maxX - range.minX + groupMargin * 2)
           .attr("height", range.maxY - range.minY + groupMargin * 2)
           .attr("fill", "#f6f6ee")
@@ -198,7 +198,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .data(links)
       .enter()
       .append("line")
-      .attr("class", "element-in-body")
       .attr("x1", (d) => d.pointsAfterOffset[0].X)
       .attr("y1", (d) => d.pointsAfterOffset[0].Y)
       .attr("x2", (d) => d.pointsAfterOffset[1].X)
@@ -214,14 +213,14 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     addMarkers(svg, markerBoxSize, refX, refY);
   }
 
-  function drawNodes(nodes, svg, view) {
+  function drawNodes(nodes, graphic, view) {
     const nodeRoundRadius = 10;
-    view.nodes = svg
+    view.nodes = graphic
       .selectAll("rect.node-rect")
       .data(nodes)
       .enter()
       .append("rect")
-      .attr("class", "element-in-body node-rect")
+      .attr("class", "node-rect")
       .attr("x", (d) => d.CenterX - d.Width / 2)
       .attr("y", (d) => d.CenterY - d.Height / 2)
       .attr("width", (d) => d.Width)
@@ -236,20 +235,19 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("stroke", (d) => `#${d.Color}`)
       .style("cursor", "pointer")
       .on("click", function (d) {
-        console.log(d)
+        console.log(d);
         // onIdClicked(view, d.TextLabel);
         // xref_idをフィルタに利用するため変更（2024_1）
         onIdClicked(view, d.ID);
       });
   }
 
-  function drawNodeTexts(nodes, svg, view) {
-    svg
+  function drawNodeTexts(nodes, graphic, view) {
+    graphic
       .selectAll("text")
       .data(nodes)
       .enter()
       .append("text")
-      .attr("class", "element-in-body")
       .attr("x", (d) => d.CenterX)
       .attr("y", (d) => d.CenterY)
       .attr("stroke", (d) => `#${d.Color}`)
@@ -258,17 +256,17 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("dominant-baseline", "central")
       .style("cursor", "pointer")
       .on("click", function (d) {
-        console.log(d)
+        console.log(d);
         // onIdClicked(view, d.TextLabel);
         // xref_idをフィルタに利用するため変更（2024_1）
         onIdClicked(view, d.ID);
       });
   }
 
-  function drawArcs(svg, pathway_data, verticalOffset) {
+  function drawArcs(graphic, pathway_data) {
     let arcs = pathway_data["shapes"].filter((d) => d.ShapeType == "Arc");
 
-    svg
+    graphic
       .selectAll("path.arc")
       .data(arcs)
       .enter()
@@ -278,9 +276,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("transform", (d) => {
         let scaleWidth = Math.max(d.Width / d.Height, 1);
         let scaleHeight = Math.max(d.Height / d.Width, 1);
-        return `translate(${d.CenterX},${
-          d.CenterY + verticalOffset
-        }) scale(${scaleWidth},${scaleHeight})`;
+        return `translate(${d.CenterX},${d.CenterY}) scale(${scaleWidth},${scaleHeight})`;
       })
       .attr("d", (d) => {
         let width = d.Width;
@@ -295,8 +291,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       });
   }
 
-  function drawHeader(svg, pathway) {
-    svg
+  function drawHeader(graphic, pathway) {
+    graphic
       .append("text")
       .attr("x", 10)
       .attr("y", 10)
@@ -304,7 +300,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("stroke", "black")
       .text(`Name:${pathway.Name}`);
 
-    svg
+    graphic
       .append("text")
       .attr("x", 10)
       .attr("y", 10)
@@ -313,7 +309,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("stroke", "black")
       .text(`Last Modified: ${pathway["Last-Modified"] || "Unknown"}`);
 
-    svg
+    graphic
       .append("text")
       .attr("x", 10)
       .attr("y", 10)
@@ -344,48 +340,56 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
   let PathwayD3View = widgets.DOMWidgetView.extend({
     createDiv: function () {
-      var divstyle = $("<div id='d3DemoDiv'>");
+      var divstyle = $("<div id='d3DemoDiv' style='border: solid red;' >");
       return divstyle;
     },
 
     createNetwork: function () {
+      console.log("createNetwork");
       let pathway_data = JSON.parse(this.model.get("pathway_data"));
       let nodes = pathway_data["nodes"];
       let links = pathway_data["interactions"];
       let pathway = pathway_data["pathway"];
       let groups = pathway_data["groups"];
-      let width = this.model.get("width");
-      let height = this.model.get("height");
+
       let svg = d3.select("#svg2");
       if (svg.empty()) {
         svg = d3
           .select("#d3DemoDiv")
           .append("svg")
           .attr("id", "svg2")
-          .attr("width", width)
-          .attr("height", height)
+          .style("width", "100%")
+          .style("height", "100%")
           .style("background-color", "#fff");
       }
+
+      let graphic = d3.select("#graphic-root");
+
       let titleOffset = 50;
-
-      drawGroups(nodes, svg, groups, titleOffset);
-      drawLinks(links, svg);
-      drawNodes(nodes, svg, this);
-      drawArcs(svg, pathway_data, titleOffset);
-      drawNodeTexts(nodes, svg, this);
-
-      let contentGroup = svg
-        .append("g")
-        .attr("class", "content-group")
-        .attr("transform", "translate(0," + titleOffset + ")");
-
-      svg.selectAll(".element-in-body").each(function () {
-        contentGroup.node().appendChild(this);
-      });
+      if (graphic.empty()) {
+        graphic = svg
+          .append("g")
+          .attr("id", "graphic-root")
+          .attr("transform", "translate(0," + titleOffset + ")");
+        const zoom = d3
+          .zoom()
+          .scaleExtent([0.1, 40])
+          .on("zoom", function () {
+            console.log("graphic");
+            graphic.attr("transform", d3.event.transform);
+          });
+        graphic.call(zoom);
+      }
+      let baseLayer = graphic.append("g").attr("id", "baseLayer");
+      let secondLayer = graphic.append("g").attr("id", "secondLayer");
+      drawGroups(nodes, baseLayer, groups);
+      drawLinks(links, secondLayer);
+      drawNodes(nodes, secondLayer, this);
+      drawArcs(secondLayer, pathway_data);
+      drawNodeTexts(nodes, secondLayer, this);
 
       drawHeader(svg, pathway);
       updateSvgSize();
-      console.log("createNetwork");
     },
 
     render: function () {
