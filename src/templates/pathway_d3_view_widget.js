@@ -340,7 +340,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
   let PathwayD3View = widgets.DOMWidgetView.extend({
     createDiv: function () {
-      var divstyle = $("<div id='d3DemoDiv' style='border: solid red;' >");
+      var divstyle = $("<div id='d3DemoDiv'>");
       return divstyle;
     },
 
@@ -375,10 +375,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .zoom()
           .scaleExtent([0.1, 40])
           .on("zoom", function () {
-            console.log("graphic");
             graphic.attr("transform", d3.event.transform);
           });
-        graphic.call(zoom);
+        svg.call(zoom);
       }
       let baseLayer = graphic.append("g").attr("id", "baseLayer");
       let secondLayer = graphic.append("g").attr("id", "secondLayer");
