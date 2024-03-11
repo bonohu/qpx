@@ -338,6 +338,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     });
   }
 
+  let networkCreationTimer = null;
+
   let PathwayD3View = widgets.DOMWidgetView.extend({
     createDiv: function () {
       var divstyle = $("<div id='d3DemoDiv'>");
@@ -395,7 +397,10 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let view = this;
       // div要素を追加
       this.$el.append(this.createDiv());
-      setTimeout(() => view.createNetwork(), 500);
+      if (networkCreationTimer) {
+        clearTimeout(networkCreationTimer);
+      }
+      networkCreationTimer = setTimeout(() => view.createNetwork(), 500);
     },
 
     set_id: function (d) {
