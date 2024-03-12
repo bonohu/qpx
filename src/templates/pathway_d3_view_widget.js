@@ -10,6 +10,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   widgets,
   d3
 ) {
+  const defaultFont = `"Liberation Sans", Arial, sans-serif`;
+
   function arrowHeadType(gpmlArrowType) {
     switch (gpmlArrowType) {
       case "Arrow":
@@ -96,11 +98,17 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       )
       .attr("fill", "#000000");
 
+    const margin = 2; // Margin to avoid cropping by the edge of the marker
     svg
       .append("defs")
       .append("marker")
       .attr("id", "marker-circle")
-      .attr("viewBox", [0, 0, markerBoxSize, markerBoxSize])
+      .attr("viewBox", [
+        -margin / 2,
+        -margin / 2,
+        markerBoxSize + margin / 2,
+        markerBoxSize + margin / 2,
+      ])
       .attr("refX", refX)
       .attr("refY", refY)
       .attr("markerWidth", markerBoxSize)
@@ -109,7 +117,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .append("circle")
       .attr("cx", markerBoxSize / 2)
       .attr("cy", markerBoxSize / 2)
-      .attr("r", markerBoxSize / 2)
+      .attr("r", markerBoxSize / 2 - margin / 2)
       .attr("stroke", "#000000")
       .attr("fill", "white");
 
@@ -250,11 +258,15 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .append("text")
       .attr("x", (d) => d.CenterX)
       .attr("y", (d) => d.CenterY)
-      .attr("stroke", (d) => `#${d.Color}`)
+      .attr("fill", (d) => `#${d.Color}`)
+      .attr("stroke-width", "0px")
       .text((d) => d.TextLabel)
       .style("text-anchor", "middle")
       .style("dominant-baseline", "central")
       .style("cursor", "pointer")
+      .style("font-family", defaultFont)
+      .style("font-size", "12px")
+      .style("font-weight", "normal")
       .on("click", function (d) {
         console.log(d);
         // onIdClicked(view, d.TextLabel);
@@ -297,7 +309,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("x", 10)
       .attr("y", 10)
       .attr("class", "pathwayName")
-      .attr("stroke", "black")
+      .attr("fill", "black")
+      .attr("font-weight", "bold")
       .text(`Name:${pathway.Name}`);
 
     graphic
@@ -306,7 +319,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("y", 10)
       .attr("dy", "1.5em")
       .attr("class", "pathwayVersion")
-      .attr("stroke", "black")
+      .attr("font-weight", "bold")
+      .attr("fill", "black")
       .text(`Last Modified: ${pathway["Last-Modified"] || "Unknown"}`);
 
     graphic
@@ -315,7 +329,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("y", 10)
       .attr("dy", "3em")
       .attr("class", "pathwayOrganism")
-      .attr("stroke", "black")
+      .attr("font-weight", "bold")
+      .attr("fill", "black")
       .text(`Organism:${pathway.Organism}`);
   }
 
