@@ -27,10 +27,11 @@ class PathwayD3VisualizerWidget(DOMWidget):
 
 
 class GpmlD3Visualizer:
-    def __init__(self, gene_data_path, gpml_dir_path="./gpml"):
+    def __init__(self, gene_data_path, filter_key="xref_id", gpml_dir_path="./gpml"):
         self.gpml_dir_path = gpml_dir_path
         self.gene_data = pd.read_table(gene_data_path)
         self.selected_gene_data = self.gene_data
+        self.filter_key = filter_key
         self.visualizer = None
         self.selected_gpml_file = None
     
@@ -52,8 +53,10 @@ class GpmlD3Visualizer:
             # xref_idでフィルターするように変更（2024/1/29oec）
             if gid:
                 # データテーブルでフィルターしたい属性を指定
-                #d = d[d["Label"] == gid]
-                d = d[d["xref_id"] == int(gid)]
+                # if gid is integer like string, convert it to integer
+                if gid.isdigit():
+                    gid = int(gid)
+                d = d[d[self.filter_key] == gid]
                 print("Xref ID {}:".format(gid))
             else:
                 print("Gene data:")
