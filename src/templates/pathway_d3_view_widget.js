@@ -264,9 +264,21 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("text-anchor", "middle")
       .style("dominant-baseline", "central")
       .style("cursor", "pointer")
-      .style("font-family", defaultFont)
-      .style("font-size", "12px")
-      .style("font-weight", "normal")
+      .style("font-family", (d) => d.FontName || defaultFont)
+      .style("font-size", (d) => d.FontSize || "12px")
+      .style("font-weight", (d) => d.FontWeight || "normal")
+      .style("font-style", (d) => d.FontStyle || "normal")
+      .style("text-decoration-line", (d) => {
+        let decorationString = "";
+        if (d.FontDecoration === "Underline") {
+          decorationString += " underline";
+        }
+        if (d.FontStrikethru === "Strikethru") {
+          decorationString += " line-through";
+        }
+        return decorationString;
+      })
+
       .on("click", function (d) {
         console.log(d);
         // onIdClicked(view, d.TextLabel);
@@ -368,6 +380,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let links = pathway_data["interactions"];
       let pathway = pathway_data["pathway"];
       let groups = pathway_data["groups"];
+      console.log({ nodes });
 
       let svg = d3.select("#svg2");
       if (svg.empty()) {
