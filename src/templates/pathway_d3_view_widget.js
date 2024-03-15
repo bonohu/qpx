@@ -11,6 +11,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   d3
 ) {
   const defaultFont = `"Liberation Sans", Arial, sans-serif`;
+  const cellHeight = 700;
 
   function arrowHeadType(gpmlArrowType) {
     switch (gpmlArrowType) {
@@ -250,6 +251,52 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       });
   }
 
+  function zoomToFit(nodes, d3Svg, d3Graphic) {
+    let bounds = {
+      x: Infinity,
+      y: Infinity,
+      width: -Infinity,
+      height: -Infinity,
+    };
+    for (let node of nodes) {
+      let nodeBounds = {
+        x: node.CenterX - node.Width / 2,
+        y: node.CenterY - node.Height / 2,
+        width: node.Width,
+        height: node.Height,
+      };
+      bounds.x = Math.min(bounds.x, nodeBounds.x);
+      bounds.y = Math.min(bounds.y, nodeBounds.y);
+      bounds.width = Math.max(
+        bounds.width,
+        nodeBounds.x - bounds.x + nodeBounds.width
+      );
+      bounds.height = Math.max(
+        bounds.height,
+        nodeBounds.y - bounds.y + nodeBounds.height
+      );
+    }
+    let svgElement = document.getElementById("svg2");
+    let fullWidth = svgElement.clientWidth,
+      fullHeight = svgElement.clientHeight;
+    let width = bounds.width,
+      height = bounds.height;
+    let midX = bounds.x + width / 2,
+      midY = bounds.y + height / 2;
+    if (width <= 0 || height <= 0) return;
+    const marginFactor = 0.8;
+    let scale = marginFactor / Math.max(width / fullWidth, height / fullHeight);
+    let translate = [
+      fullWidth / 2 - scale * midX,
+      fullHeight / 2 - scale * midY,
+    ];
+    d3Graphic.attr("transform", `translate(${translate}) scale(${scale})`);
+    d3Svg.call(
+      d3.zoom().transform,
+      d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+    );
+  }
+
   function drawNodeTexts(nodes, graphic, view) {
     graphic
       .selectAll("text")
@@ -347,11 +394,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   }
 
   function updateSvgSize() {
-    const margin = 50;
     let svg = document.getElementById("svg2");
-    let bbox = svg.getBBox();
-    svg.setAttribute("width", bbox.x + bbox.width + bbox.x);
-    svg.setAttribute("height", bbox.y + bbox.height + bbox.y + margin);
+    svg.setAttribute("height", cellHeight);
   }
 
   function onIdClicked(view, geneId) {
@@ -419,6 +463,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
       drawHeader(svg, pathway);
       updateSvgSize();
+      zoomToFit(nodes, svg, graphic);
     },
 
     render: function () {
