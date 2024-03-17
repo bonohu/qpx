@@ -11,6 +11,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   d3
 ) {
   const defaultFont = `"Liberation Sans", Arial, sans-serif`;
+  const defaultFontSize = 12;
   const cellHeight = 700;
 
   function arrowHeadType(gpmlArrowType) {
@@ -298,6 +299,29 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   }
 
   function drawNodeTexts(nodes, graphic, view) {
+    function linebreakText(node) {
+      // 改行を含む文字列をtspanで分割して表示する（SVGでは\nが効かないため）
+      try {
+        if (!node.TextLabel || !node.TextLabel.includes("\n")) {
+          return node.TextLabel;
+        }
+        let textList = node.TextLabel.split("\n");
+        let string = "";
+        let fontSize = node.FontSize
+          ? parseInt(node.FontSize)
+          : defaultFontSize;
+        textList.forEach((t, i) => {
+          string += `<tspan y="${
+            (i - (textList.length - 1) / 2) * fontSize + node.CenterY
+          }px" x="${node.CenterX}">${t}</tspan>`;
+        });
+        return string;
+      } catch (e) {
+        console.error(e);
+        return node.TextLabel;
+      }
+    }
+
     graphic
       .selectAll("text")
       .data(nodes)
@@ -307,12 +331,12 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("y", (d) => d.CenterY)
       .attr("fill", (d) => `#${d.Color}`)
       .attr("stroke-width", "0px")
-      .text((d) => d.TextLabel)
+      .html((d) => linebreakText(d))
       .style("text-anchor", "middle")
       .style("dominant-baseline", "central")
       .style("cursor", "pointer")
       .style("font-family", (d) => d.FontName || defaultFont)
-      .style("font-size", (d) => d.FontSize || "12px")
+      .style("font-size", (d) => d.FontSize || `${defaultFontSize}px`)
       .style("font-weight", (d) => d.FontWeight || "normal")
       .style("font-style", (d) => d.FontStyle || "normal")
       .style("text-decoration-line", (d) => {
@@ -325,7 +349,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         }
         return decorationString;
       })
-
       .on("click", function (d) {
         console.log(d);
         // onIdClicked(view, d.TextLabel);
