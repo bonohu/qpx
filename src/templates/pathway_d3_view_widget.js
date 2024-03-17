@@ -250,9 +250,14 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         // xref_idをフィルタに利用するため変更（2024_1）
         onIdClicked(view, d.ID);
       });
+    // Prevent zooming when double-clicking on a node
+    view.nodes.on("dblclick", function () {
+      d3.event.preventDefault();
+      d3.event.stopPropagation();
+    });
   }
 
-  function zoomToFit(nodes, d3Svg, d3Graphic) {
+  function zoomToFit(nodes, d3Svg, d3Graphic, duration = 0) {
     let bounds = {
       x: Infinity,
       y: Infinity,
@@ -291,7 +296,10 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       fullWidth / 2 - scale * midX,
       fullHeight / 2 - scale * midY,
     ];
-    d3Graphic.attr("transform", `translate(${translate}) scale(${scale})`);
+    d3Graphic
+      .transition()
+      .duration(duration || 0)
+      .attr("transform", `translate(${translate}) scale(${scale})`);
     d3Svg.call(
       d3.zoom().transform,
       d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
@@ -354,6 +362,11 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         // onIdClicked(view, d.TextLabel);
         // xref_idをフィルタに利用するため変更（2024_1）
         onIdClicked(view, d.ID);
+      })
+      // Prevent zooming when double-clicking on a node
+      .on("dblclick", function () {
+        d3.event.preventDefault();
+        d3.event.stopPropagation();
       });
   }
 
@@ -458,6 +471,10 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .style("width", "100%")
           .style("height", "100%")
           .style("background-color", "#fff");
+
+        svg.on("dblclick", function (event) {
+          zoomToFit(nodes, svg, graphic, 400);
+        });
       }
 
       let graphic = d3.select("#graphic-root");
@@ -474,7 +491,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .on("zoom", function () {
             graphic.attr("transform", d3.event.transform);
           });
-        svg.call(zoom);
+        svg.call(zoom).on("dblclick.zoom", null);
       }
       let baseLayer = graphic.append("g").attr("id", "baseLayer");
       let secondLayer = graphic.append("g").attr("id", "secondLayer");
