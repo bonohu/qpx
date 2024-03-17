@@ -2,7 +2,7 @@
 import glob
 import json
 import os
-import pandas as pd
+import polars as pl
 from IPython.display import display, HTML, clear_output
 from traitlets import Unicode, Bool, validate, TraitError
 from ipywidgets import DOMWidget, register, interact, interactive, widgets
@@ -29,7 +29,7 @@ class PathwayD3VisualizerWidget(DOMWidget):
 class GpmlD3Visualizer:
     def __init__(self, gene_data_path, filter_key="xref_id", gpml_dir_path="./gpml"):
         self.gpml_dir_path = gpml_dir_path
-        self.gene_data = pd.read_table(gene_data_path)
+        self.gene_data = pl.read_csv(gene_data_path, separator='\t')
         self.selected_gene_data = self.gene_data
         self.filter_key = filter_key
         self.visualizer = None
@@ -56,7 +56,7 @@ class GpmlD3Visualizer:
                 # if gid is integer like string, convert it to integer
                 if gid.isdigit():
                     gid = int(gid)
-                d = d[d[self.filter_key] == gid]
+                d = d.filter(pl.col(self.filter_key) == gid)
                 print("Xref ID {}:".format(gid))
             else:
                 print("Gene data:")
