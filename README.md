@@ -39,6 +39,8 @@ $ conda activate ex-qpx
 $ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
 $ conda install ipywidgets=7.6.5
 $ conda install pandas
+$ pip install itables
+$ pip install polars
 ```
 
 
@@ -47,11 +49,10 @@ $ conda install pandas
 # Todo
 
 - テーブルwidgetの改良
-  - ソート機能のあるdata tableのwidgetがあれば利用する
-  - Descriptionなどの長い文字列があった場合クリックすると全文表示される、といったようなギミックがあると良い
-  - tabulatorのwidgetがあった気がする
+  ☑️  ソート機能のあるdata tableのwidgetがあれば利用する
+  ☑️  Descriptionなどの長い文字列があった場合クリックすると全文表示される、といったようなギミックがあると良い
 - ダイアグラムの改修
-  - パスウェイダイアグラムを拡大縮小できた方が良い
-  - WikiPathwaysからDLしたgpmlのノードのテキストが枠からハミだすので修正する
+  ☑️  パスウェイダイアグラムを拡大縮小できた方が良い
+  ☑️  WikiPathwaysからDLしたgpmlのノードのテキストが枠からハミだすので修正する
 - データテーブルのソースも選択できるようにすると便利？（複数のパスウェイを扱うケースが多いかまだよくわからない）
 - 必要であればセルを実行するようなボタン widget を追加する
