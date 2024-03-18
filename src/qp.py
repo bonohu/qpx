@@ -8,7 +8,7 @@ from IPython.display import display, HTML, clear_output
 from traitlets import Unicode, Bool, validate, TraitError
 from ipywidgets import DOMWidget, register, interact, interactive, widgets
 from src.gpml_parser import GpmlParser
-from itables import show
+from itables import show, JavascriptFunction
 
     
 
@@ -82,7 +82,14 @@ class GpmlD3Visualizer:
             else:
                 print("Gene data:")
             self.selected_gene_data = d
-            show(self.selected_gene_data, classes="display compact")
+
+            show(self.selected_gene_data, classes="display compact", 
+                 columnDefs=[{"targets": "_all",                              
+                            "render": JavascriptFunction("""
+                                function (data, type, full, meta) {
+                                    return `<span title=${data}>${data}</span`;
+                                },
+                                """)}])
 
         dataframe_output = widgets.interactive_output(display_gene_data, {"gid": self.visualizer_widget})
         
@@ -95,5 +102,11 @@ class GpmlD3Visualizer:
             ]
         )
 
+        css = """
+        .dataTable th, .dataTable td{
+            max-width: 150px;
+        }
+        """
+        display(HTML(f"<style>{css}</style>"))
 
         display(self.widgets)
