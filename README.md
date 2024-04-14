@@ -14,6 +14,7 @@ qp_view.ipynb を Jupyter notebook 環境で開いて利用します。
 ### 前提条件
 
 - docker および docker-compose がインストールされていること
+- Docker Desktopを起動していること
 
 ### インストール
 
