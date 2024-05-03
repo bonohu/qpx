@@ -1,4 +1,4 @@
-# qp
+# qpx
 
 Jupyter notebook で WikiPathways のパスウェイと選択したノードの属性テーブルを表示するツールです。
 
