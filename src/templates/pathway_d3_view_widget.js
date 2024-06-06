@@ -480,6 +480,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let graphic = d3.select("#graphic-root");
 
       let titleOffset = 50;
+      let selecting = false;
+      start = null;
       if (graphic.empty()) {
         graphic = svg
           .append("g")
@@ -489,7 +491,25 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .zoom()
           .scaleExtent([0.1, 40])
           .on("zoom", function () {
+            if (selecting) {
+              moveSelection(start, d3.mouse(this));
+              return;
+            }
             graphic.attr("transform", d3.event.transform);
+          })
+          .on("start", function () {
+            if (d3.event.sourceEvent?.shiftKey) {
+              selecting = true;
+              console.log("start selection");
+              start = d3.mouse(this);
+              startSelection(start);
+            }
+          })
+          .on("end", function () {
+            if (selecting) {
+              selecting = false;
+              endSelection(start, d3.mouse(this));
+            }
           });
         svg.call(zoom).on("dblclick.zoom", null);
       }
@@ -504,6 +524,40 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       drawHeader(svg, pathway);
       updateSvgSize();
       zoomToFit(nodes, svg, graphic);
+
+      function rect(x, y, w, h) {
+        return (
+          "M" + [x, y] + " l" + [w, 0] + " l" + [0, h] + " l" + [-w, 0] + "z"
+        );
+      }
+
+      let selection = svg
+        .append("path")
+        .style("fill", "#ADD8E6")
+        .style("stroke", "#ADD8E6")
+        .style("fill-opacity", 0.3)
+        .style("stroke-opacity", 0.7)
+        .style("stroke-width", 2)
+        .style("stroke-dasharray", "5, 5")
+        .attr("class", "selection")
+        .attr("visibility", "hidden");
+
+      let startSelection = function (start) {
+        selection
+          .attr("d", rect(start[0], start[0], 0, 0))
+          .attr("visibility", "visible");
+      };
+
+      let moveSelection = function (start, moved) {
+        selection.attr(
+          "d",
+          rect(start[0], start[1], moved[0] - start[0], moved[1] - start[1])
+        );
+      };
+
+      let endSelection = function (start, end) {
+        selection.attr("visibility", "hidden");
+      };
     },
 
     render: function () {
