@@ -13,6 +13,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   const defaultFont = `"Liberation Sans", Arial, sans-serif`;
   const defaultFontSize = 12;
   const cellHeight = 700;
+  let selectedNodes = [];
 
   function arrowHeadType(gpmlArrowType) {
     switch (gpmlArrowType) {
@@ -245,10 +246,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .style("stroke", (d) => `#${d.Color}`)
       .style("cursor", "pointer")
       .on("click", function (d) {
-        console.log(d);
         // onIdClicked(view, d.TextLabel);
         // xref_idをフィルタに利用するため変更（2024_1）
-        onIdClicked(view, d.ID);
+        onIdClicked(view, nodes, d.ID);
       });
     // Prevent zooming when double-clicking on a node
     view.nodes.on("dblclick", function () {
@@ -358,10 +358,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         return decorationString;
       })
       .on("click", function (d) {
-        console.log(d);
         // onIdClicked(view, d.TextLabel);
         // xref_idをフィルタに利用するため変更（2024_1）
-        onIdClicked(view, d.ID);
+        onIdClicked(view, nodes, d.ID);
       })
       // Prevent zooming when double-clicking on a node
       .on("dblclick", function () {
@@ -434,15 +433,23 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     svg.setAttribute("height", cellHeight);
   }
 
-  function onIdClicked(view, geneId) {
-    view.model.set("value", geneId);
-    view.touch();
-
+  function updateNodeStyle(view) {
     const defaultStrokeWidth = 1;
     const selectedStrokeWidth = 3;
     view.nodes.style("stroke-width", (d) => {
-      return d.TextLabel === geneId ? selectedStrokeWidth : defaultStrokeWidth;
+      if (selectedNodes.find((node) => node.ID === d.ID)) {
+        return selectedStrokeWidth;
+      }
+      return defaultStrokeWidth;
     });
+  }
+
+  function onIdClicked(view, nodes, geneId) {
+    selectedNodes = nodes.filter((node) => node.ID === geneId);
+    console.log({ selectedNodes });
+    view.model.set("value", geneId);
+    view.touch();
+    updateNodeStyle(view);
   }
 
   let networkCreationTimer = null;
@@ -460,6 +467,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let links = pathway_data["interactions"];
       let pathway = pathway_data["pathway"];
       let groups = pathway_data["groups"];
+      let view = this;
       console.log({ nodes });
 
       let svg = d3.select("#svg2");
@@ -509,8 +517,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .on("end", function () {
             if (selecting) {
               selecting = false;
-              endSelection(start, d3.mouse(this));
               svg.call(zoom.transform, lastTransform);
+              endSelection(start, d3.mouse(this));
+              updateNodeStyle(view);
             }
           });
         svg.call(zoom).on("dblclick.zoom", null);
@@ -559,6 +568,26 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
       let endSelection = function (start, end) {
         selection.attr("visibility", "hidden");
+        let minX = Math.min(start[0], end[0]);
+        let minY = Math.min(start[1], end[1]);
+        let maxX = Math.max(start[0], end[0]);
+        let maxY = Math.max(start[1], end[1]);
+
+        // Fit the coordinates to the zoom transformation
+        let transform = d3.zoomTransform(svg.node());
+        minX = (minX - transform.x) / transform.k;
+        minY = (minY - transform.y) / transform.k;
+        maxX = (maxX - transform.x) / transform.k;
+        maxY = (maxY - transform.y) / transform.k;
+
+        selectedNodes = nodes.filter((node) => {
+          return (
+            minX <= node.CenterX &&
+            node.CenterX <= maxX &&
+            minY <= node.CenterY &&
+            node.CenterY <= maxY
+          );
+        });
       };
     },
 
