@@ -481,6 +481,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
       let titleOffset = 50;
       let selecting = false;
+      let lastTransform = null; // A variable to revert the zoom transformation after selection
       start = null;
       if (graphic.empty()) {
         graphic = svg
@@ -500,8 +501,8 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .on("start", function () {
             if (d3.event.sourceEvent?.shiftKey) {
               selecting = true;
-              console.log("start selection");
               start = d3.mouse(this);
+              lastTransform = d3.event.transform;
               startSelection(start);
             }
           })
@@ -509,6 +510,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
             if (selecting) {
               selecting = false;
               endSelection(start, d3.mouse(this));
+              svg.call(zoom.transform, lastTransform);
             }
           });
         svg.call(zoom).on("dblclick.zoom", null);
