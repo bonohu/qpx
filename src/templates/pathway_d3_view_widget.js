@@ -328,7 +328,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       }
     }
 
-    graphic
+    view.nodeTexts = graphic
       .selectAll("text")
       .data(nodes)
       .enter()
@@ -427,15 +427,35 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     svg.setAttribute("height", cellHeight);
   }
 
-  function updateNodeStyle(view) {
+  function propagateChangeOfSelectedNodes(view) {
     const defaultStrokeWidth = 1;
     const selectedStrokeWidth = 3;
+
+    view.model.set(
+      "value",
+      selectedNodes
+        .map((n) => n.ID)
+        .filter((n) => n !== null && n.length > 0) // Remove empty strings
+        .filter((x, i, self) => self.indexOf(x) === i) // Remove duplicates
+    );
+    view.touch();
     view.nodes.style("stroke-width", (d) => {
       if (selectedNodes.find((node) => node.ID === d.ID)) {
         return selectedStrokeWidth;
       }
       return defaultStrokeWidth;
     });
+    view.nodeTexts.style("font-weight", (d) => {
+      if (selectedNodes.find((node) => node.ID === d.ID)) {
+        return d.FontWeight || "bold";
+      }
+      return d.FontWeight || "normal";
+    });
+  }
+
+  function selectedGeneIdsChanged() {
+    let newSelection = this.model.get("selected_gene_ids");
+    selectedNodes = nodes.filter((n) => newSelection.includes(n.ID));
   }
 
   function onNodeClicked(node) {
@@ -447,9 +467,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     } else {
       selectedNodes = clickedNodes;
     }
-    view.model.set("value", geneId);
-    view.touch();
-    updateNodeStyle(view);
+    propagateChangeOfSelectedNodes(view);
   }
 
   let networkCreationTimer = null;
@@ -462,6 +480,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
     createNetwork: function () {
       console.log("createNetwork");
+      this.model.on("change:selected_gene_ids", selectedGeneIdsChanged, this);
       let pathway_data = JSON.parse(this.model.get("pathway_data"));
       nodes = pathway_data["nodes"];
       let links = pathway_data["interactions"];
@@ -511,7 +530,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .clickDistance(5)
           .filter(() => !d3.event.button)
           .on("zoom", function () {
-            console.log(d3.event);
             if (d3.event.sourceEvent.ctrlKey) {
               d3.event.sourceEvent.preventDefault();
             }
@@ -535,7 +553,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
               selecting = false;
               svg.call(zoom.transform, lastTransform);
               endSelection(startPoint, mouseUpPoint);
-              updateNodeStyle(view);
+              propagateChangeOfSelectedNodes(view);
             } else {
               if (mouseDownPoint) {
                 const threshold = 5;
@@ -544,7 +562,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
                   Math.abs(mouseDownPoint[1] - mouseUpPoint[1]) < threshold
                 ) {
                   endSelection(mouseDownPoint, mouseUpPoint);
-                  updateNodeStyle(view);
+                  propagateChangeOfSelectedNodes(view);
                 }
               }
             }
@@ -638,12 +656,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         clearTimeout(networkCreationTimer);
       }
       networkCreationTimer = setTimeout(() => view.createNetwork(), 500);
-    },
-
-    set_id: function (d) {
-      var view = this;
-      view.model.set("value", d);
-      view.touch();
     },
   });
 

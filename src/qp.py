@@ -4,6 +4,8 @@ import json
 import os
 import polars as pl
 import pandas as pd
+import traitlets
+from typing import List
 from IPython.display import display, HTML, clear_output
 from traitlets import Unicode, Bool, validate, TraitError
 from ipywidgets import DOMWidget, register, interact, interactive, widgets
@@ -19,14 +21,21 @@ class PathwayD3VisualizerWidget(DOMWidget):
     _view_module = Unicode('pathway_d3_view_widget').tag(sync=True)
     _view_module_version = Unicode('0.1.0').tag(sync=True)
 
-    value = Unicode('', help="").tag(sync=True)
+    value = traitlets.List([], help="").tag(sync=True)
     pathway_data = Unicode('', help="").tag(sync=True)
     
-    def __init__(self, pathway_data, value):
+    def __init__(self, pathway_data, dummy_value):
         super().__init__()
         self.pathway_data = pathway_data
-        self.value = value
+        self.selected_gene_ids = dummy_value
 
+    @property
+    def selected_gene_ids(self):
+        return self.value
+
+    @selected_gene_ids.setter
+    def selected_gene_ids(self, value):
+        self.value = value
 
 
 class GpmlD3Visualizer:
@@ -37,7 +46,6 @@ class GpmlD3Visualizer:
         self.filter_key = filter_key
         self.visualizer = None
         self.selected_gpml_file = None
-        self.gid = None
     
 
     def show(self):
@@ -58,27 +66,26 @@ class GpmlD3Visualizer:
 
 
         # interactive_output使用時、itablesが描画直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
-        initial_dummy_value = "　"
-        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), value=initial_dummy_value)
+        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), dummy_value=[''])
         from threading import Timer
         def redraw():
-            self.visualizer_widget.value = ""
+            self.visualizer_widget.selected_gene_ids = []
         timer = Timer(0.2, redraw, ())
         timer.start()
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
-        def display_gene_data(gid:str):
+        def display_gene_data(gids:List[str]):
             d = self.gene_data
-            self.gid = gid
+            gids = [str(gid) for gid in gids]
             # xref_idでフィルターするように変更（2024/1/29oec）
-            if gid:
+            if len(gids) > 0:
                 # データテーブルでフィルターしたい属性を指定
-                d = d.filter(pl.col(self.filter_key).cast(pl.datatypes.Utf8) == str(gid))
+                d = d.filter(pl.col(self.filter_key).cast(pl.datatypes.Utf8).is_in(gids))
                 if d.shape[0] == 0:
-                    print("No data found for Xref ID {}".format(gid))
+                    print("No data found for Xref ID {}".format(gids))
                     return
-                print("Xref ID {}:".format(gid))
+                print("Xref ID {}:".format(gids))
             else:
                 print("Gene data:")
             self.selected_gene_data = d
@@ -91,7 +98,7 @@ class GpmlD3Visualizer:
                                 },
                                 """)}])
 
-        dataframe_output = widgets.interactive_output(display_gene_data, {"gid": self.visualizer_widget})
+        dataframe_output = widgets.interactive_output(display_gene_data, {"gids": self.visualizer_widget})
         
         self.widgets = widgets.VBox( 
             [
