@@ -13,6 +13,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   const defaultFont = `"Liberation Sans", Arial, sans-serif`;
   const defaultFontSize = 12;
   const cellHeight = 700;
+  let nodes = [];
+  let selectedNodes = [];
+  let view = null;
 
   function arrowHeadType(gpmlArrowType) {
     switch (gpmlArrowType) {
@@ -244,12 +247,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .attr("fill", "white")
       .style("stroke", (d) => `#${d.Color}`)
       .style("cursor", "pointer")
-      .on("click", function (d) {
-        console.log(d);
-        // onIdClicked(view, d.TextLabel);
-        // xref_idをフィルタに利用するため変更（2024_1）
-        onIdClicked(view, d.ID);
-      });
+      .on("click", onNodeClicked);
     // Prevent zooming when double-clicking on a node
     view.nodes.on("dblclick", function () {
       d3.event.preventDefault();
@@ -330,7 +328,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       }
     }
 
-    graphic
+    view.nodeTexts = graphic
       .selectAll("text")
       .data(nodes)
       .enter()
@@ -357,12 +355,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         }
         return decorationString;
       })
-      .on("click", function (d) {
-        console.log(d);
-        // onIdClicked(view, d.TextLabel);
-        // xref_idをフィルタに利用するため変更（2024_1）
-        onIdClicked(view, d.ID);
-      })
+      .on("click", onNodeClicked)
       // Prevent zooming when double-clicking on a node
       .on("dblclick", function () {
         d3.event.preventDefault();
@@ -434,15 +427,48 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     svg.setAttribute("height", cellHeight);
   }
 
-  function onIdClicked(view, geneId) {
-    view.model.set("value", geneId);
-    view.touch();
-
+  function propagateChangeOfSelectedNodes(view) {
     const defaultStrokeWidth = 1;
     const selectedStrokeWidth = 3;
+
+    view.model.set(
+      "value",
+      selectedNodes
+        .map((n) => n.ID)
+        .filter((n) => n !== null && n.length > 0) // Remove empty strings
+        .filter((x, i, self) => self.indexOf(x) === i) // Remove duplicates
+    );
+    view.touch();
     view.nodes.style("stroke-width", (d) => {
-      return d.TextLabel === geneId ? selectedStrokeWidth : defaultStrokeWidth;
+      if (selectedNodes.find((node) => node.ID === d.ID)) {
+        return selectedStrokeWidth;
+      }
+      return defaultStrokeWidth;
     });
+    view.nodeTexts.style("font-weight", (d) => {
+      if (selectedNodes.find((node) => node.ID === d.ID)) {
+        return d.FontWeight || "bold";
+      }
+      return d.FontWeight || "normal";
+    });
+  }
+
+  function selectedGeneIdsChanged() {
+    let newSelection = this.model.get("value");
+    selectedNodes = nodes.filter((n) => newSelection.includes(n.ID));
+    propagateChangeOfSelectedNodes(this);
+  }
+
+  function onNodeClicked(node) {
+    let geneId = node.ID;
+    let clickedNodes = nodes.filter((n) => n.ID === geneId);
+
+    if (d3.event.ctrlKey || d3.event.metaKey) {
+      selectedNodes = selectedNodes.concat(clickedNodes);
+    } else {
+      selectedNodes = clickedNodes;
+    }
+    propagateChangeOfSelectedNodes(view);
   }
 
   let networkCreationTimer = null;
@@ -455,14 +481,17 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
     createNetwork: function () {
       console.log("createNetwork");
+      this.model.on("change:value", selectedGeneIdsChanged, this);
       let pathway_data = JSON.parse(this.model.get("pathway_data"));
-      let nodes = pathway_data["nodes"];
+      nodes = pathway_data["nodes"];
       let links = pathway_data["interactions"];
       let pathway = pathway_data["pathway"];
       let groups = pathway_data["groups"];
+      view = this;
       console.log({ nodes });
 
       let svg = d3.select("#svg2");
+      let mouseDownPoint = null;
       if (svg.empty()) {
         svg = d3
           .select("#d3DemoDiv")
@@ -472,6 +501,14 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
           .style("height", "100%")
           .style("background-color", "#fff");
 
+        svg.on("contextmenu", function (d, i) {
+          // Prevent the default context menu.
+          // This is necessary because after contextmenu with ctrl + click, the "start" event of d3.zoom is not fired somehow.
+          d3.event.preventDefault();
+        });
+        svg.on("mousedown", function (d, i) {
+          mouseDownPoint = d3.mouse(this);
+        });
         svg.on("dblclick", function (event) {
           zoomToFit(nodes, svg, graphic, 400);
         });
@@ -480,6 +517,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let graphic = d3.select("#graphic-root");
 
       let titleOffset = 50;
+      let selecting = false;
+      let lastTransform = null; // A variable to revert the zoom transformation after selection
+      let startPoint = null;
       if (graphic.empty()) {
         graphic = svg
           .append("g")
@@ -488,8 +528,46 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         const zoom = d3
           .zoom()
           .scaleExtent([0.1, 40])
+          .clickDistance(5)
+          .filter(() => !d3.event.button)
           .on("zoom", function () {
+            if (d3.event.sourceEvent.ctrlKey) {
+              d3.event.sourceEvent.preventDefault();
+            }
+            if (selecting) {
+              moveSelection(startPoint, d3.mouse(this));
+              return;
+            }
             graphic.attr("transform", d3.event.transform);
+          })
+          .on("start", function () {
+            if (d3.event.sourceEvent?.shiftKey) {
+              selecting = true;
+              startPoint = d3.mouse(this);
+              lastTransform = d3.event.transform;
+              startSelection(startPoint);
+            }
+          })
+          .on("end", function () {
+            let mouseUpPoint = d3.mouse(this);
+            if (selecting) {
+              selecting = false;
+              svg.call(zoom.transform, lastTransform);
+              endSelection(startPoint, mouseUpPoint);
+              propagateChangeOfSelectedNodes(view);
+            } else {
+              if (mouseDownPoint) {
+                const threshold = 5;
+                if (
+                  Math.abs(mouseDownPoint[0] - mouseUpPoint[0]) < threshold &&
+                  Math.abs(mouseDownPoint[1] - mouseUpPoint[1]) < threshold
+                ) {
+                  endSelection(mouseDownPoint, mouseUpPoint);
+                  propagateChangeOfSelectedNodes(view);
+                }
+              }
+            }
+            mouseDownPoint = null;
           });
         svg.call(zoom).on("dblclick.zoom", null);
       }
@@ -504,6 +582,71 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       drawHeader(svg, pathway);
       updateSvgSize();
       zoomToFit(nodes, svg, graphic);
+
+      function rect(x, y, w, h) {
+        return (
+          "M" + [x, y] + " l" + [w, 0] + " l" + [0, h] + " l" + [-w, 0] + "z"
+        );
+      }
+
+      let selection = svg
+        .append("path")
+        .style("fill", "#ADD8E6")
+        .style("stroke", "#ADD8E6")
+        .style("fill-opacity", 0.3)
+        .style("stroke-opacity", 0.7)
+        .style("stroke-width", 2)
+        .style("stroke-dasharray", "5, 5")
+        .attr("class", "selection")
+        .attr("visibility", "hidden");
+
+      let startSelection = function (start) {
+        selection
+          .attr("d", rect(start[0], start[0], 0, 0))
+          .attr("visibility", "visible");
+      };
+
+      let moveSelection = function (start, moved) {
+        selection.attr(
+          "d",
+          rect(start[0], start[1], moved[0] - start[0], moved[1] - start[1])
+        );
+      };
+
+      let endSelection = function (start, end) {
+        selection.attr("visibility", "hidden");
+        let minX = Math.min(start[0], end[0]);
+        let minY = Math.min(start[1], end[1]);
+        let maxX = Math.max(start[0], end[0]);
+        let maxY = Math.max(start[1], end[1]);
+
+        // Fit the coordinates to the zoom transformation
+        let transform = d3.zoomTransform(svg.node());
+        minX = (minX - transform.x) / transform.k;
+        minY = (minY - transform.y) / transform.k;
+        maxX = (maxX - transform.x) / transform.k;
+        maxY = (maxY - transform.y) / transform.k;
+
+        let intersectingNodes = nodes.filter((node) => {
+          return (
+            minX <= node.CenterX + node.Width / 2 &&
+            node.CenterX - node.Width / 2 <= maxX &&
+            minY <= node.CenterY + node.Height / 2 &&
+            node.CenterY - node.Height / 2 <= maxY
+          );
+        });
+
+        if (
+          d3.event.metaKey ||
+          d3.event.ctrlKey ||
+          d3.event.sourceEvent?.metaKey ||
+          d3.event.sourceEvent?.ctrlKey
+        ) {
+          selectedNodes = selectedNodes.concat(intersectingNodes);
+        } else {
+          selectedNodes = intersectingNodes;
+        }
+      };
     },
 
     render: function () {
@@ -514,12 +657,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
         clearTimeout(networkCreationTimer);
       }
       networkCreationTimer = setTimeout(() => view.createNetwork(), 500);
-    },
-
-    set_id: function (d) {
-      var view = this;
-      view.model.set("value", d);
-      view.touch();
     },
   });
 
