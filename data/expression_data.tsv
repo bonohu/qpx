@@ -1,0 +1,11 @@
+gene	value	sample	Annotation1	Annotation2
+PAL	93.5	Embryo	hoge	fuga
+PAL	27	Muscle cell test	foo	
+PAL	1	Lung	bar	baz
+C4H	96.2	Liver	hoge	fuga
+C4H	97.0	Brain	foo	bar
+C4H	91.5	Heart	baz	qux
+4CL	82.0	Embryo	hoge	fuga
+4CL	81.8	Muscle cell test	foo	
+CHS	69.6	Lung	bar	baz
+CHS	88.6	Liver	hoge	fuga

@@ -454,8 +454,9 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
   }
 
   function selectedGeneIdsChanged() {
-    let newSelection = this.model.get("selected_gene_ids");
+    let newSelection = this.model.get("value");
     selectedNodes = nodes.filter((n) => newSelection.includes(n.ID));
+    propagateChangeOfSelectedNodes(this);
   }
 
   function onNodeClicked(node) {
@@ -480,7 +481,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
     createNetwork: function () {
       console.log("createNetwork");
-      this.model.on("change:selected_gene_ids", selectedGeneIdsChanged, this);
+      this.model.on("change:value", selectedGeneIdsChanged, this);
       let pathway_data = JSON.parse(this.model.get("pathway_data"));
       nodes = pathway_data["nodes"];
       let links = pathway_data["interactions"];

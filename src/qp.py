@@ -5,6 +5,7 @@ import os
 import polars as pl
 import pandas as pd
 import traitlets
+from threading import Timer
 from typing import List
 from IPython.display import HTML, clear_output, display
 from traitlets import Unicode, Bool, validate, TraitError
@@ -62,14 +63,11 @@ class GpmlD3Visualizer:
         def visualize(gpml_file:str):
             self.visualizer_widget.pathway_data = json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, gpml_file)).data)
             display(self.visualizer_widget)
-            # if len(self.visualizer_widget.selected_gene_ids) > 0:
-            # self.visualizer_widget.selected_gene_ids = []
 
 
 
-        # interactive_output使用時、itablesが描画直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする FIXME
+        # interactive_output使用時、itablesがセルの実行直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), dummy_value=[''])
-        from threading import Timer
         def redraw():
             self.visualizer_widget.selected_gene_ids = [] # dummy_valueとは別の値を設定することで再描画を行う
         timer = Timer(1, redraw, ()) # タイムアウトが短すぎると、なぜか発現量テーブルが描画されないことがある（描画タイミングが衝突する？）
@@ -143,3 +141,109 @@ class GpmlD3Visualizer:
         display(HTML(f"<style>{css}</style>"))
 
         display(self.widgets)
+
+
+
+
+class GeneSearchForm:
+    def __init__(self, gene_data_path, gpml_d3_visualizer, search_target="Enzyme", mapping_key="xref_id"):
+        self.gene_data = pl.read_csv(gene_data_path, separator='\t')
+        self.visualizer = gpml_d3_visualizer
+        self.mapping_key = mapping_key
+        self.search_target = search_target
+    
+
+    def show(self):
+        search_input = widgets.Text(
+            placeholder='Enter gene name',
+            description='Gene:',
+            disabled=False,
+            value=' ' # 後述するredraw用に空白文字を入れておく
+        )
+
+        def display_gene_data(query:str):
+            selected_gene_data = self.gene_data
+            query = query.strip()
+            if len(query) > 0:
+                selected_gene_data = selected_gene_data.filter(pl.col(self.search_target).str.contains(f"(?i){query}")) # (?i)は大文字小文字を区別しないフラグ
+                if selected_gene_data.shape[0] == 0:
+                    print("No data found")
+                    return
+            column_index_of_mapping_key = selected_gene_data.columns.index(self.mapping_key)
+
+            if column_index_of_mapping_key == -1:
+                print(f"Column {self.mapping_key} not found")
+                return
+            def show_table(df):
+                show(df, classes="display compact clickable", searching=False,
+                     columnDefs=[{"targets": "_all",                              
+                                "render": JavascriptFunction("""
+                                    function (data, type, full, meta) {
+                                        return `<span title=${data}>${data}</span`;
+                                    },
+                                    """)},
+                                    {"targets": column_index_of_mapping_key, "className": "mapping-key"}])
+
+
+            show_table(selected_gene_data)
+
+        dataframe_output = widgets.interactive_output(display_gene_data, {"query": search_input})
+
+        # interactive_output使用時、itablesがセルの実行直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
+        def redraw():
+            search_input.value = ''
+        timer = Timer(1, redraw, ())
+        timer.start()
+        
+        self.widgets = widgets.VBox( 
+            [
+                search_input,
+                dataframe_output      
+            ]
+        )
+
+        css = """
+        .dataTable th, .dataTable td{
+            max-width: 150px;
+        }
+        .dataTable {
+            margin-left: 0 !important;
+            margin-bottom: 30px !important;
+        }
+        .dataTable caption {
+            font-size: large;
+            font-weight: bold;
+            color: black;
+            text-align: center;
+        }
+        .clickable tbody tr {
+            cursor: pointer;
+        }
+        """
+        display(HTML(f"<style>{css}</style>"))
+
+
+        display(HTML(
+            """
+            <script>
+            $(document).on('click', '.clickable tbody tr', function () {
+                let index = $(this).find('.mapping-key').text();
+                let comm = Jupyter.notebook.kernel.comm_manager.new_comm('on_row_click',
+                                                     {'index': index})
+                comm.close();
+            });
+            </script>
+            """
+        ))
+
+        display(self.widgets)
+
+
+        def on_row_click(comm, msg):
+            msg_data = msg['content']['data']
+            row_index = msg_data['index']
+            selected_gene_data = self.gene_data[int(row_index)]
+
+            self.visualizer.visualizer_widget.selected_gene_ids = [row_index]
+
+        get_ipython().kernel.comm_manager.register_target('on_row_click', on_row_click)
