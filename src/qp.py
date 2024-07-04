@@ -70,7 +70,7 @@ class GpmlD3Visualizer:
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), dummy_value=[''])
         def redraw():
             self.visualizer_widget.selected_gene_ids = [] # dummy_valueとは別の値を設定することで再描画を行う
-        timer = Timer(1, redraw, ()) # タイムアウトが短すぎると、なぜか発現量テーブルが描画されないことがある（描画タイミングが衝突する？）
+        timer = Timer(0.2, redraw, ())
         timer.start()
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
