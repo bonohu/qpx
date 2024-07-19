@@ -19,7 +19,7 @@ qp_view.ipynb を Jupyter notebook 環境で開いて利用します。
 ### インストール
 
 ```
-git clone git@github.com:dogrunjp/qpx.git
+git clone https://github.com/dogrunjp/qpx
 cd qpx
 docker-compose up -d
 (最新のDocker Desktopがインストールされている場合docker compose up -d)
