@@ -3,7 +3,6 @@ import glob
 import json
 import os
 import polars as pl
-import pandas as pd
 import traitlets
 from threading import Timer
 from typing import List
@@ -12,7 +11,6 @@ from traitlets import Unicode, Bool, validate, TraitError
 from ipywidgets import DOMWidget, register, interact, interactive, widgets
 from src.gpml_parser import GpmlParser
 from itables import show, JavascriptFunction
-
 
 @register
 class PathwayD3VisualizerWidget(DOMWidget):
@@ -37,12 +35,25 @@ class PathwayD3VisualizerWidget(DOMWidget):
         self.value = value
 
 
+
+
+@register
+class HeatmapVisualizerWidget(DOMWidget):
+    _view_name = Unicode('HeatmapView').tag(sync=True)
+    _view_module = Unicode('heatmap_view_widget').tag(sync=True)
+
+    value = traitlets.List([], help="").tag(sync=True)
+    expression_data = Unicode('', help="").tag(sync=True)
+    
+    def __init__(self, expression_data):
+        super().__init__()
+        self.expression_data = expression_data
+
 class GpmlD3Visualizer:
-    def __init__(self, gene_data_path, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml"):
+    def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml"):
         self.gpml_dir_path = gpml_dir_path
-        self.gene_data = pl.read_csv(gene_data_path, separator='\t')
-        self.expression_data = pd.read_csv(expression_data_path, sep='\t')
-        self.selected_gene_data = self.gene_data
+        self.expression_data = pl.read_csv(expression_data_path, separator='\t'
+                                           )
         self.filter_key = filter_key
         self.visualizer = None
         self.selected_gpml_file = None
@@ -51,6 +62,7 @@ class GpmlD3Visualizer:
     def show(self):
         gpml_files = glob.glob("{}/*.gpml".format(self.gpml_dir_path))
         gpml_files = [os.path.basename(gpml_file) for gpml_file in gpml_files]
+        gpml_files.sort()
 
         if len(gpml_files) > 0:
             self.selected_gpml_file = gpml_files[0]
@@ -65,51 +77,51 @@ class GpmlD3Visualizer:
             display(self.visualizer_widget)
 
 
-
         # interactive_output使用時、itablesがセルの実行直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), dummy_value=[''])
-        def redraw():
-            self.visualizer_widget.selected_gene_ids = [] # dummy_valueとは別の値を設定することで再描画を行う
-        timer = Timer(0.2, redraw, ())
-        timer.start()
+        # def redraw():
+        #     self.visualizer_widget.selected_gene_ids = [] # dummy_valueとは別の値を設定することで再描画を行う
+        # timer = Timer(0.2, redraw, ())
+        # timer.start()
+
+        def df_to_dicts(df):
+            list_of_dicts = []
+            expression_columns = df.columns[4:]
+            for row in df.iter_rows(named=True):
+                expression_values = {col: row[col] for col in expression_columns}
+                list_of_dicts.append({
+                    "name": row["transcript_id"],
+                    "expression_values": expression_values
+                })
+            return list_of_dicts
+
+        max_rows_to_display = 10
+        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])))
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
         def display_gene_data(gids:List[str]):
-            selected_gene_data = self.gene_data
-            gids = [str(gid) for gid in gids]
-            gene_caption = "Gene data"
-            # xref_idでフィルターするように変更（2024/1/29oec）
-            if len(gids) > 0 and gids[0] != "":
-                # データテーブルでフィルターしたい属性を指定
-                selected_gene_data = selected_gene_data.filter(pl.col(self.filter_key).cast(pl.datatypes.Utf8).is_in(gids))
-                if selected_gene_data.shape[0] == 0:
-                    print("No data found for Xref ID {}".format(gids))
-                    return
-                gene_caption = f"Gene data for Xref ID {gids}"
-            self.selected_gene_data = selected_gene_data
+            try:
+                gids = [int(gid) for gid in gids]
+            except:
+                gids = []
+
 
             def show_table(df, caption):
-                show(df, caption, classes="display compact", style="table-layout:auto;width:auto;caption-side:top;",
-                     columnDefs=[{"targets": "_all",                              
-                                "render": JavascriptFunction("""
-                                    function (data, type, full, meta) {
-                                        return `<span title=${data}>${data}</span`;
-                                    },
-                                    """)}])
+                show(df, caption)
 
-            show_table(selected_gene_data, gene_caption)
-
-            gene_names = selected_gene_data['Enzyme'].to_list()
             # make unique
-            gene_names = list(set(gene_names))
-            selected_expression_data = self.expression_data[self.expression_data['gene'].isin(gene_names)]
+            if len(gids) > 0 and gids[0] != "":
+                selected_expression_data = self.expression_data.filter(pl.col('xref_id').is_in(gids))
+            else:
+                selected_expression_data = self.expression_data                
 
             if selected_expression_data.shape[0] == 0:
                 print("No expression data found")
                 return
-            
-            show_table(selected_expression_data, "Expression data")
+            self.selected_expression_data = selected_expression_data
+            display(selected_expression_data)
+
 
 
         dataframe_output = widgets.interactive_output(display_gene_data, {"gids": self.visualizer_widget})
@@ -119,7 +131,8 @@ class GpmlD3Visualizer:
                 widgets.HBox([widgets.Label(value='Select GPML file:'), 
                     dropdown]),
                 self.interactive_visualizer,      
-                dataframe_output      
+                dataframe_output,
+                self.heatmap_widget
             ]
         )
 
