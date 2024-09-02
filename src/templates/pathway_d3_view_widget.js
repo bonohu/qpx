@@ -480,7 +480,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     },
 
     createNetwork: function () {
-      console.log("createNetwork");
       this.model.on("change:value", selectedGeneIdsChanged, this);
       let pathway_data = JSON.parse(this.model.get("pathway_data"));
       nodes = pathway_data["nodes"];
@@ -488,7 +487,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       let pathway = pathway_data["pathway"];
       let groups = pathway_data["groups"];
       view = this;
-      console.log({ nodes });
 
       let svg = d3.select("#svg2");
       let mouseDownPoint = null;

@@ -20,11 +20,12 @@ class PathwayD3VisualizerWidget(DOMWidget):
 
     value = traitlets.List([], help="").tag(sync=True)
     pathway_data = Unicode('', help="").tag(sync=True)
+    expression_data = Unicode('', help="").tag(sync=True)
     
-    def __init__(self, pathway_data, dummy_value):
+    def __init__(self, pathway_data):
         super().__init__()
         self.pathway_data = pathway_data
-        self.selected_gene_ids = dummy_value
+        self.selected_gene_ids = []
 
     @property
     def selected_gene_ids(self):
@@ -77,41 +78,33 @@ class GpmlD3Visualizer:
             display(self.visualizer_widget)
 
 
-        # interactive_output使用時、itablesがセルの実行直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
-        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data), dummy_value=[''])
-        # def redraw():
-        #     self.visualizer_widget.selected_gene_ids = [] # dummy_valueとは別の値を設定することで再描画を行う
-        # timer = Timer(0.2, redraw, ())
-        # timer.start()
+        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
+
 
         def df_to_dicts(df):
             list_of_dicts = []
-            expression_columns = df.columns[4:]
+            # expression_columns = df.columns[4:]
             for row in df.iter_rows(named=True):
-                expression_values = {col: row[col] for col in expression_columns}
-                list_of_dicts.append({
-                    "name": row["transcript_id"],
-                    "expression_values": expression_values
-                })
+                dict_row = {}
+                for col in df.columns:
+                    dict_row[col] = row[col]
+                list_of_dicts.append(dict_row)
             return list_of_dicts
-
-        max_rows_to_display = 10
+        
+        max_rows_to_display = 100
         self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])))
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
         def display_gene_data(gids:List[str]):
+            original_gids = gids
             try:
-                gids = [int(gid) for gid in gids]
+                gids = [int(gid) for gid in gids if gid != ""]
             except:
                 gids = []
 
 
-            def show_table(df, caption):
-                show(df, caption)
-
-            # make unique
-            if len(gids) > 0 and gids[0] != "":
+            if len(original_gids) > 0 and original_gids[0] != "":
                 selected_expression_data = self.expression_data.filter(pl.col('xref_id').is_in(gids))
             else:
                 selected_expression_data = self.expression_data                
@@ -120,8 +113,7 @@ class GpmlD3Visualizer:
                 print("No expression data found")
                 return
             self.selected_expression_data = selected_expression_data
-            display(selected_expression_data)
-
+            # display(selected_expression_data)
 
 
         dataframe_output = widgets.interactive_output(display_gene_data, {"gids": self.visualizer_widget})
@@ -137,12 +129,12 @@ class GpmlD3Visualizer:
         )
 
         css = """
-        .dataTable th, .dataTable td{
-            max-width: 150px;
-        }
         .dataTable {
             margin-left: 0 !important;
             margin-bottom: 30px !important;
+        }
+        .dt-layout-full {
+            overflow-x: auto;
         }
         .dataTable caption {
             font-size: large;
@@ -150,6 +142,7 @@ class GpmlD3Visualizer:
             color: black;
             text-align: center;
         }
+
         """
         display(HTML(f"<style>{css}</style>"))
 
