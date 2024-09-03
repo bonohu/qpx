@@ -77,11 +77,12 @@ define("heatmap_view_widget", [
     createHeatmap: function () {
       // this.model.on("change:value", selectedGeneIdsChanged, this);
       let expression_data = JSON.parse(this.model.get("expression_data"));
+      let expressionColumnsIndex =
+        parseInt(this.model.get("expression_columns_index")) || 4;
       maxExpressionValue = 0;
-      const expressionStartIndex = 4;
       for (let row of expression_data) {
         Object.keys(row)
-          .slice(expressionStartIndex)
+          .slice(expressionColumnsIndex)
           .forEach((key) => {
             // TODO: parameterize start index
             row[key] = parseFloat(row[key]);
@@ -90,9 +91,10 @@ define("heatmap_view_widget", [
       }
       let targets = Array.from(
         {
-          length: Object.keys(expression_data[0]).length - expressionStartIndex,
+          length:
+            Object.keys(expression_data[0]).length - expressionColumnsIndex,
         },
-        (_, i) => i + expressionStartIndex
+        (_, i) => i + expressionColumnsIndex
       );
       const highlightColor = [131, 146, 219];
       const defaultColor = [250, 250, 255];

@@ -45,19 +45,23 @@ class HeatmapVisualizerWidget(DOMWidget):
 
     value = traitlets.List([], help="").tag(sync=True)
     expression_data = Unicode('', help="").tag(sync=True)
+    expression_columns_index = traitlets.Int(4, help="").tag(sync=True)
     
-    def __init__(self, expression_data):
-        super().__init__()
+    def __init__(self, expression_data, expression_columns_index):
+        super().__init__()        
         self.expression_data = expression_data
+        self.expression_columns_index = expression_columns_index
+
 
 class GpmlD3Visualizer:
-    def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml"):
+    def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4):
         self.gpml_dir_path = gpml_dir_path
         self.expression_data = pl.read_csv(expression_data_path, separator='\t'
                                            )
         self.filter_key = filter_key
         self.visualizer = None
         self.selected_gpml_file = None
+        self.expression_columns_index = expression_columns_index
     
 
     def show(self):
@@ -92,7 +96,7 @@ class GpmlD3Visualizer:
             return list_of_dicts
         
         max_rows_to_display = 100
-        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])))
+        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])), expression_columns_index=self.expression_columns_index)
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
