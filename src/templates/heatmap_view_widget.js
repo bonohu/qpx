@@ -67,7 +67,35 @@ define("heatmap_view_widget", [
   "datatables.net",
   "datatables.net-dt",
   "datatables.net-buttons",
-], function (widgets, svg, ApexCharts) {
+], function (widgets) {
+  let selectedGeneIds = [];
+  let table = null;
+  function selectedGeneIdsChanged() {
+    let newSelection = this.model.get("value");
+    if (newSelection === undefined) {
+      return;
+    }
+    selectedGeneIds = newSelection;
+
+    if (table) {
+      if (selectedGeneIds.length == 0) {
+        table
+          .columns(1) // TODO: parameterize index
+          .search("")
+          .draw();
+      } else {
+        table
+          .columns(1) // TODO: parameterize index
+          .search((data) => {
+            return selectedGeneIds
+              .map((x) => x.toString() == data)
+              .some((x) => x);
+          })
+          .draw();
+      }
+    }
+  }
+
   let HeatmapView = widgets.DOMWidgetView.extend({
     createDiv: function () {
       var divstyle = $("<table id='heatmap-div' class='row-border nowrap'>");
@@ -75,7 +103,7 @@ define("heatmap_view_widget", [
     },
 
     createHeatmap: function () {
-      // this.model.on("change:value", selectedGeneIdsChanged, this);
+      this.model.on("change:value", selectedGeneIdsChanged, this);
       let expression_data = JSON.parse(this.model.get("expression_data"));
       let expressionColumnsIndex =
         parseInt(this.model.get("expression_columns_index")) || 4;
@@ -84,7 +112,6 @@ define("heatmap_view_widget", [
         Object.keys(row)
           .slice(expressionColumnsIndex)
           .forEach((key) => {
-            // TODO: parameterize start index
             row[key] = parseFloat(row[key]);
             maxExpressionValue = Math.max(maxExpressionValue, row[key]);
           });
@@ -98,7 +125,7 @@ define("heatmap_view_widget", [
       );
       const highlightColor = [131, 146, 219];
       const defaultColor = [250, 250, 255];
-      $("#heatmap-div").DataTable({
+      table = $("#heatmap-div").DataTable({
         data: expression_data.map((x) => Object.values(x)),
         columns: Object.keys(expression_data[0]).map((x) => ({ title: x })),
         columnDefs: [
@@ -118,8 +145,6 @@ define("heatmap_view_widget", [
           },
         ],
       });
-      console.log(expression_data);
-      // table.rows.add(expression_data).draw();
     },
 
     render: function () {

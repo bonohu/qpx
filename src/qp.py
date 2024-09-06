@@ -51,6 +51,17 @@ class HeatmapVisualizerWidget(DOMWidget):
         super().__init__()        
         self.expression_data = expression_data
         self.expression_columns_index = expression_columns_index
+        self.selected_gene_ids = []
+
+
+    @property
+    def selected_gene_ids(self):
+        return self.value
+    
+    @selected_gene_ids.setter
+    def selected_gene_ids(self, value):
+        self.value = value
+
 
 
 class GpmlD3Visualizer:
@@ -95,13 +106,13 @@ class GpmlD3Visualizer:
                 list_of_dicts.append(dict_row)
             return list_of_dicts
         
-        max_rows_to_display = 100
+        max_rows_to_display = 1000000
         self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])), expression_columns_index=self.expression_columns_index)
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
-        def display_gene_data(gids:List[str]):
-            original_gids = gids
+        def on_gene_ids_change(change):
+            original_gids = gids = change["new"]
             try:
                 gids = [int(gid) for gid in gids if gid != ""]
             except:
@@ -117,17 +128,15 @@ class GpmlD3Visualizer:
                 print("No expression data found")
                 return
             self.selected_expression_data = selected_expression_data
-            # display(selected_expression_data)
+            self.heatmap_widget.selected_gene_ids = gids
 
-
-        dataframe_output = widgets.interactive_output(display_gene_data, {"gids": self.visualizer_widget})
+        self.visualizer_widget.observe(on_gene_ids_change, names='value')
         
         self.widgets = widgets.VBox( 
             [
                 widgets.HBox([widgets.Label(value='Select GPML file:'), 
                     dropdown]),
                 self.interactive_visualizer,      
-                dataframe_output,
                 self.heatmap_widget
             ]
         )
