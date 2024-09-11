@@ -46,12 +46,14 @@ class HeatmapVisualizerWidget(DOMWidget):
     value = traitlets.List([], help="").tag(sync=True)
     expression_data = Unicode('', help="").tag(sync=True)
     expression_columns_index = traitlets.Int(4, help="").tag(sync=True)
+    filter_key = Unicode('xref_id', help="").tag(sync=True)
     
-    def __init__(self, expression_data, expression_columns_index):
+    def __init__(self, expression_data, expression_columns_index, filter_key = "xref_id"):
         super().__init__()        
         self.expression_data = expression_data
         self.expression_columns_index = expression_columns_index
         self.selected_gene_ids = []
+        self.filter_key = filter_key
 
 
     @property
@@ -70,6 +72,8 @@ class GpmlD3Visualizer:
         self.expression_data = pl.read_csv(expression_data_path, separator='\t'
                                            )
         self.filter_key = filter_key
+        if filter_key not in self.expression_data.columns:
+            raise ValueError(f"Column {filter_key} not found in expression data")
         self.visualizer = None
         self.selected_gpml_file = None
         self.expression_columns_index = expression_columns_index
@@ -107,7 +111,7 @@ class GpmlD3Visualizer:
             return list_of_dicts
         
         max_rows_to_display = 1000000
-        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])), expression_columns_index=self.expression_columns_index)
+        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])), expression_columns_index=self.expression_columns_index, filter_key=self.filter_key)
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 

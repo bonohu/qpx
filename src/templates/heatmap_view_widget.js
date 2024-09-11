@@ -70,6 +70,7 @@ define("heatmap_view_widget", [
 ], function (widgets) {
   let selectedGeneIds = [];
   let table = null;
+  let searchColumnIndex = 0;
   function selectedGeneIdsChanged() {
     let newSelection = this.model.get("value");
     if (newSelection === undefined) {
@@ -79,13 +80,10 @@ define("heatmap_view_widget", [
 
     if (table) {
       if (selectedGeneIds.length == 0) {
-        table
-          .columns(1) // TODO: parameterize index
-          .search("")
-          .draw();
+        table.columns(searchColumnIndex).search("").draw();
       } else {
         table
-          .columns(1) // TODO: parameterize index
+          .columns(searchColumnIndex)
           .search((data) => {
             return selectedGeneIds
               .map((x) => x.toString() == data)
@@ -105,6 +103,7 @@ define("heatmap_view_widget", [
     createHeatmap: function () {
       this.model.on("change:value", selectedGeneIdsChanged, this);
       let expression_data = JSON.parse(this.model.get("expression_data"));
+      let filter_key = this.model.get("filter_key");
       let expressionColumnsIndex =
         parseInt(this.model.get("expression_columns_index")) || 4;
       maxExpressionValue = 0;
@@ -123,6 +122,8 @@ define("heatmap_view_widget", [
         },
         (_, i) => i + expressionColumnsIndex
       );
+      searchColumnIndex = Object.keys(expression_data[0]).indexOf(filter_key);
+      if (searchColumnIndex == -1) searchColumnIndex = 0;
       const highlightColor = [131, 146, 219];
       const defaultColor = [250, 250, 255];
       table = $("#heatmap-div").DataTable({
