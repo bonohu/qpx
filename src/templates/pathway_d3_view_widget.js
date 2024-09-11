@@ -69,6 +69,26 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
 
     for (let group of groups) {
       if (nodeGroups[group.GroupId]) {
+        if (group.Style === "Complex") {
+          // Draw octagon
+          let range = nodeGroups[group.GroupId];
+          let x = range.minX - groupMargin;
+          let y = range.minY - groupMargin;
+          let width = range.maxX - range.minX + groupMargin * 2;
+          let height = range.maxY - range.minY + groupMargin * 2;
+          let r = Math.max(10, width / 10, height / 10); // Radius of the corner
+          let path = `M ${x + r} ${y} h ${width - r * 2} l ${r} ${r} v ${
+            height - r * 2
+          } l ${-r} ${r} h ${-width + r * 2} l ${-r} ${-r} v ${
+            -height + r * 2
+          } l ${r} ${-r} z`;
+          graphic
+            .append("path")
+            .attr("d", path)
+            .attr("fill", "#f6f6ee")
+            .attr("stroke", "gray")
+            .attr("stroke-width", 1);
+        } else {
         let range = nodeGroups[group.GroupId];
         graphic
           .append("rect")
