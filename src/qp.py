@@ -69,8 +69,13 @@ class HeatmapVisualizerWidget(DOMWidget):
 class GpmlD3Visualizer:
     def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4):
         self.gpml_dir_path = gpml_dir_path
-        self.expression_data = pl.read_csv(expression_data_path, separator='\t'
-                                           )
+        temp_df = pl.read_csv(expression_data_path, separator='\t', n_rows=1)
+        columns = temp_df.columns
+        dtypes = {col: pl.Float64 for col in columns[expression_columns_index:]}  # 4列目以降を数値として指定
+        dtypes["xref_id"] = pl.Int64  # "xref_id"列を整数として指定
+        self.expression_data = pl.read_csv(expression_data_path, separator='\t', ignore_errors=True, dtypes=dtypes)
+        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=open(expression_data_path).read(), expression_columns_index=expression_columns_index, filter_key=filter_key)
+        self.selected_expression_data = self.expression_data
         self.filter_key = filter_key
         if filter_key not in self.expression_data.columns:
             raise ValueError(f"Column {filter_key} not found in expression data")
@@ -99,19 +104,6 @@ class GpmlD3Visualizer:
 
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
 
-
-        def df_to_dicts(df):
-            list_of_dicts = []
-            # expression_columns = df.columns[4:]
-            for row in df.iter_rows(named=True):
-                dict_row = {}
-                for col in df.columns:
-                    dict_row[col] = row[col]
-                list_of_dicts.append(dict_row)
-            return list_of_dicts
-        
-        max_rows_to_display = 1000000
-        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=json.dumps(df_to_dicts(self.expression_data[:max_rows_to_display])), expression_columns_index=self.expression_columns_index, filter_key=self.filter_key)
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 

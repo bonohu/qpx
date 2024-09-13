@@ -56,6 +56,9 @@ for (var i = 0; i < extensions.length; i++) {
   }
 }
 
+paths["papaparse"] =
+  "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min";
+
 require.config({
   paths,
 });
@@ -67,7 +70,8 @@ define("heatmap_view_widget", [
   "datatables.net",
   "datatables.net-dt",
   "datatables.net-buttons",
-], function (widgets) {
+  "papaparse",
+], function (widgets, _, _, _, PapaParse) {
   let selectedGeneIds = [];
   let table = null;
   let searchColumnIndex = 0;
@@ -101,51 +105,65 @@ define("heatmap_view_widget", [
     },
 
     createHeatmap: function () {
-      this.model.on("change:value", selectedGeneIdsChanged, this);
-      let expression_data = JSON.parse(this.model.get("expression_data"));
-      let filter_key = this.model.get("filter_key");
-      let expressionColumnsIndex =
-        parseInt(this.model.get("expression_columns_index")) || 4;
-      maxExpressionValue = 0;
-      for (let row of expression_data) {
-        Object.keys(row)
-          .slice(expressionColumnsIndex)
-          .forEach((key) => {
-            row[key] = parseFloat(row[key]);
-            maxExpressionValue = Math.max(maxExpressionValue, row[key]);
-          });
-      }
-      let targets = Array.from(
-        {
-          length:
-            Object.keys(expression_data[0]).length - expressionColumnsIndex,
-        },
-        (_, i) => i + expressionColumnsIndex
+      // Show loading spinner
+      this.$el.html(
+        this.$el.html() + "<div class='loader-text'>Loading...</div>"
       );
-      searchColumnIndex = Object.keys(expression_data[0]).indexOf(filter_key);
-      if (searchColumnIndex == -1) searchColumnIndex = 0;
-      const highlightColor = [131, 146, 219];
-      const defaultColor = [250, 250, 255];
-      table = $("#heatmap-div").DataTable({
-        data: expression_data.map((x) => Object.values(x)),
-        columns: Object.keys(expression_data[0]).map((x) => ({ title: x })),
-        columnDefs: [
+      this.model.on("change:value", selectedGeneIdsChanged, this);
+      setTimeout(() => {
+        let expression_data = PapaParse.parse(
+          this.model.get("expression_data"),
           {
-            targets,
-            createdCell: function (td, cellData, rowData, row, col) {
-              if (Number.isFinite(cellData)) {
-                let strength = cellData / maxExpressionValue;
-                let color = highlightColor
-                  .map(
-                    (x, i) => x * strength + defaultColor[i] * (1 - strength)
-                  )
-                  .join(",");
-                $(td).css("background-color", `rgb(${color})`);
-              }
-            },
+            skipEmptyLines: true,
+          }
+        ).data;
+        let headers = expression_data[0];
+        expression_data = expression_data.slice(1);
+        let filter_key = this.model.get("filter_key");
+        let expressionColumnsIndex =
+          parseInt(this.model.get("expression_columns_index")) || 4;
+        maxExpressionValue = 0;
+        for (let row of expression_data) {
+          for (let i = expressionColumnsIndex; i < row.length; i++) {
+            let val = parseFloat(row[i]);
+            if (Number.isNaN(val)) continue;
+            row[i] = val;
+            maxExpressionValue = Math.max(maxExpressionValue, val);
+          }
+        }
+        let targets = Array.from(
+          {
+            length: headers.length - expressionColumnsIndex,
           },
-        ],
-      });
+          (_, i) => i + expressionColumnsIndex
+        );
+        searchColumnIndex = headers.indexOf(filter_key);
+        if (searchColumnIndex == -1) searchColumnIndex = 0;
+        const highlightColor = [131, 146, 219];
+        const defaultColor = [250, 250, 255];
+        table = $("#heatmap-div").DataTable({
+          data: expression_data,
+          columns: headers.map((x) => ({ title: x })),
+          columnDefs: [
+            {
+              targets,
+              createdCell: function (td, cellData, _, _, _) {
+                if (Number.isFinite(cellData)) {
+                  let strength = cellData / maxExpressionValue;
+                  let color = highlightColor
+                    .map(
+                      (x, i) => x * strength + defaultColor[i] * (1 - strength)
+                    )
+                    .join(",");
+                  $(td).css("background-color", `rgb(${color})`);
+                }
+              },
+            },
+          ],
+        });
+        // Hide loading spinner
+        $(this.el).find(".loader-text").remove();
+      }, 10);
     },
 
     render: function () {
