@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Pathway xmlns="http://pathvisio.org/GPML/2013a" Name="test_pathway" Version="20240627" Organism="Drosophila melanogaster">
+  <BiopaxRef>f1b</BiopaxRef>
+  <BiopaxRef>ce9</BiopaxRef>
+  <Graphics BoardWidth="1248.3333333333342" BoardHeight="1239.833333333334" />
+  <DataNode TextLabel="3-oxoecdysteroid 3beta-reductase" GraphId="b5431" Type="GeneProduct">
+    <Graphics CenterX="738.666666666667" CenterY="427.9" Width="200.0" Height="25.0" ZOrder="32768" FontSize="12" Valign="Middle" />
+    <Xref Database="" ID="" />
+  </DataNode>
+  <DataNode TextLabel="20,26-Dihydroxyecdysone" GraphId="d14fc" Type="Metabolite">
+    <Graphics CenterX="992.6666666666665" CenterY="1197.0000000000023" Width="200.0" Height="25.0" ZOrder="32768" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="HMDB" ID="HMDB0245570" />
+  </DataNode>
+  <DataNode TextLabel="Cyp315a1" GraphId="b3ff8" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333334" CenterY="814.667" Width="90.0" Height="25.0" ZOrder="32770" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100127120" />
+  </DataNode>
+  <DataNode TextLabel="3-dehydroecdysone" GraphId="fd20f" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="1094.6666666666642" Width="200.0" Height="25.0" ZOrder="32772" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:17058" />
+  </DataNode>
+  <DataNode TextLabel="3-dehydroecdysone" GraphId="d3cd6" Type="Metabolite">
+    <Graphics CenterX="1035.999999999999" CenterY="889.3333333333316" Width="200.0" Height="25.0" ZOrder="32774" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:17058" />
+  </DataNode>
+  <DataNode TextLabel="2,22,25-Trideoxyecdysone" GraphId="dab9c" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="515.9999999999995" Width="200.0" Height="25.0" ZOrder="32776" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:19290" />
+  </DataNode>
+  <DataNode TextLabel="Cyp18a1" GraphId="a1382" Type="GeneProduct">
+    <Graphics CenterX="1082.666666666668" CenterY="1138.1" Width="90.0" Height="25.0" ZOrder="32778" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100036578" />
+  </DataNode>
+  <DataNode TextLabel="Eck" GraphId="d83f7" Type="GeneProduct">
+    <Graphics CenterX="369.9999999999998" CenterY="1035.0" Width="90.0" Height="25.0" ZOrder="32780" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="751080" />
+  </DataNode>
+  <DataNode TextLabel="Nvd" GraphId="d7f30" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333331" CenterY="153.167" Width="90.0" Height="25.0" ZOrder="32782" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="733067" />
+  </DataNode>
+  <DataNode TextLabel="LOC100862709&#xA;(3-dehydroecdysone 3alpha-reductase)" GraphId="cb5ee" Type="GeneProduct">
+    <Graphics CenterX="740.0" CenterY="1138.233" Width="225.0" Height="35.0" ZOrder="32784" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100862709" />
+  </DataNode>
+  <DataNode TextLabel="Diketol" GraphId="f4857" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="365.0" Width="90.0" Height="25.0" ZOrder="32786" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:80541" />
+  </DataNode>
+  <DataNode TextLabel="Cyp314a1" GraphId="d2c8d" Type="GeneProduct">
+    <Graphics CenterX="1082.666666666668" CenterY="1025.333" Width="90.0" Height="25.0" ZOrder="32788" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100127102" />
+  </DataNode>
+  <DataNode TextLabel="2-deoxyecdysone" GraphId="bc470" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="758.6666666666666" Width="200.0" Height="25.0" ZOrder="32790" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:19566" />
+  </DataNode>
+  <DataNode TextLabel="20-hydroxyecdysone" GraphId="fc723" Type="Metabolite">
+    <Graphics CenterX="992.6666666666665" CenterY="1094.6666666666642" Width="200.0" Height="25.0" ZOrder="32792" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:16587" />
+  </DataNode>
+  <DataNode TextLabel="ecdysone" GraphId="b0512" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="992.6666666666665" Width="90.0" Height="25.0" ZOrder="32794" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:16688" />
+  </DataNode>
+  <DataNode TextLabel="cholesterol" GraphId="d52aa" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="111.99999999999993" Width="90.0" Height="25.0" ZOrder="32796" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:16113" />
+  </DataNode>
+  <DataNode TextLabel="7-dehydrocholesterol" GraphId="dd8ef" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="208.66666666666683" Width="120.0" Height="25.0" ZOrder="32800" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:17759" />
+  </DataNode>
+  <DataNode TextLabel="LOC101736392&#xA;(ecdysone oxidase)" GraphId="b39ca" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333334" CenterY="1035.967" Width="120.0" Height="35.0" ZOrder="32802" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="101736392" />
+  </DataNode>
+  <DataNode TextLabel="3-Epiecdysone" GraphId="f4bd4" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="1197.333333333334" Width="200.0" Height="25.0" ZOrder="32804" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="Wikidata" ID="Q27149575" />
+  </DataNode>
+  <DataNode TextLabel="delta4-diketol" GraphId="f14ba" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="298.6666666666671" Width="90.0" Height="25.0" ZOrder="32806" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="PubChem-substance" ID="242081911" />
+  </DataNode>
+  <DataNode TextLabel="2,22-Dideoxy-3-dehydroecdysone" GraphId="a23d6" Type="Metabolite">
+    <Graphics CenterX="1035.999999999999" CenterY="636.0" Width="200.0" Height="25.0" ZOrder="32808" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="Wikidata" ID="Q27149577" />
+  </DataNode>
+  <DataNode TextLabel="LOC101735876&#xA;(aldo-keto reductase AKR2E4-like)" GraphId="eb06a" Type="GeneProduct">
+    <Graphics CenterX="749.3333333333329" CenterY="954.259" Width="190.0" Height="35.0" ZOrder="32812" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="101735876" />
+  </DataNode>
+  <DataNode TextLabel="Cyp302a1" GraphId="f1707" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333333" CenterY="687.567" Width="90.0" Height="25.0" ZOrder="32814" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="692499" />
+  </DataNode>
+  <DataNode TextLabel="3-Dehydro-2-deoxyecdysone" GraphId="e7ace" Type="Metabolite">
+    <Graphics CenterX="1035.999999999999" CenterY="758.6666666666666" Width="200.0" Height="25.0" ZOrder="32816" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="Wikidata" ID="Q27149576" />
+  </DataNode>
+  <DataNode TextLabel="Cyp306a1" GraphId="f146e" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333331" CenterY="566.5" Width="90.0" Height="25.0" ZOrder="32818" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100127116" />
+  </DataNode>
+  <DataNode TextLabel="2,22-dideoxyecdysone" GraphId="d96b0" Type="Metabolite">
+    <Graphics CenterX="584.0" CenterY="636.0" Width="200.0" Height="25.0" ZOrder="32820" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="ChEBI" ID="CHEBI:80530" />
+  </DataNode>
+  <DataNode TextLabel="Ecdysteroid 22-phosphate" GraphId="eb550" Type="Metabolite">
+    <Graphics CenterX="287.3333333333333" CenterY="1094.6666666666642" Width="200.0" Height="25.0" ZOrder="32822" FontSize="12" Valign="Middle" Color="0000ff" />
+    <Xref Database="PubChem-substance" ID="405236395" />
+  </DataNode>
+  <DataNode TextLabel="Cyp307a1" GraphId="b30ca" Type="GeneProduct">
+    <Graphics CenterX="685.3333333333331" CenterY="247.167" Width="90.0" Height="25.0" ZOrder="32824" FontSize="12" Valign="Middle" />
+    <Xref Database="Entrez Gene" ID="100127052" />
+  </DataNode>
+  <Interaction GraphId="id266a5c88">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="638.666666666667" Y="427.9" GraphRef="b5431" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="427.8999999999998" GraphRef="c4385" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id315db613">
+    <Graphics ZOrder="12288" LineThickness="1.0">
+      <Point X="1035.999999999999" Y="771.1666666666666" GraphRef="e7ace" RelX="0.0" RelY="1.0" />
+      <Point X="1035.999999999999" Y="876.8333333333316" GraphRef="d3cd6" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.41900311526480055" Shape="None" GraphId="a7cbc" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id31a12bce">
+    <Graphics ZOrder="12290" LineThickness="1.0">
+      <Point X="584.0" Y="1107.1666666666642" GraphRef="fd20f" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="1184.833333333334" GraphRef="f4bd4" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="c39be" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id656b1f4">
+    <Graphics ZOrder="12292" LineThickness="1.0">
+      <Point X="992.6666666666665" Y="1107.1666666666642" GraphRef="fc723" RelX="0.0" RelY="1.0" />
+      <Point X="992.6666666666665" Y="1184.5000000000023" GraphRef="d14fc" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="d5770" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id8228693">
+    <Graphics ZOrder="12294" LineThickness="1.0">
+      <Point X="625.3333333333334" Y="1035.967" GraphRef="b39ca" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="1035.9666666666656" GraphRef="f3d4b" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id4880ef82">
+    <Graphics ZOrder="12296" LineThickness="1.0">
+      <Point X="584.0" Y="221.16666666666683" GraphRef="dd8ef" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="286.1666666666671" GraphRef="f14ba" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="bd70a" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idf0b1904b">
+    <Graphics ZOrder="12298" LineThickness="1.0">
+      <Point X="640.3333333333331" Y="153.167" GraphRef="d7f30" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="153.16666666666669" GraphRef="e153d" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idf352b67e">
+    <Graphics ZOrder="12300" LineThickness="1.0">
+      <Point X="640.3333333333331" Y="566.5" GraphRef="f146e" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="566.4999999999998" GraphRef="fb8b2" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idef38f2ea">
+    <Graphics ZOrder="12302" LineThickness="1.0">
+      <Point X="640.3333333333331" Y="247.16700000000003" GraphRef="b30ca" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="247.16666666666694" GraphRef="bd70a" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idbcbf2920">
+    <Graphics ZOrder="12304" LineThickness="1.0">
+      <Point X="1037.666666666668" Y="1138.1" GraphRef="a1382" RelX="-1.0" RelY="0.0" />
+      <Point X="992.6666666666665" Y="1138.0999999999995" GraphRef="d5770" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id66d6ae2f">
+    <Graphics ZOrder="12306" LineThickness="1.0">
+      <Point X="584.0" Y="648.5" GraphRef="d96b0" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="746.1666666666666" GraphRef="bc470" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="d4435" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id483013e4">
+    <Graphics ZOrder="12308" LineThickness="1.0">
+      <Point X="730.3333333333334" Y="814.667" GraphRef="b3ff8" RelX="1.0" RelY="0.0" />
+      <Point X="1035.999999999999" Y="815.4413291796465" GraphRef="a7cbc" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id517c5bb6">
+    <Graphics ZOrder="12310" LineThickness="1.0">
+      <Point X="627.5" Y="1138.233" GraphRef="cb5ee" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="1138.2333333333322" GraphRef="c39be" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idff5c7934">
+    <Graphics ZOrder="12312" LineThickness="1.0">
+      <Point X="730.3333333333333" Y="687.567" GraphRef="f1707" RelX="1.0" RelY="0.0" />
+      <Point X="1035.999999999999" Y="687.5666666666666" GraphRef="ca6b4" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id5be1827b">
+    <Graphics ZOrder="12314" LineThickness="1.0">
+      <Point X="1035.999999999999" Y="648.5" GraphRef="a23d6" RelX="0.0" RelY="1.0" />
+      <Point X="1035.999999999999" Y="746.1666666666666" GraphRef="e7ace" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="ca6b4" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id6a275f1e">
+    <Graphics ZOrder="12316" LineThickness="1.0">
+      <Point X="584.0" Y="124.49999999999993" GraphRef="d52aa" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="196.16666666666683" GraphRef="dd8ef" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="e153d" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id1f62c0b8">
+    <Graphics ZOrder="12318" LineThickness="1.0">
+      <Point X="640.3333333333333" Y="687.567" GraphRef="f1707" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="687.5666666666666" GraphRef="d4435" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id2d9d91df">
+    <Graphics ZOrder="12320" LineThickness="1.0">
+      <Point X="584.0" Y="377.5" GraphRef="f4857" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="503.49999999999955" GraphRef="dab9c" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="c4385" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id4510dc2d">
+    <Graphics ZOrder="12322" LineThickness="1.0">
+      <Point X="584.0" Y="528.4999999999995" GraphRef="dab9c" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="623.5" GraphRef="d96b0" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="fb8b2" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="iddc12792b">
+    <Graphics ZOrder="12324" LineThickness="1.0">
+      <Point X="640.3333333333334" Y="814.667" GraphRef="b3ff8" RelX="-1.0" RelY="0.0" />
+      <Point X="584.0" Y="814.6666666666666" GraphRef="e4a56" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id6c4ba32c">
+    <Graphics ZOrder="12326" LineThickness="1.0">
+      <Point X="584.0" Y="1005.1666666666665" GraphRef="b0512" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="1082.1666666666642" GraphRef="fd20f" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.4" Shape="None" GraphId="f3d4b" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idca35b511">
+    <Graphics ConnectorType="Elbow" ZOrder="12328" LineThickness="1.0">
+      <Point X="629.0" Y="992.6666666666665" GraphRef="b0512" RelX="1.0" RelY="0.0" />
+      <Point X="992.6666666666665" Y="1082.1666666666642" GraphRef="fc723" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.8745862449429983" Shape="None" GraphId="a2a1b" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id5cc3fe3e">
+    <Graphics ConnectorType="Elbow" ZOrder="12330" LineThickness="1.0">
+      <Point X="629.0" Y="365.0" GraphRef="f4857" RelX="1.0" RelY="0.0" />
+      <Point X="1035.999999999999" Y="623.5" GraphRef="a23d6" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.9186075632356624" Shape="None" GraphId="c6fe0" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id9df23bcc">
+    <Graphics ConnectorType="Elbow" ZOrder="12332" LineThickness="1.0">
+      <Point X="539.0" Y="992.6666666666665" GraphRef="b0512" RelX="-1.0" RelY="0.0" />
+      <Point X="287.3333333333333" Y="1082.1666666666642" GraphRef="eb550" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.8617489008304898" Shape="None" GraphId="c01e3" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idb30d14ca">
+    <Graphics ConnectorType="Elbow" ZOrder="12334" LineThickness="1.0">
+      <Point X="1035.999999999999" Y="901.8333333333316" GraphRef="d3cd6" RelX="0.0" RelY="1.0" />
+      <Point X="606.5" Y="980.1666666666665" GraphRef="b0512" RelX="0.5" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.9489829943314442" Shape="None" GraphId="dd576" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id322f5df9">
+    <Graphics ZOrder="12336" LineThickness="1.0">
+      <Point X="584.0" Y="311.1666666666671" GraphRef="f14ba" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="352.5" GraphRef="f4857" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id6c18ab7f">
+    <Graphics ZOrder="12338" LineThickness="1.0">
+      <Point X="730.3333333333331" Y="566.5" GraphRef="f146e" RelX="1.0" RelY="0.0" />
+      <Point X="1035.999999999999" Y="569.3333333333334" GraphRef="c6fe0" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idb094b8f1">
+    <Graphics ZOrder="12340" LineThickness="1.0">
+      <Point X="654.3333333333329" Y="954.259" GraphRef="eb06a" RelX="-1.0" RelY="0.0" />
+      <Point X="606.5" Y="954.2585306213182" GraphRef="dd576" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idb156c439">
+    <Graphics ZOrder="12342" LineThickness="1.0">
+      <Point X="584.0" Y="771.1666666666666" GraphRef="bc470" RelX="0.0" RelY="1.0" />
+      <Point X="584.0" Y="980.1666666666665" GraphRef="b0512" RelX="0.0" RelY="-1.0" ArrowHead="mim-conversion" />
+      <Anchor Position="0.20813397129186614" Shape="None" GraphId="e4a56" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="idde339fd0">
+    <Graphics ZOrder="12344" LineThickness="1.0">
+      <Point X="324.9999999999998" Y="1035.0" GraphRef="d83f7" RelX="-1.0" RelY="0.0" />
+      <Point X="287.3333333333333" Y="1035.0" GraphRef="c01e3" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <Interaction GraphId="id8f643f3b">
+    <Graphics ZOrder="12346" LineThickness="1.0">
+      <Point X="1037.666666666668" Y="1025.333" GraphRef="d2c8d" RelX="-1.0" RelY="0.0" />
+      <Point X="992.6666666666665" Y="1025.3333333333333" GraphRef="a2a1b" RelX="0.0" RelY="0.0" ArrowHead="mim-catalysis" />
+    </Graphics>
+    <Xref Database="" ID="" />
+  </Interaction>
+  <InfoBox CenterX="0.0" CenterY="0.0" />
+  <Biopax>
+    <bp:PublicationXref xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:id="f1b">
+      <bp:ID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27875986</bp:ID>
+      <bp:DB rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PubMed</bp:DB>
+      <bp:TITLE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The retardant effect of 2-Tridecanone, mediated by Cytochrome P450, on the Development of Cotton bollworm, Helicoverpa armigera.</bp:TITLE>
+      <bp:SOURCE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BMC Genomics</bp:SOURCE>
+      <bp:YEAR rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2016</bp:YEAR>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zhang L</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lu Y</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xiang M</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shang Q</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gao X</bp:AUTHORS>
+    </bp:PublicationXref>
+    <bp:PublicationXref xmlns:bp="http://www.biopax.org/release/biopax-level3.owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" rdf:id="ce9">
+      <bp:ID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28893182</bp:ID>
+      <bp:DB rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PubMed</bp:DB>
+      <bp:TITLE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The dynamic landscape of gene regulation during Bombyx mori oogenesis.</bp:TITLE>
+      <bp:SOURCE rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BMC Genomics</bp:SOURCE>
+      <bp:YEAR rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2017</bp:YEAR>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zhang Q</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sun W</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sun BY</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Xiao Y</bp:AUTHORS>
+      <bp:AUTHORS rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zhang Z</bp:AUTHORS>
+    </bp:PublicationXref>
+  </Biopax>
+</Pathway>
+
