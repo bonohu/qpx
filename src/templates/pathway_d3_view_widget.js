@@ -674,7 +674,23 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       if (networkCreationTimer) {
         clearTimeout(networkCreationTimer);
       }
-      networkCreationTimer = setTimeout(() => view.createNetwork(), 500);
+      networkCreationTimer = setTimeout(() => {
+        view.createNetwork();
+        let button = document.createElement("button");
+        button.innerHTML = "Download SVG";
+        button.onclick = function () {
+          let svg = document.getElementById("svg2");
+          let svgData = new XMLSerializer().serializeToString(svg);
+          let svgBlob = new Blob([svgData], { type: "image/svg+xml" });
+          let svgUrl = URL.createObjectURL(svgBlob);
+          let downloadLink = document.createElement("a");
+          downloadLink.href = svgUrl;
+          downloadLink.download = "pathway.svg";
+          downloadLink.click();
+          URL.revokeObjectURL(svgUrl);
+        };
+        view.$el.append(button);
+      }, 500);
     },
   });
 
