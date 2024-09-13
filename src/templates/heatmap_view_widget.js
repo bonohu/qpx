@@ -165,7 +165,7 @@ define("heatmap_view_widget", [
           ],
           buttons: [
             {
-              text: "PNG",
+              text: "Download Table as PNG",
               action: function (e, dt, node, config) {
                 html2canvas(document.getElementById("heatmap-div"), {
                   scale: 2, // 解像度を高めに保つ
@@ -180,7 +180,7 @@ define("heatmap_view_widget", [
             },
           ],
           layout: {
-            topStart: "buttons",
+            bottomStart: "buttons",
           },
         });
         // Hide loading spinner

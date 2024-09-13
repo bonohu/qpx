@@ -89,18 +89,19 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
             .attr("stroke", "gray")
             .attr("stroke-width", 1);
         } else {
-        let range = nodeGroups[group.GroupId];
-        graphic
-          .append("rect")
-          .attr("class", "group-rect")
-          .attr("x", range.minX - groupMargin)
-          .attr("y", range.minY - groupMargin)
-          .attr("width", range.maxX - range.minX + groupMargin * 2)
-          .attr("height", range.maxY - range.minY + groupMargin * 2)
-          .attr("fill", "#f6f6ee")
-          .attr("stroke", "gray")
-          .attr("stroke-width", 1)
-          .attr("stroke-dasharray", "5,5");
+          let range = nodeGroups[group.GroupId];
+          graphic
+            .append("rect")
+            .attr("class", "group-rect")
+            .attr("x", range.minX - groupMargin)
+            .attr("y", range.minY - groupMargin)
+            .attr("width", range.maxX - range.minX + groupMargin * 2)
+            .attr("height", range.maxY - range.minY + groupMargin * 2)
+            .attr("fill", "#f6f6ee")
+            .attr("stroke", "gray")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "5,5");
+        }
       }
     }
   }
@@ -195,53 +196,196 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     const refY = markerBoxSize * refYFactor;
 
     links.forEach((link) => {
-      link.pointsAfterOffset = [
-        {
-          X: link.points[0].X + link.points[0].RelX,
-          Y: link.points[0].Y + link.points[0].RelY,
-        },
-        {
-          X: link.points[1].X + link.points[1].RelX,
-          Y: link.points[1].Y + link.points[1].RelY,
-        },
-      ];
+      link.pointsAfterOffset = link.points.map((point) => {
+        return {
+          X: point.X + point.RelX,
+          Y: point.Y + point.RelY,
+        };
+      });
       if (
         link.points[0].ArrowHead === "mim-inhibition" ||
-        link.points[1].ArrowHead === "mim-inhibition"
+        link.points[link.points.length - 1].ArrowHead === "mim-inhibition"
       ) {
         let length = Math.sqrt(
-          Math.pow(link.points[1].X - link.points[0].X, 2) +
-            Math.pow(link.points[1].Y - link.points[0].Y, 2)
+          Math.pow(
+            link.points[link.points.length - 1].X - link.points[0].X,
+            2
+          ) +
+            Math.pow(
+              link.points[link.points.length - 1].Y - link.points[0].Y,
+              2
+            )
         );
-        let cosine = (link.points[1].X - link.points[0].X) / length;
-        let sine = (link.points[1].Y - link.points[0].Y) / length;
+        let cosine =
+          (link.points[link.points.length - 1].X - link.points[0].X) / length;
+        let sine =
+          (link.points[link.points.length - 1].Y - link.points[0].Y) / length;
 
         if (link.points[0].ArrowHead === "mim-inhibition") {
           link.pointsAfterOffset[0].X += (cosine * markerBoxSize) / 2;
           link.pointsAfterOffset[0].Y += (sine * markerBoxSize) / 2;
         } else {
-          link.pointsAfterOffset[1].X -= (cosine * markerBoxSize) / 2;
-          link.pointsAfterOffset[1].Y -= (sine * markerBoxSize) / 2;
+          link.pointsAfterOffset[link.points.length - 1].X -=
+            (cosine * markerBoxSize) / 2;
+          link.pointsAfterOffset[link.points.length - 1].Y -=
+            (sine * markerBoxSize) / 2;
         }
       }
     });
+
+    function connectionSide(relX, relY) {
+      if (relX === null && relY === null) {
+        return null;
+      }
+      if (Math.abs(relX) > Math.abs(relY)) {
+        if (relX > 0) {
+          return "east";
+        } else {
+          return "west";
+        }
+      } else {
+        if (relY > 0) {
+          return "south";
+        } else {
+          return "north";
+        }
+      }
+    }
+
+    function calculateWayPoints(connectionPoints) {
+      let wayPoints = [];
+      const SEGMENT_OFFSET = 20; // 中継点のオフセット
+      console.log(connectionPoints);
+      let previousHorizontal = false;
+      for (let i = 0; i < connectionPoints.length - 1; i++) {
+        let point1 = connectionPoints[i];
+        let point2 = connectionPoints[i + 1];
+        let side1 = connectionSide(point1.RelX, point1.RelY);
+        let side2 = connectionSide(point2.RelX, point2.RelY);
+
+        let horizontal1 = side1 === "west" || side1 === "east";
+        let horizontal2 = side2 === "west" || side2 === "east";
+        wayPoints.push(point1);
+
+        if (side1 === null) {
+          // RelXやRelYから方向が決定できない場合
+          if (!previousHorizontal) {
+            // 直前と垂直な方向に曲げる
+            wayPoints.push({
+              X: point2.X,
+              Y: point1.Y,
+            });
+            previousHorizontal = true;
+          } else {
+            wayPoints.push({
+              X: point1.X,
+              Y: point2.Y,
+            });
+            previousHorizontal = false;
+          }
+        } else {
+          previousHorizontal = horizontal1;
+          if ((horizontal1 && horizontal2) || (!horizontal1 && !horizontal2)) {
+            // 中継点を挟む場合
+            if (horizontal1) {
+              wayPoints.push({
+                X:
+                  point1.X +
+                  SEGMENT_OFFSET * (point2.X - point1.X > 0 ? 1 : -1),
+                Y: point1.Y,
+              });
+              wayPoints.push({
+                X:
+                  point1.X +
+                  SEGMENT_OFFSET * (point2.X - point1.X > 0 ? 1 : -1),
+                Y: point2.Y,
+              });
+            } else {
+              wayPoints.push({
+                X: point1.X,
+                Y:
+                  point1.Y +
+                  SEGMENT_OFFSET * (point2.Y - point1.Y > 0 ? 1 : -1),
+              });
+              wayPoints.push({
+                X: point2.X,
+                Y:
+                  point1.Y +
+                  SEGMENT_OFFSET * (point2.Y - point1.Y > 0 ? 1 : -1),
+              });
+            }
+          } else {
+            // シンプルなL字型
+            if (horizontal1) {
+              wayPoints.push({
+                X: point2.X,
+                Y: point1.Y,
+              });
+            } else {
+              wayPoints.push({
+                X: point1.X,
+                Y: point2.Y,
+              });
+            }
+          }
+        }
+      }
+      wayPoints.push(connectionPoints[connectionPoints.length - 1]);
+      return wayPoints;
+    }
+
+    function drawLine(
+      d3Selector,
+      point1,
+      point2,
+      lineStyle,
+      startArrowHeadType,
+      endArrowHeadType
+    ) {
+      d3Selector
+        .append("line")
+        .attr("x1", point1.X)
+        .attr("y1", point1.Y)
+        .attr("x2", point2.X)
+        .attr("y2", point2.Y)
+        .attr("stroke", "black")
+        .attr("marker-start", startArrowHeadType)
+        .attr("marker-end", endArrowHeadType)
+        .attr("stroke-dasharray", lineStyle === "Broken" ? "5,5" : null)
+        .attr("fill", "none");
+    }
 
     svg
       .selectAll("line")
       .data(links)
       .enter()
-      .append("line")
-      .attr("x1", (d) => d.pointsAfterOffset[0].X)
-      .attr("y1", (d) => d.pointsAfterOffset[0].Y)
-      .attr("x2", (d) => d.pointsAfterOffset[1].X)
-      .attr("y2", (d) => d.pointsAfterOffset[1].Y)
-      .attr("stroke", "black")
-      .attr("marker-start", (d) => arrowHeadType(d.points[0].ArrowHead))
-      .attr("marker-end", (d) => arrowHeadType(d.points[1].ArrowHead))
-      .attr("stroke-dasharray", (d) =>
-        d.Graphics?.LineStyle === "Broken" ? "5,5" : null
-      )
-      .attr("fill", "none");
+      .each(function (d) {
+        if (d.Graphics?.ConnectorType === "Elbow") {
+          let wayPoints = calculateWayPoints(d.points);
+          console.log({ wayPoints });
+          for (let i = 0; i < wayPoints.length - 1; i++) {
+            drawLine(
+              d3.select(this),
+              wayPoints[i],
+              wayPoints[i + 1],
+              d.Graphics?.LineStyle,
+              arrowHeadType(wayPoints[i].ArrowHead),
+              arrowHeadType(wayPoints[i + 1].ArrowHead)
+            );
+          }
+        } else {
+          for (let i = 0; i < d.pointsAfterOffset.length - 1; i++) {
+            drawLine(
+              d3.select(this),
+              d.pointsAfterOffset[i],
+              d.pointsAfterOffset[i + 1],
+              d.Graphics?.LineStyle,
+              arrowHeadType(d.points[i].ArrowHead),
+              arrowHeadType(d.points[i + 1].ArrowHead)
+            );
+          }
+        }
+      });
 
     addMarkers(svg, markerBoxSize, refX, refY);
   }
@@ -677,7 +821,7 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       networkCreationTimer = setTimeout(() => {
         view.createNetwork();
         let button = document.createElement("button");
-        button.innerHTML = "Download SVG";
+        button.innerHTML = "Download Pathway as SVG";
         button.onclick = function () {
           let svg = document.getElementById("svg2");
           let svgData = new XMLSerializer().serializeToString(svg);
