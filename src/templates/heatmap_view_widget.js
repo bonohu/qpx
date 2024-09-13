@@ -59,6 +59,8 @@ for (var i = 0; i < extensions.length; i++) {
 paths["papaparse"] =
   "https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min";
 
+paths["html2canvas"] = "https://html2canvas.hertzen.com/dist/html2canvas.min";
+
 require.config({
   paths,
 });
@@ -71,7 +73,8 @@ define("heatmap_view_widget", [
   "datatables.net-dt",
   "datatables.net-buttons",
   "papaparse",
-], function (widgets, _, _, _, PapaParse) {
+  "html2canvas",
+], function (widgets, _, _, _, PapaParse, html2canvas) {
   let selectedGeneIds = [];
   let table = null;
   let searchColumnIndex = 0;
@@ -160,6 +163,25 @@ define("heatmap_view_widget", [
               },
             },
           ],
+          buttons: [
+            {
+              text: "PNG",
+              action: function (e, dt, node, config) {
+                html2canvas(document.getElementById("heatmap-div"), {
+                  scale: 2, // 解像度を高めに保つ
+                }).then(function (canvas) {
+                  var img = canvas.toDataURL("image/png");
+                  var a = document.createElement("a");
+                  a.href = img;
+                  a.download = "heatmap_table.png";
+                  a.click();
+                });
+              },
+            },
+          ],
+          layout: {
+            topStart: "buttons",
+          },
         });
         // Hide loading spinner
         $(this.el).find(".loader-text").remove();
