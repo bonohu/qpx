@@ -88,7 +88,7 @@ class GpmlParser:
 
             graphics = interaction.find('gpml:Graphics', namespace)
             if graphics is not None:
-                interaction_attributes = ["LineStyle"]
+                interaction_attributes = ["LineStyle", "ConnectorType"]
                 for attr in interaction_attributes:
                     interaction_data['Graphics'][attr] = case_insensitive_get(graphics, attr)
 
