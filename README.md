@@ -65,7 +65,19 @@ $ conda install polars
 
 1. パスウェイダイアグラム
 2. 遺伝子情報テーブル（発現量含む）
-   ![gpml_d3_visualizer](images/gpml_d3_visualizer.png)
+
+   - 発現量部分はヒートマップとしての色がつくようになっているが、この色を変更したい場合は
+     `heatmap_view_widget.js` の以下の RGB 値を変更すればよい。
+
+   ```
+         const highlightColor = [131, 146, 219];
+         const defaultColor = [250, 250, 255];
+   ```
+
+   - ヒートマップの色は、発現量の値に応じて、`defaultColor` から `highlightColor` に向かって変化するようになっている。
+
+GpmlD3Visualizer のスクリーンショット：
+![gpml_d3_visualizer](images/gpml_d3_visualizer.png)
 
 ### GeneSearchForm
 
