@@ -10,10 +10,3 @@ services:
       - 8888:8888
     volumes:
       - ".:/home/jovyan/work"
-
-  selenium:
-    image: selenium/standalone-chrome
-    shm_size: 2gb
-    ports:
-      - "4444:4444"
-      - "7900:7900"

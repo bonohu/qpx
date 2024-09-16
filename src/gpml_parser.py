@@ -88,7 +88,7 @@ class GpmlParser:
 
             graphics = interaction.find('gpml:Graphics', namespace)
             if graphics is not None:
-                interaction_attributes = ["LineStyle"]
+                interaction_attributes = ["LineStyle", "ConnectorType"]
                 for attr in interaction_attributes:
                     interaction_data['Graphics'][attr] = case_insensitive_get(graphics, attr)
 
@@ -110,7 +110,9 @@ class GpmlParser:
 
         # Groupタグからグループ情報を抽出
         for group in root.findall('gpml:Group', namespace):
-            group_data = {'GroupId': case_insensitive_get(group, 'GroupId')}
+            group_data = {'GroupId': case_insensitive_get(group, 'GroupId'),
+                          'Style': case_insensitive_get(group, 'Style'),
+                          }
             parsed_data['groups'].append(group_data)
 
         for shape in root.findall('gpml:Shape', namespace):

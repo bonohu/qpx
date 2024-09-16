@@ -2,7 +2,7 @@
 
 Jupyter notebook で WikiPathways のパスウェイと選択したノードの属性テーブルを表示するツールです。
 
-qp_view.ipynb を Jupyter notebook 環境で開いて利用します。
+qpx.ipynb を Jupyter notebook 環境で開いて利用します。
 
 ## memo
 
@@ -61,12 +61,23 @@ $ conda install polars
 
 ### GpmlD3Visualizer
 
-- 可視化のメインとなるコンポーネントであり、以下の３つの要素から構成される
+- 可視化のメインとなるコンポーネントであり、以下の２つの要素から構成される
 
 1. パスウェイダイアグラム
-2. 遺伝子情報テーブル
-3. 発現量テーブル
-   ![gpml_d3_visualizer](images/gpml_d3_visualizer.png)
+2. 遺伝子情報テーブル（発現量含む）
+
+   - 発現量部分はヒートマップとしての色がつくようになっているが、この色を変更したい場合は
+     `heatmap_view_widget.js` の以下の RGB 値を変更すればよい。
+
+   ```
+         const highlightColor = [131, 146, 219];
+         const defaultColor = [250, 250, 255];
+   ```
+
+   - ヒートマップの色は、発現量の値に応じて、`defaultColor` から `highlightColor` に向かって変化するようになっている。
+
+GpmlD3Visualizer のスクリーンショット：
+![gpml_d3_visualizer](images/gpml_d3_visualizer.png)
 
 ### GeneSearchForm
 
@@ -78,5 +89,3 @@ $ conda install polars
 # Todo
 
 - conda 環境でノード選択時に table が表示されない不具合の解消
-- 複数のノードの選択（フィルターとする遺伝子を複数選択できるような UI）
-- データテーブルのソースも選択できるようにすると便利？（複数のパスウェイを扱うケースが多いかまだよくわからない）
