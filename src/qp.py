@@ -119,12 +119,9 @@ class GpmlD3Visualizer:
                 selected_expression_data = self.expression_data.filter(pl.col('xref_id').is_in(gids))
             else:
                 selected_expression_data = self.expression_data                
-
-            if selected_expression_data.shape[0] == 0:
-                print("No expression data found")
-                return
             self.selected_expression_data = selected_expression_data
-            self.heatmap_widget.selected_gene_ids = gids
+            self.heatmap_widget.selected_gene_ids = original_gids
+
 
         self.visualizer_widget.observe(on_gene_ids_change, names='value')
         
