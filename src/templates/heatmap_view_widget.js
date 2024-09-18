@@ -78,6 +78,8 @@ define("heatmap_view_widget", [
   let selectedGeneIds = [];
   let table = null;
   let searchColumnIndex = 0;
+  let maxExpressionValue = 0;
+  let globalMaxExpressionValue = 0;
   function selectedGeneIdsChanged() {
     let newSelection = this.model.get("value");
     if (newSelection === undefined) {
@@ -140,6 +142,7 @@ define("heatmap_view_widget", [
           },
           (_, i) => i + expressionColumnsIndex
         );
+        globalMaxExpressionValue = maxExpressionValue;
         searchColumnIndex = headers.indexOf(filter_key);
         if (searchColumnIndex == -1) searchColumnIndex = 0;
         const highlightColor = [131, 146, 219];
@@ -183,6 +186,31 @@ define("heatmap_view_widget", [
             bottomStart: "buttons",
           },
         });
+
+        table.on("search.dt", function () {
+          let searchedRows = table.rows({ search: "applied" }).data();
+
+          let noSearchApplied =
+            searchedRows.length == table.rows().data().length;
+          if (noSearchApplied) {
+            prevSearchedRows = [];
+            maxExpressionValue = globalMaxExpressionValue;
+            return;
+          }
+
+          // recompute maxExpressionValue
+          maxExpressionValue = 0;
+
+          for (let j = 0; j < searchedRows.length; j++) {
+            let row = searchedRows[j];
+            for (let i = expressionColumnsIndex; i < row.length; i++) {
+              let val = parseFloat(row[i]);
+              if (Number.isNaN(val)) continue;
+              maxExpressionValue = Math.max(maxExpressionValue, val);
+            }
+          }
+        });
+
         // Hide loading spinner
         $(this.el).find(".loader-text").remove();
       }, 10);

@@ -255,7 +255,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
     function calculateWayPoints(connectionPoints) {
       let wayPoints = [];
       const SEGMENT_OFFSET = 20; // 中継点のオフセット
-      console.log(connectionPoints);
       let previousHorizontal = false;
       for (let i = 0; i < connectionPoints.length - 1; i++) {
         let point1 = connectionPoints[i];
@@ -362,7 +361,6 @@ define("pathway_d3_view_widget", ["@jupyter-widgets/base", "d3"], function (
       .each(function (d) {
         if (d.Graphics?.ConnectorType === "Elbow") {
           let wayPoints = calculateWayPoints(d.points);
-          console.log({ wayPoints });
           for (let i = 0; i < wayPoints.length - 1; i++) {
             drawLine(
               d3.select(this),
