@@ -16,6 +16,32 @@ qpx.ipynb を Jupyter notebook 環境で開いて利用します。
 - docker および docker-compose がインストールされていること
 - Docker Desktop を起動していること
 
+### プロジェクトデータの配置
+- qpxの実行にはGPMLと発現テーブルの少なくとも二つのファイルが必要です。アプリケーションをビルドする前にこれらのファイルの配置についての設定を記述します。
+
+#### ローカルのファイルを直接アプリケーションに配置する場合
+- GPMLをプロジェクトディレクトリのgpml/の下に置いてください
+- 発現テーブルはgpml/もしくはdata/に置き、notebook起動後にファイルパスを書き換えてください
+
+#### Githubのデータレポジトリを利用する場合
+
+1. qpxローカルレポジトリにcdしqpxレポジトリの中（root）でデータリポジトリをcloneする
+1. qpxのプロジェクトにgpml/ディレクトリが残っている場合元のgpml/をgmpl_bak/等に変更する（削除しても構わない）
+1. docker-compose.ymlのvolumesにデータリポジトリのプロジェクトを以下のようにマッピングする（元の".:/home/jovyan/work"は消さない）。
+
+```
+volumes:
+　- ".:/home/jovyan/work"
+　- "./{data_repo_name}/{project_name}:/home/jovyan/work/gpml"
+```
+
+1. notebookを起動したら発現データのファイルパスを以下のように修正する。
+
+```
+   expression_data_path = "gpml/ファイル名"
+```
+
+
 ### インストール
 
 ```
