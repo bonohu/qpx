@@ -82,31 +82,32 @@ The following two components are both described in `qp.py`.
 
 ### GpmlD3Visualizer
 
-- 可視化のメインとなるコンポーネントであり、以下の２つの要素から構成される
+- The main component of the visualization
+- It consists of the following two elements
 
-1. パスウェイダイアグラム
-2. 遺伝子情報テーブル（発現量含む）
+1. Pathway diagram
+2. Gene information table (including expression levels)
 
-   - 発現量部分はヒートマップとしての色がつくようになっているが、この色を変更したい場合は
-     `heatmap_view_widget.js` の以下の RGB 値を変更すればよい。
+   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `heatmap_view_widget_js`.
 
    ```
          const highlightColor = [131, 146, 219];
          const defaultColor = [250, 250, 255];
    ```
 
-   - ヒートマップの色は、発現量の値に応じて、`defaultColor` から `highlightColor` に向かって変化するようになっている。
+   - The color of the heatmap changes from `defaultColor` to `highlightColor` according to the expression value.
 
-GpmlD3Visualizer のスクリーンショット：
+Screen shot of GpmlD3Visualizer:
 ![gpml_d3_visualizer](images/gpml_d3_visualizer.png)
 
 ### GeneSearchForm
 
-- 遺伝子情報を検索するためのコンポーネント。検索ボックスと遺伝子情報テーブルの２要素から構成される。
-- 初期化時に Gpml3DVisualizer のインスタンスを渡すことで、遺伝子情報テーブル内の行をクリックした際に、Gpml3DVisualizer の対応するノードを選択状態にすることができる。
-- 検索ボックス部分は今後、より柔軟なクエリインターフェースに拡充予定
+- Component for searching gene information
+- It consists of two components: a search box and a gene information table.
+- By passing an instance of Gpml3DVisualizer at initialization, the corresponding node of Gpml3DVisualizer can be made selected when a row in the gene information table is clicked.
+- The search box portion will be expanded to a more flexible query interface in the future.
   ![gene_search_form](images/gene_search_form.png)
 
 # Todo
 
-- conda 環境でノード選択時に table が表示されない不具合の解消
+- Fixed a bug that table is not displayed when selecting a node in Anaconda environment.
