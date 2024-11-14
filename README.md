@@ -8,20 +8,23 @@ Open `qpx.ipynb` in a Jupyter notebook environment and use it.
 ### Prerequisite
 
 - `docker` and `docker-compose` must be installed
-- Docker Desktop must be running.
+- Docker Desktop must be running
 
-### プロジェクトデータの配置
-- qpxの実行にはGPMLと発現テーブルの少なくとも二つのファイルが必要です。アプリケーションをビルドする前にこれらのファイルの配置についての設定を記述します。
+### Deployment of Project Data
 
-#### ローカルのファイルを直接アプリケーションに配置する場合
-- GPMLをプロジェクトディレクトリのgpml/の下に置いてください
-- 発現テーブルはgpml/もしくはdata/に置き、notebook起動後にファイルパスを書き換えてください
+- At least two files (GPML and expression table) are required to run QPX
+- Describe the configuration for the placement of these files before building the application
 
-#### Githubのデータレポジトリを利用する場合
+#### Case1: Place local files directly into the application
 
-1. qpxローカルレポジトリにcdしqpxレポジトリの中（root）でデータリポジトリをcloneする
-1. qpxのプロジェクトにgpml/ディレクトリが残っている場合元のgpml/をgmpl_bak/等に変更する（削除しても構わない）
-1. docker-compose.ymlのvolumesにデータリポジトリのプロジェクトを以下のようにマッピングする（元の".:/home/jovyan/work"は消さない）。
+- Place GPML files under `gpml/` in the project directory
+- Place the expression table in `gpml/` or `data/` and rewrite the file path after starting the notebook
+
+#### Case2: Use GitHub data repository
+
+1. `cd` to qpx local repository and clone the data repository in the qpx repository (root)
+2. If the `gpml/` directory remains in the qpx project, change the original `gpml/` to `gmpl_backup/`, etc (you can delete it)
+3. Map the data repository project to volumes in `docker-compose.yml` as follows (do not delete the original `".:/home/jovyan/work"` is not deleted)
 
 ```
 volumes:
@@ -29,26 +32,24 @@ volumes:
 　- "./{data_repo_name}/{project_name}:/home/jovyan/work/gpml"
 ```
 
-1. notebookを起動したら発現データのファイルパスを以下のように修正する。
+4. After starting Jupyter notebook, modify the file path of the expression data as follows
 
 ```
-   expression_data_path = "gpml/ファイル名"
+   expression_data_path = "gpml/(file name)"
 ```
 
-
-### インストール
+### Installation
 
 ```
 git clone https://github.com/dogrunjp/qpx
 cd qpx
 docker compose up -d
-(最新のDocker Desktopがインストールされている場合docker compose up -d)
 ```
 
-起動後、http://localhost:8888/notebooks/work/qpx.ipynb にアクセスして、各セルを実行することで可視化を行えます。
-可視化対象の GPML ファイルを増やしたい場合は、gpml フォルダの中に、拡張子を「.gpml」にしたファイルを置いてください。
+After launching, you can access http://localhost:8888/notebooks/work/qpx.ipynb and run each cell for visualization.
+If you want to increase the number of GPML files to be visualized, place the files with the extension `.gpml` in `gpml/` directory.
 
-アプリケーションに更新があった場合はローカルレポジトリを更新したあとにコンテナをビルドし直す必要があります。
+If there are updates to the application, the container must be re-built after updating the local repository as follows.
 
 ```
 docker compose down
@@ -56,11 +57,11 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
-### 動作環境についての追記
+### Additional note on operating environment
 
-- qpx は docker compose で起動した jupyter notebook で動作を確認しています。
-- またローカルに構築した conda 環境でも notebook 上のアプリケーションの起動を確認しています（一部の動作に不具合があります）。
-- conda で直接環境を構築する場合は以下の通りに Python とライブラリのバージョンを指定して conda の仮想環境と依存ライブラリのインストールを行なってください。
+- QPX is running on Jupyter Notebook started with docker compose.
+- We have also verified that applications on the notebook start up in a locally built Anaconda environment (some behavior is faulty).
+- If you are building the environment directly with Anaconda, install the Anaconda virtual environment and dependent libraries by specifying Python and library versions as follows.
 
 ```
 $ conda create -n qpx python=3.10
@@ -72,12 +73,12 @@ $ conda install itables
 $ conda install polars
 ```
 
-- conda で構築する環境名は qpx である必要はありません
-- python の version は 3.9 もしくは 3.10 のみ対応しています
+- The name of the environment to be built with Anaconda does not have to be qpx
+- Only python version 3.9 or 3.10 is supported
 
-# 主要コンポーネントについて
+# About Major Components
 
-以下の２コンポーネントは、いずれも `qp.py` に記述されている。
+The following two components are both described in `qp.py`.
 
 ### GpmlD3Visualizer
 
