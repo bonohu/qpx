@@ -1,20 +1,14 @@
-# qpx
+# Quest for Pathways with eXpression (QPX) 
 
-Jupyter notebook で WikiPathways のパスウェイと選択したノードの属性テーブルを表示するツールです。
+Quest for Pathways with eXpression (QPX) is a tool that displays WikiPathways pathways and attribute tables for selected nodes in Jupyter notebook.
+Open `qpx.ipynb` in a Jupyter notebook environment and use it.
 
-qpx.ipynb を Jupyter notebook 環境で開いて利用します。
+## Usage
 
-## memo
+### Prerequisite
 
-- メインの notebook の名前を qpx.ipynb に変更しました。
-- メインの Python ファイルの名前を qp.py に変更しました。
-
-## 使い方
-
-### 前提条件
-
-- docker および docker-compose がインストールされていること
-- Docker Desktop を起動していること
+- `docker` and `docker-compose` must be installed
+- Docker Desktop must be running.
 
 ### プロジェクトデータの配置
 - qpxの実行にはGPMLと発現テーブルの少なくとも二つのファイルが必要です。アプリケーションをビルドする前にこれらのファイルの配置についての設定を記述します。
