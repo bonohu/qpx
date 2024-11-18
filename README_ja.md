@@ -62,26 +62,43 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
-### 動作環境についての追記
+### モジュールを追加し別の可視化や解析を行いたい場合
 
-- qpx は docker compose で起動した jupyter notebook で動作を確認しています。
-- またローカルに構築した conda 環境でも notebook 上のアプリケーションの起動を確認しています（一部の動作に不具合があります）。
-- conda で直接環境を構築する場合は以下の通りに Python とライブラリのバージョンを指定して conda の仮想環境と依存ライブラリのインストールを行なってください。
+qpxでは、選択した遺伝子のテーブルをpolarsのデータフレームとして取得して利用することができます。
+また、新たにモジュールを読み込み選択したテーブルに対する解析手法や可視化手法をnotebookに追加することができます。
+
+PyPIに登録されたPythonのモジュールを利用したい場合
+requirements.txtにモジュールを記述した後にdockerのビルドを行ってください
+
+#### seabornを利用しsubplotsを表示する例
+
+1. アプリケーションのbuild前にrequirements.txtに"seaborn==0.13.2"を追加し、その後docker composeする
+1. notebookを起動したら、記述済みのcellの後に下記のような処理を追加する
 
 ```
-$ conda create -n qpx python=3.10
-$ conda activate qpx
-$ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
-$ conda install ipywidgets=7.6.5
-$ conda install pandas
-$ conda install itables
-$ conda install polars
+import matplotlib.pyplot as plt
+import seaborn as sns
+ids = df["transcript_id"]
+samples = df.columns[3:]
+# polarsはindexが無いためpolarのdataframeもset_indexできない・ややx軸（sample）のラベルを設定するのが面倒
+selected_data = df[:, 3:]
+selected_data = selected_data.transpose(column_names=ids)
+
+fig, axes = plt.subplots(2, 2, sharex=True, figsize=(8,6))
+axes = axes.ravel()
+for i, name in enumerate(ids):
+    sns.barplot(ax=axes[i], data=selected_data[:,i])
+    axes[i].set_title(name)
+    axes[i].xaxis.set_ticklabels(samples)
+    axes[i].tick_params(axis='x', labelrotation=45)
+
+fig.savefig("sample.png")
 ```
 
-- conda で構築する環境名は qpx である必要はありません
-- python の version は 3.9 もしくは 3.10 のみ対応しています
 
-# 主要コンポーネントについて
+
+
+## 主要コンポーネントについて
 
 以下の２コンポーネントは、いずれも `qp.py` に記述されている。
 
@@ -112,6 +129,23 @@ GpmlD3Visualizer のスクリーンショット：
 - 検索ボックス部分は今後、より柔軟なクエリインターフェースに拡充予定
   ![gene_search_form](images/gene_search_form.png)
 
-# Todo
 
-- conda 環境でノード選択時に table が表示されない不具合の解消
+
+## 動作環境についての追記
+
+- qpx は docker compose で起動した jupyter notebook で動作を確認しています。
+- またローカルに構築した conda 環境でも notebook 上のアプリケーションの起動を確認しています（一部の動作に不具合があります）。
+- conda で直接環境を構築する場合は以下の通りに Python とライブラリのバージョンを指定して conda の仮想環境と依存ライブラリのインストールを行なってください。
+
+```
+$ conda create -n qpx python=3.10
+$ conda activate qpx
+$ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
+$ conda install ipywidgets=7.6.5
+$ conda install pandas
+$ conda install itables
+$ conda install polars
+```
+
+- conda で構築する環境名は qpx である必要はありません
+- python の version は 3.9 もしくは 3.10 のみ対応しています
