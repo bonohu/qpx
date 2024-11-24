@@ -45,7 +45,7 @@ volumes:
 ### インストール
 
 ```
-git clone https://github.com/dogrunjp/qpx
+git clone https://github.com/bonohu/qpx
 cd qpx
 docker compose up -d
 (最新のDocker Desktopがインストールされている場合docker compose up -d)
