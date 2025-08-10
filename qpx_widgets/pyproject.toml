@@ -8,12 +8,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qpx_widgets"
-description = "A Custom Jupyter Widget Library"
+description = "A Custom Jupyter Widget for visualizing WikiPathways pathways in Jupyter notebooks"
 readme = "README.md"
 license = { file = "LICENSE.txt" }
 requires-python = ">=3.9"
 authors = [
-    { name = "me", email = "me@me.com" },
+    { name = "bonohu", email = "bonohu@gmail.com" },
 ]
 keywords = [
     "IPython",
@@ -58,7 +58,7 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/myorg/qpx_widgets"
+Homepage = "https://github.com/bonohu/qpx"
 
 [tool.hatch.metadata]
 allow-direct-references = true
