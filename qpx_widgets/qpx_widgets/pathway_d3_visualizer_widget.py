@@ -38,16 +38,3 @@ class PathwayD3VisualizerWidget(DOMWidget):
 
 # Alias for easier import
 PathwayD3Model = PathwayD3VisualizerWidget
-
-
-class ExampleWidget(DOMWidget):
-    """TODO: Add docstring here
-    """
-    _model_name = Unicode('ExampleModel').tag(sync=True)
-    _model_module = Unicode(module_name).tag(sync=True)
-    _model_module_version = Unicode(module_version).tag(sync=True)
-    _view_name = Unicode('ExampleView').tag(sync=True)
-    _view_module = Unicode(module_name).tag(sync=True)
-    _view_module_version = Unicode(module_version).tag(sync=True)
-
-    value = Unicode('Endless World').tag(sync=True)

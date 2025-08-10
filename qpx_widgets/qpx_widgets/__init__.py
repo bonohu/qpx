@@ -4,7 +4,7 @@
 # Copyright (c) me.
 # Distributed under the terms of the Modified BSD License.
 
-from .example import ExampleWidget, PathwayD3VisualizerWidget, PathwayD3Model
+from .pathway_d3_visualizer_widget import PathwayD3VisualizerWidget, PathwayD3Model
 from ._version import __version__, version_info
 
 def _jupyter_labextension_paths():
