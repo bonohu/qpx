@@ -108,7 +108,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   render() {
     this.el.classList.add('pathway-d3-widget');
-    
+
     // Create container div
     const containerDiv = document.createElement('div');
     containerDiv.id = 'd3DemoDiv';
@@ -126,7 +126,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   private createNetwork(): void {
     this.model.on('change:value', this.selectedGeneIdsChanged, this);
-    
+
     const pathwayDataStr = this.model.get('pathway_data');
     if (!pathwayDataStr || pathwayDataStr === '{}') {
       return;
@@ -143,7 +143,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   private createSVG(): void {
     const container = d3.select('#d3DemoDiv');
-    
+
     this.svgElement = container
       .append('svg')
       .attr('id', 'svg2')
@@ -210,7 +210,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   private drawGroups(nodes: PathwayNode[], graphic: d3.Selection<SVGGElement, unknown, HTMLElement, any>, groups: PathwayGroup[]): void {
     const nodeGroups: { [key: string]: { minX: number; minY: number; maxX: number; maxY: number } } = {};
-    
+
     nodes.forEach((node) => {
       const groupId = node.GroupRef;
       if (!groupId) return;
@@ -244,9 +244,9 @@ export class PathwayD3View extends DOMWidgetView {
         const width = range.maxX - range.minX + groupMargin * 2;
         const height = range.maxY - range.minY + groupMargin * 2;
         const r = Math.max(10, width / 10, height / 10);
-        
+
         const path = `M ${x + r} ${y} h ${width - r * 2} l ${r} ${r} v ${height - r * 2} l ${-r} ${r} h ${-width + r * 2} l ${-r} ${-r} v ${-height + r * 2} l ${r} ${-r} z`;
-        
+
         graphic
           .append('path')
           .attr('d', path)
@@ -348,11 +348,11 @@ export class PathwayD3View extends DOMWidgetView {
 
     links.forEach((link) => {
       const group = svg.append('g');
-      
+
       for (let i = 0; i < link.points.length - 1; i++) {
         const point1 = link.points[i];
         const point2 = link.points[i + 1];
-        
+
         group
           .append('line')
           .attr('x1', point1.X + (point1.RelX || 0))
@@ -370,7 +370,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   private drawNodes(nodes: PathwayNode[], graphic: d3.Selection<SVGGElement, unknown, HTMLElement, any>): void {
     const nodeRoundRadius = 10;
-    
+
     this.nodeElements = graphic
       .selectAll('rect.node-rect')
       .data(nodes)
@@ -585,8 +585,8 @@ export class PathwayD3View extends DOMWidgetView {
 
     if (this.nodeElements) {
       this.nodeElements.style('stroke-width', (d) => {
-        return this.selectedNodes.find((node) => node.ID === d.ID) 
-          ? selectedStrokeWidth 
+        return this.selectedNodes.find((node) => node.ID === d.ID)
+          ? selectedStrokeWidth
           : defaultStrokeWidth;
       });
     }
@@ -626,18 +626,22 @@ export class PathwayD3View extends DOMWidgetView {
   }
 }
 
-// Keep the original example classes for compatibility
-export class ExampleModel extends DOMWidgetModel {
+
+
+export class HeatmapModel extends DOMWidgetModel {
   defaults() {
     return {
       ...super.defaults(),
-      _model_name: ExampleModel.model_name,
-      _model_module: ExampleModel.model_module,
-      _model_module_version: ExampleModel.model_module_version,
-      _view_name: ExampleModel.view_name,
-      _view_module: ExampleModel.view_module,
-      _view_module_version: ExampleModel.view_module_version,
-      value: 'Hello World',
+      _model_name: HeatmapModel.model_name,
+      _model_module: HeatmapModel.model_module,
+      _model_module_version: HeatmapModel.model_module_version,
+      _view_name: HeatmapModel.view_name,
+      _view_module: HeatmapModel.view_module,
+      _view_module_version: HeatmapModel.view_module_version,
+      value: [],
+      expression_data: '',
+      expression_columns_index: 4,
+      filter_key: 'xref_id',
     };
   }
 
@@ -645,23 +649,243 @@ export class ExampleModel extends DOMWidgetModel {
     ...DOMWidgetModel.serializers,
   };
 
-  static model_name = 'ExampleModel';
+  static model_name = 'HeatmapModel';
   static model_module = MODULE_NAME;
   static model_module_version = MODULE_VERSION;
-  static view_name = 'ExampleView';
+  static view_name = 'HeatmapView';
   static view_module = MODULE_NAME;
   static view_module_version = MODULE_VERSION;
 }
 
-export class ExampleView extends DOMWidgetView {
-  render() {
-    this.el.classList.add('custom-widget');
+export class HeatmapView extends DOMWidgetView {
+  private table: any = null;
+  private selectedGeneIds: string[] = [];
+  private searchColumnIndex: number = 0;
+  private maxExpressionValue: number = 0;
+  private globalMaxExpressionValue: number = 0;
 
-    this.value_changed();
-    this.model.on('change:value', this.value_changed, this);
+  render() {
+    this.el.classList.add('heatmap-widget');
+
+    // Create table element
+    const tableDiv = document.createElement('table');
+    tableDiv.id = 'heatmap-div';
+    tableDiv.className = 'row-border nowrap';
+    this.el.appendChild(tableDiv);
+
+    // Show loading spinner
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loader-text';
+    loadingDiv.textContent = 'Loading...';
+    this.el.appendChild(loadingDiv);
+
+    // Set up model change listener
+    this.model.on('change:value', this.selectedGeneIdsChanged, this);
+
+    // Initialize heatmap after a short delay
+    setTimeout(() => {
+      this.createHeatmap();
+    }, 500);
   }
 
-  value_changed() {
-    this.el.textContent = this.model.get('value');
+  private selectedGeneIdsChanged(): void {
+    const newSelection: string[] = this.model.get('value');
+    if (newSelection === undefined) {
+      return;
+    }
+    this.selectedGeneIds = newSelection;
+
+    if (this.table) {
+      if (this.selectedGeneIds.length === 0) {
+        this.table.columns(this.searchColumnIndex).search('').draw();
+      } else {
+        this.table
+          .columns(this.searchColumnIndex)
+          .search((data: string) => {
+            return this.selectedGeneIds
+              .map((x) => x.toString() === data)
+              .some((x) => x);
+          })
+          .draw();
+      }
+    }
+  }
+
+  private async createHeatmap(): Promise<void> {
+    // Load required libraries dynamically
+    const Papa = await this.loadPapaParse();
+    const html2canvas = await this.loadHtml2Canvas();
+    const DataTable = await this.loadDataTables();
+
+    setTimeout(() => {
+      const expressionDataStr = this.model.get('expression_data');
+      const expressionData = Papa.parse(expressionDataStr, {
+        skipEmptyLines: true,
+      }).data;
+
+      const headers = expressionData[0];
+      const data = expressionData.slice(1);
+      const filterKey = this.model.get('filter_key');
+      const expressionColumnsIndex = parseInt(this.model.get('expression_columns_index')) || 4;
+
+      this.maxExpressionValue = 0;
+      this.globalMaxExpressionValue = 0;
+
+      // Process data and find max expression value
+      for (const row of data) {
+        for (let i = expressionColumnsIndex; i < row.length; i++) {
+          const val = parseFloat(row[i]);
+          if (!Number.isNaN(val)) {
+            row[i] = val;
+            this.maxExpressionValue = Math.max(this.maxExpressionValue, val);
+          }
+        }
+      }
+
+      this.globalMaxExpressionValue = this.maxExpressionValue;
+      this.searchColumnIndex = headers.indexOf(filterKey);
+      if (this.searchColumnIndex === -1) this.searchColumnIndex = 0;
+
+      const targets = Array.from(
+        { length: headers.length - expressionColumnsIndex },
+        (_, i) => i + expressionColumnsIndex
+      );
+
+      const highlightColor = [131, 146, 219];
+      const defaultColor = [250, 250, 255];
+
+      // Initialize DataTable
+      this.table = new DataTable('#heatmap-div', {
+        data: data,
+        columns: headers.map((x: string) => ({ title: x })),
+        columnDefs: [
+          {
+            targets: targets,
+            createdCell: (td: HTMLElement, cellData: any) => {
+              if (Number.isFinite(cellData)) {
+                const strength = cellData / this.maxExpressionValue;
+                const color = highlightColor
+                  .map((x, i) => x * strength + defaultColor[i] * (1 - strength))
+                  .join(',');
+                (td as HTMLElement).style.backgroundColor = `rgb(${color})`;
+              }
+            },
+          },
+        ],
+        buttons: [
+          {
+            text: 'Download Table as PNG',
+            action: () => {
+              html2canvas(document.getElementById('heatmap-div')!, {
+                scale: 2,
+              }).then((canvas: HTMLCanvasElement) => {
+                const img = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = img;
+                a.download = 'heatmap_table.png';
+                a.click();
+              });
+            },
+          },
+        ],
+        layout: {
+          bottomStart: 'buttons',
+        },
+      });
+
+      this.table.on('search.dt', () => {
+        const searchedRows = this.table.rows({ search: 'applied' }).data();
+        const noSearchApplied = searchedRows.length === this.table.rows().data().length;
+
+        if (noSearchApplied) {
+          this.maxExpressionValue = this.globalMaxExpressionValue;
+          return;
+        }
+
+        // Recompute maxExpressionValue for filtered data
+        this.maxExpressionValue = 0;
+        for (let j = 0; j < searchedRows.length; j++) {
+          const row = searchedRows[j];
+          for (let i = expressionColumnsIndex; i < row.length; i++) {
+            const val = parseFloat(row[i]);
+            if (!Number.isNaN(val)) {
+              this.maxExpressionValue = Math.max(this.maxExpressionValue, val);
+            }
+          }
+        }
+      });
+
+      // Hide loading spinner
+      const loadingElement = this.el.querySelector('.loader-text');
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+    }, 10);
+  }
+
+  private async loadPapaParse(): Promise<any> {
+    return new Promise((resolve) => {
+      if ((window as any).Papa) {
+        resolve((window as any).Papa);
+      } else {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js';
+        script.onload = () => resolve((window as any).Papa);
+        document.head.appendChild(script);
+      }
+    });
+  }
+
+  private async loadHtml2Canvas(): Promise<any> {
+    return new Promise((resolve) => {
+      if ((window as any).html2canvas) {
+        resolve((window as any).html2canvas);
+      } else {
+        const script = document.createElement('script');
+        script.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+        script.onload = () => resolve((window as any).html2canvas);
+        document.head.appendChild(script);
+      }
+    });
+  }
+
+  private async loadDataTables(): Promise<any> {
+    return new Promise((resolve) => {
+      if ((window as any).DataTable) {
+        resolve((window as any).DataTable);
+      } else {
+        // Load CSS first
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = 'https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.min.css';
+        document.head.appendChild(cssLink);
+
+        // Load DataTables CSS for buttons
+        const buttonsCssLink = document.createElement('link');
+        buttonsCssLink.rel = 'stylesheet';
+        buttonsCssLink.href = 'https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.min.css';
+        document.head.appendChild(buttonsCssLink);
+
+        // Load jQuery first
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        jqueryScript.onload = () => {
+          // Load DataTables
+          const dtScript = document.createElement('script');
+          dtScript.src = 'https://cdn.datatables.net/2.1.5/js/dataTables.min.js';
+          dtScript.onload = () => {
+            // Load DataTables buttons
+            const buttonsScript = document.createElement('script');
+            buttonsScript.src = 'https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.min.js';
+            buttonsScript.onload = () => {
+              resolve((window as any).DataTable);
+            };
+            document.head.appendChild(buttonsScript);
+          };
+          document.head.appendChild(dtScript);
+        };
+        document.head.appendChild(jqueryScript);
+      }
+    });
   }
 }

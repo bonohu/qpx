@@ -13,7 +13,7 @@ from ipywidgets import DOMWidget
 from traitlets import Unicode
 from ._frontend import module_name, module_version
 
-class PathwayD3VisualizerWidget(DOMWidget):
+class PathwayD3Model(DOMWidget):
     _model_name = Unicode('PathwayD3Model').tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
     _model_module_version = Unicode(module_version).tag(sync=True)
@@ -36,5 +36,5 @@ class PathwayD3VisualizerWidget(DOMWidget):
     def selected_gene_ids(self, value):
         self.value = value
 
-# Alias for easier import
-PathwayD3Model = PathwayD3VisualizerWidget
+# Alias for backward compatibility
+PathwayD3VisualizerWidget = PathwayD3Model
