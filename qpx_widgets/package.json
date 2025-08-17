@@ -98,5 +98,6 @@
         "singleton": true
       }
     }
-  }
+  },
+  "packageManager": "yarn@1.22.2"
 }
