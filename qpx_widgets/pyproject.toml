@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-    "hatchling>=1.21.1",
+    "hatchling>=1.5.0",
     "jupyterlab>=4.0.0,<5",
     "hatch-nodejs-version>=0.3.2",
 ]
@@ -36,6 +36,7 @@ classifiers = [
 ]
 dependencies = [
     "ipywidgets>=8.0.0",
+    "itables==1.7.1",
 ]
 version = "0.1.0.dev0"
 
@@ -59,9 +60,6 @@ test = [
 
 [project.urls]
 Homepage = "https://github.com/bonohu/qpx"
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.hatch.build]
 artifacts = [
@@ -92,7 +90,7 @@ skip-if-exists = [
     "qpx_widgets/labextension/package.json",
 ]
 dependencies = [
-    "hatch-jupyter-builder>=0.8.3",
+    "hatch-jupyter-builder>=0.5",
 ]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]

@@ -57,7 +57,7 @@
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.8",
     "@jupyter-widgets/base-manager": "^1.0.7",
-    "@jupyterlab/builder": "^4.0.11",
+    "@jupyterlab/builder": "^4.4.6",
     "@lumino/application": "^2.3.0",
     "@lumino/widgets": "^2.3.1",
     "@types/jest": "^29.5.11",
@@ -85,7 +85,7 @@
     "webpack-cli": "^5.1.4"
   },
   "devDependenciesComments": {
-    "@jupyterlab/builder": "pinned to the latest JupyterLab 3.x release",
+    "@jupyterlab/builder": "pinned to the latest JupyterLab 4.x release",
     "@lumino/application": "pinned to the latest Lumino 1.x release",
     "@lumino/widgets": "pinned to the latest Lumino 1.x release"
   },
@@ -98,6 +98,5 @@
         "singleton": true
       }
     }
-  },
-  "packageManager": "yarn@1.22.2"
+  }
 }
