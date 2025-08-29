@@ -196,13 +196,13 @@ export class PathwayD3View extends DOMWidgetView {
     switch (gpmlArrowType) {
       case 'Arrow':
       case 'mim-conversion':
-        return 'url(#marker-arrow)';
+        return 'url(#marker-arrow)'; // -▶
       case 'mim-catalysis':
-        return 'url(#marker-circle)';
+        return 'url(#marker-circle)';  // -◯
       case 'mim-inhibition':
-        return 'url(#marker-pipe)';
+        return 'url(#marker-pipe)';  // -┃
       case 'mim-modification':
-        return 'url(#marker-open-arrow)';
+        return 'url(#marker-open-arrow)';  // ->
       default:
         return '';
     }
@@ -530,8 +530,8 @@ export class PathwayD3View extends DOMWidgetView {
               d.pointsAfterOffset[i],
               d.pointsAfterOffset[i + 1],
               d.Graphics?.LineStyle,
-              self.arrowHeadType(d.pointsAfterOffset[i].ArrowHead),
-              self.arrowHeadType(d.pointsAfterOffset[i + 1].ArrowHead)
+              self.arrowHeadType(d.points[i].ArrowHead),
+              self.arrowHeadType(d.points[i + 1].ArrowHead)
             );
           }
         }
