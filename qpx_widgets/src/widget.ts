@@ -1060,3 +1060,269 @@ export class HeatmapView extends DOMWidgetView {
     });
   }
 }
+
+// DataTable Widget Models and Views
+export class DataTableModel extends DOMWidgetModel {
+  defaults() {
+    return {
+      ...super.defaults(),
+      _model_name: DataTableModel.model_name,
+      _model_module: DataTableModel.model_module,
+      _model_module_version: DataTableModel.model_module_version,
+      _view_name: DataTableModel.view_name,
+      _view_module: DataTableModel.view_module,
+      _view_module_version: DataTableModel.view_module_version,
+      data: {},
+      columns: [],
+      mapping_key_column: '',
+      selected_row_id: '',
+      search_query: '',
+    };
+  }
+
+  static serializers: ISerializers = {
+    ...DOMWidgetModel.serializers,
+  };
+
+  static model_name = 'DataTableModel';
+  static model_module = MODULE_NAME;
+  static model_module_version = MODULE_VERSION;
+  static view_name = 'DataTableView';
+  static view_module = MODULE_NAME;
+  static view_module_version = MODULE_VERSION;
+}
+
+export class DataTableView extends DOMWidgetView {
+  private tableContainer: HTMLDivElement | null = null;
+
+  render() {
+    this.el.classList.add('data-table-widget');
+
+    // Create container
+    this.tableContainer = document.createElement('div');
+    this.tableContainer.className = 'datatable-container';
+    this.el.appendChild(this.tableContainer);
+
+    // Create search input
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'search-container';
+
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Enter gene name...';
+    searchInput.className = 'gene-search-input';
+    searchInput.addEventListener('input', (e) => {
+      const query = (e.target as HTMLInputElement).value;
+      this.model.set('search_query', query);
+      this.touch();
+      this.updateTable();
+    });
+
+    searchContainer.appendChild(searchInput);
+    this.el.appendChild(searchContainer);
+
+    // Create table element
+    const tableElement = document.createElement('table');
+    tableElement.id = 'gene-data-table';
+    tableElement.className = 'display compact clickable';
+    this.tableContainer.appendChild(tableElement);
+
+    // Listen for model changes
+    this.model.on('change:data', this.updateTable, this);
+    this.model.on('change:search_query', this.updateTable, this);
+
+    // Add CSS styles
+    this.addStyles();
+
+    // Initialize table after short delay
+    setTimeout(() => {
+      this.initializeTable();
+    }, 100);
+  }
+
+  private addStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .data-table-widget {
+        margin: 20px 0;
+      }
+      
+      .search-container {
+        margin-bottom: 10px;
+      }
+      
+      .gene-search-input {
+        width: 300px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      
+      .gene-search-input:focus {
+        outline: none;
+        border-color: #4CAF50;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+      }
+      
+      .datatable-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      
+      .clickable tbody tr {
+        cursor: pointer;
+      }
+      
+      .clickable tbody tr:hover {
+        background-color: #f5f5f5;
+      }
+      
+      .clickable tbody tr.selected {
+        background-color: #e3f2fd;
+      }
+      
+      .mapping-key {
+        font-weight: bold;
+      }
+      
+      #gene-data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      #gene-data-table th,
+      #gene-data-table td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      
+      #gene-data-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      
+      #gene-data-table tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  private async initializeTable() {
+    // Initialize with current data
+    this.updateTable();
+  }
+
+  private updateTable() {
+    const data = this.model.get('data');
+    const columns = this.model.get('columns');
+    const mappingKeyColumn = this.model.get('mapping_key_column');
+
+    if (!data || !data.rows || !columns || columns.length === 0) {
+      return;
+    }
+
+    // Clear existing table
+    const tableElement = document.getElementById('gene-data-table');
+    if (!tableElement) return;
+
+    tableElement.innerHTML = '';
+
+    // Create table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+
+    columns.forEach((column: any) => {
+      const th = document.createElement('th');
+      th.textContent = column.name;
+      if (column.key === mappingKeyColumn) {
+        th.className = 'mapping-key';
+      }
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    tableElement.appendChild(thead);
+
+    // Create table body
+    const tbody = document.createElement('tbody');
+
+    data.rows.forEach((row: any, rowIndex: number) => {
+      const tr = document.createElement('tr');
+      tr.dataset.rowIndex = rowIndex.toString();
+
+      columns.forEach((column: any) => {
+        const td = document.createElement('td');
+        const cellValue = row[column.key] || '';
+        td.textContent = cellValue;
+        td.title = cellValue; // Tooltip for truncated text
+
+        if (column.key === mappingKeyColumn) {
+          td.className = 'mapping-key';
+        }
+
+        tr.appendChild(td);
+      });
+
+      // Add click handler
+      tr.addEventListener('click', () => {
+        // Remove previous selection
+        tbody.querySelectorAll('tr.selected').forEach(selectedTr => {
+          selectedTr.classList.remove('selected');
+        });
+
+        // Add selection to clicked row
+        tr.classList.add('selected');
+
+        // Get the mapping key value
+        const mappingKeyIndex = columns.findIndex((col: any) => col.key === mappingKeyColumn);
+        if (mappingKeyIndex >= 0) {
+          const mappingKeyValue = row[mappingKeyColumn];
+          this.model.set('selected_row_id', mappingKeyValue);
+          this.touch();
+        }
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    tableElement.appendChild(tbody);
+
+    // Update info display
+    this.updateInfoDisplay(data.rows.length, data.total_rows || data.rows.length);
+  }
+
+  private updateInfoDisplay(filteredCount: number, totalCount: number) {
+    // Remove existing info display
+    const existingInfo = this.el.querySelector('.table-info');
+    if (existingInfo) {
+      existingInfo.remove();
+    }
+
+    // Create new info display
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'table-info';
+    infoDiv.style.margin = '10px 0';
+    infoDiv.style.fontSize = '14px';
+    infoDiv.style.color = '#666';
+
+    if (filteredCount === totalCount) {
+      infoDiv.textContent = `Showing ${totalCount} entries`;
+    } else {
+      infoDiv.textContent = `Showing ${filteredCount} of ${totalCount} entries (filtered)`;
+    }
+
+    this.el.appendChild(infoDiv);
+  }
+}

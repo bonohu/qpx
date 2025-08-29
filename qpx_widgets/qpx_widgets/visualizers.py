@@ -19,7 +19,7 @@ from IPython import get_ipython
 from ipywidgets import interact, interactive, widgets
 from .pathway_d3_visualizer_widget import PathwayD3VisualizerWidget
 from .heatmap_visualizer_widget import HeatmapVisualizerWidget
-from itables import show, JavascriptFunction
+from .data_table_widget import DataTableWidget
 
 
 class GpmlD3Visualizer:
@@ -115,6 +115,13 @@ class GeneSearchForm:
         self.visualizer = gpml_d3_visualizer
         self.mapping_key = mapping_key
         self.search_target = search_target
+        self.data_table_widget = DataTableWidget(
+            data_frame=self.gene_data,
+            mapping_key=mapping_key,
+            search_target=search_target
+        )
+        # Listen for row selection changes
+        self.data_table_widget.observe(self._on_row_selection, names='selected_row_id')
     
 
     def show(self):
@@ -122,88 +129,39 @@ class GeneSearchForm:
             placeholder='Enter gene name',
             description='Gene:',
             disabled=False,
-            value=' ' # 後述するredraw用に空白文字を入れておく
+            value=''
         )
 
-        def display_gene_data(query: str):
-            selected_gene_data = self.gene_data
-            query = query.strip()
-            if len(query) > 0:
-                selected_gene_data = selected_gene_data.filter(pl.col(self.search_target).str.contains(f"(?i){query}")) # (?i)は大文字小文字を区別しないフラグ
-                if selected_gene_data.shape[0] == 0:
-                    print("No data found")
-                    return
-            column_index_of_mapping_key = selected_gene_data.columns.index(self.mapping_key)
+        def on_search_change(change):
+            query = change['new']
+            self.data_table_widget.update_data(self.gene_data, query)
 
-            if column_index_of_mapping_key == -1:
-                print(f"Column {self.mapping_key} not found")
-                return
-            def show_table(df):
-                show(df, classes="display compact clickable", searching=False,
-                     columnDefs=[{"targets": "_all",                              
-                                "render": JavascriptFunction("""
-                                    function (data, type, full, meta) {
-                                        return `<span title=${data}>${data}</span`;
-                                    },
-                                    """)},
-                                    {"targets": column_index_of_mapping_key, "className": "mapping-key"}])
-
-            show_table(selected_gene_data)
-
-        dataframe_output = widgets.interactive_output(display_gene_data, {"query": search_input})
-
-        # interactive_output使用時、itablesがセルの実行直後だけ表示されない問題があるため、タイマーをかけてすぐに再描画するようにする
-        def redraw():
-            search_input.value = ''
-        timer = Timer(1, redraw, ())
-        timer.start()
+        search_input.observe(on_search_change, names='value')
         
-        self.widgets = widgets.VBox( 
-            [
-                search_input,
-                dataframe_output      
-            ]
-        )
+        # Initialize with all data
+        self.data_table_widget.update_data(self.gene_data)
+        
+        self.widgets = widgets.VBox([
+            search_input,
+            self.data_table_widget
+        ])
 
         css = """
-        .dataTable th, .dataTable td{
-            max-width: 150px;
-        }
-        .dataTable {
+        .data-table-widget {
             margin-left: 0 !important;
             margin-bottom: 30px !important;
         }
-        .dataTable caption {
-            font-size: large;
-            font-weight: bold;
-            color: black;
-            text-align: center;
-        }
-        .clickable tbody tr {
-            cursor: pointer;
+        .datatable-container {
+            max-height: 400px;
+            overflow-y: auto;
         }
         """
         display(HTML(f"<style>{css}</style>"))
-
-        display(HTML(
-            """
-            <script>
-            $(document).on('click', '.clickable tbody tr', function () {
-                let index = $(this).find('.mapping-key').text();
-                let comm = Jupyter.notebook.kernel.comm_manager.new_comm('on_row_click',
-                                                     {'index': index})
-                comm.close();
-            });
-            </script>
-            """
-        ))
-
         display(self.widgets)
 
-        def on_row_click(comm, msg):
-            msg_data = msg['content']['data']
-            row_index = msg_data['index']
-            selected_gene_data = self.gene_data[int(row_index)]
-            self.visualizer.visualizer_widget.selected_gene_ids = [row_index]
-
-        get_ipython().kernel.comm_manager.register_target('on_row_click', on_row_click)
+    def _on_row_selection(self, change):
+        """Handle row selection from DataTable widget"""
+        selected_id = change['new']
+        if selected_id and self.visualizer and hasattr(self.visualizer, 'visualizer_widget'):
+            # Convert selected_id to appropriate format and update visualizer
+            self.visualizer.visualizer_widget.selected_gene_ids = [str(selected_id)]

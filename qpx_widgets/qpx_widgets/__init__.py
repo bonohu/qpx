@@ -6,6 +6,7 @@
 
 from .pathway_d3_visualizer_widget import PathwayD3VisualizerWidget, PathwayD3Model
 from .heatmap_visualizer_widget import HeatmapVisualizerWidget, HeatmapModel
+from .data_table_widget import DataTableWidget
 from .visualizers import GpmlD3Visualizer, GeneSearchForm
 from ._version import __version__, version_info
 
