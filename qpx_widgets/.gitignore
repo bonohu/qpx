@@ -154,3 +154,6 @@ qpx_widgets/nbextension/index.*
 # Packed lab extensions
 qpx_widgets/labextension
 .yarn
+
+dist/
+node_modules/
