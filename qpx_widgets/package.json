@@ -43,7 +43,7 @@
     "lint:check": "eslint . --ext .ts,.tsx",
     "prepack": "jlpm run build:lib",
     "test": "jest",
-    "watch": "npm-run-all -p watch:*",
+    "watch": "npm-run-all -p \"watch:*\"",
     "watch:lib": "tsc -w",
     "watch:nbextension": "webpack --watch --mode=development",
     "watch:labextension": "jupyter labextension watch ."
@@ -98,5 +98,6 @@
         "singleton": true
       }
     }
-  }
+  },
+  "packageManager": "yarn@4.9.4"
 }
