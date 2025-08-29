@@ -41,12 +41,12 @@ volumes:
 ### Installation
 
 ```
-git clone https://github.com/dogrunjp/qpx
+git clone https://github.com/bonohu/qpx
 cd qpx
 docker compose up -d
 ```
 
-After launching, you can access http://localhost:8888/notebooks/work/qpx.ipynb and run each cell for visualization.
+After launching, you can access http://localhost:8888/lab/tree/qpx.ipynb and run each cell for visualization.
 If you want to increase the number of GPML files to be visualized, place the files with the extension `.gpml` in `gpml/` directory.
 
 If there are updates to the application, the container must be re-built after updating the local repository as follows.
@@ -69,7 +69,6 @@ $ conda activate qpx
 $ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
 $ conda install ipywidgets=7.6.5
 $ conda install pandas
-$ conda install itables
 $ conda install polars
 ```
 
@@ -78,7 +77,7 @@ $ conda install polars
 
 # About Major Components
 
-The following two components are both described in `qp.py`.
+The following two components are both described in `qpx_widgets/qpx_widgets/visualizers.py`
 
 ### GpmlD3Visualizer
 
@@ -88,7 +87,7 @@ The following two components are both described in `qp.py`.
 1. Pathway diagram
 2. Gene information table (including expression levels)
 
-   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `heatmap_view_widget_js`.
+   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `qpx_widgets/src/widgets.ts`.
 
    ```
          const highlightColor = [131, 146, 219];
@@ -106,6 +105,12 @@ Screen shot of GpmlD3Visualizer:
 - It consists of two components: a search box and a gene information table.
 - By passing an instance of Gpml3DVisualizer at initialization, the corresponding node of Gpml3DVisualizer can be made selected when a row in the gene information table is clicked.
 - The search box portion will be expanded to a more flexible query interface in the future.
+
+- Example usage:
+```
+search_form = qpx_widgets.GeneSearchForm("data/red_perilla_anthocyanin_test.tsv", visualizer)
+search_form.show()
+```
   ![gene_search_form](images/gene_search_form.png)
 
 # Todo

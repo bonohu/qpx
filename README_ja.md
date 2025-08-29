@@ -143,7 +143,6 @@ $ conda activate qpx
 $ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
 $ conda install ipywidgets=7.6.5
 $ conda install pandas
-$ conda install itables
 $ conda install polars
 ```
 
