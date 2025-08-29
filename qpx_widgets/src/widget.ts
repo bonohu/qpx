@@ -1244,24 +1244,6 @@ export class DataTableView extends DOMWidgetView {
     this.tableContainer.className = 'datatable-container';
     this.el.appendChild(this.tableContainer);
 
-    // Create search input
-    const searchContainer = document.createElement('div');
-    searchContainer.className = 'search-container';
-
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.placeholder = 'Enter gene name...';
-    searchInput.className = 'gene-search-input';
-    searchInput.addEventListener('input', (e) => {
-      const query = (e.target as HTMLInputElement).value;
-      this.model.set('search_query', query);
-      this.touch();
-      this.updateTable();
-    });
-
-    searchContainer.appendChild(searchInput);
-    this.el.appendChild(searchContainer);
-
     // Create table element
     const tableElement = document.createElement('table');
     tableElement.id = 'gene-data-table';
@@ -1270,7 +1252,6 @@ export class DataTableView extends DOMWidgetView {
 
     // Listen for model changes
     this.model.on('change:data', this.updateTable, this);
-    this.model.on('change:search_query', this.updateTable, this);
 
     // Add CSS styles
     this.addStyles();
@@ -1286,24 +1267,6 @@ export class DataTableView extends DOMWidgetView {
     style.textContent = `
       .data-table-widget {
         margin: 20px 0;
-      }
-      
-      .search-container {
-        margin-bottom: 10px;
-      }
-      
-      .gene-search-input {
-        width: 300px;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      
-      .gene-search-input:focus {
-        outline: none;
-        border-color: #4CAF50;
-        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
       }
       
       .datatable-container {
@@ -1430,7 +1393,8 @@ export class DataTableView extends DOMWidgetView {
         const mappingKeyIndex = columns.findIndex((col: any) => col.key === mappingKeyColumn);
         if (mappingKeyIndex >= 0) {
           const mappingKeyValue = row[mappingKeyColumn];
-          this.model.set('selected_row_id', mappingKeyValue);
+          // Ensure the value is converted to string to match the Unicode trait expectation
+          this.model.set('selected_row_id', String(mappingKeyValue));
           this.touch();
         }
       });

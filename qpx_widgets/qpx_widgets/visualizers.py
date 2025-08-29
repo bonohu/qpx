@@ -162,6 +162,14 @@ class GeneSearchForm:
     def _on_row_selection(self, change):
         """Handle row selection from DataTable widget"""
         selected_id = change['new']
-        if selected_id and self.visualizer and hasattr(self.visualizer, 'visualizer_widget'):
+        if selected_id is not None and selected_id != '' and self.visualizer and hasattr(self.visualizer, 'visualizer_widget'):
             # Convert selected_id to appropriate format and update visualizer
-            self.visualizer.visualizer_widget.selected_gene_ids = [str(selected_id)]
+            # Ensure the ID is converted to string for consistency
+            gene_id_str = str(selected_id)
+            
+            # Update the visualizer widget's value directly
+            self.visualizer.visualizer_widget.value = [gene_id_str]
+            
+            # Also trigger the heatmap update
+            if hasattr(self.visualizer, 'heatmap_widget'):
+                self.visualizer.heatmap_widget.selected_gene_ids = [gene_id_str]
