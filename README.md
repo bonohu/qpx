@@ -57,6 +57,19 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
+### Quick Start with MyBinder
+
+For a quick demo without local installation, you can try QPX directly in your browser using MyBinder:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb)
+
+Simply click the badge above or visit the following URL:
+```
+https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb
+```
+
+This will launch a live Jupyter environment with QPX pre-installed. Note that MyBinder sessions are temporary and any changes will be lost when the session ends.
+
 ### Additional note on operating environment
 
 - QPX is running on Jupyter Notebook started with docker compose.

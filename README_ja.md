@@ -58,6 +58,19 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
+### MyBinderでクイックスタート
+
+ローカルにインストールすることなく、ブラウザ上で直接QPXを試すことができます：
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb)
+
+上記のバッジをクリックするか、以下のURLにアクセスしてください：
+```
+https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb
+```
+
+QPXがプリインストールされたJupyter環境が起動します。MyBinderのセッションは一時的なものであり、セッション終了時に変更内容は失われることにご注意ください。
+
 ### モジュールを追加し別の可視化や解析を行いたい場合
 
 qpxでは、選択した遺伝子のテーブルをpolarsのデータフレームとして取得して利用することができます。
