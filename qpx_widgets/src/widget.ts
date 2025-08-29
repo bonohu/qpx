@@ -803,8 +803,6 @@ export class PathwayD3View extends DOMWidgetView {
     event.stopPropagation();
     event.preventDefault();
 
-    console.log('Node clicked:', node.ID, 'Ctrl/Cmd:', event.ctrlKey || event.metaKey);
-
     const geneId = node.ID;
     const clickedNodes = this.nodes.filter((n) => n.ID === geneId);
 
@@ -814,15 +812,12 @@ export class PathwayD3View extends DOMWidgetView {
       if (isAlreadySelected) {
         // Remove from selection
         this.selectedNodes = this.selectedNodes.filter(n => n.ID !== geneId);
-        console.log('Removed from selection. Current selection:', this.selectedNodes.map(n => n.ID));
       } else {
         // Add to selection
         this.selectedNodes = this.selectedNodes.concat(clickedNodes);
-        console.log('Added to selection. Current selection:', this.selectedNodes.map(n => n.ID));
       }
     } else {
       this.selectedNodes = clickedNodes;
-      console.log('Single selection. Current selection:', this.selectedNodes.map(n => n.ID));
     }
     this.propagateChangeOfSelectedNodes();
   }
