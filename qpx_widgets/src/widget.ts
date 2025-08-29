@@ -1234,200 +1234,267 @@ export class DataTableModel extends DOMWidgetModel {
 }
 
 export class DataTableView extends DOMWidgetView {
-  private tableContainer: HTMLDivElement | null = null;
+  private table: any = null;
+  private mappingKeyColumn: string = '';
+  private searchColumnIndex: number = 0;
 
   render() {
     this.el.classList.add('data-table-widget');
 
-    // Create container
-    this.tableContainer = document.createElement('div');
-    this.tableContainer.className = 'datatable-container';
-    this.el.appendChild(this.tableContainer);
-
     // Create table element
-    const tableElement = document.createElement('table');
-    tableElement.id = 'gene-data-table';
-    tableElement.className = 'display compact clickable';
-    this.tableContainer.appendChild(tableElement);
+    const tableDiv = document.createElement('table');
+    tableDiv.id = 'gene-data-table';
+    tableDiv.className = 'row-border nowrap';
+    this.el.appendChild(tableDiv);
 
-    // Listen for model changes
+    // Show loading spinner
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'loader-text';
+    loadingDiv.textContent = 'Loading...';
+    this.el.appendChild(loadingDiv);
+
+    // Set up model change listeners
     this.model.on('change:data', this.updateTable, this);
+    this.model.on('change:search_query', this.searchChanged, this);
 
-    // Add CSS styles
-    this.addStyles();
-
-    // Initialize table after short delay
+    // Initialize table after a short delay
     setTimeout(() => {
-      this.initializeTable();
-    }, 100);
+      this.createTable();
+    }, 500);
   }
 
-  private addStyles() {
+  private searchChanged(): void {
+    const searchQuery: string = this.model.get('search_query');
+    if (this.table) {
+      if (!searchQuery || searchQuery.trim() === '') {
+        this.table.search('').draw();
+      } else {
+        this.table.search(searchQuery).draw();
+      }
+    }
+  }
+
+  private async createTable(): Promise<void> {
+    // Load required libraries dynamically
+    await this.loadDataTables();
+
+    setTimeout(() => {
+      this.updateTable();
+    }, 10);
+  }
+
+  private updateTable(): void {
+    const data = this.model.get('data');
+    const columns = this.model.get('columns');
+    this.mappingKeyColumn = this.model.get('mapping_key_column');
+
+    if (!data || !data.rows || !columns || columns.length === 0) {
+      return;
+    }
+
+    // Destroy existing table if it exists
+    if (this.table) {
+      this.table.destroy();
+      this.table = null;
+    }
+
+    // Clear table element
+    const tableElement = document.getElementById('gene-data-table');
+    if (!tableElement) return;
+    tableElement.innerHTML = '';
+
+    // Find the search column index
+    this.searchColumnIndex = columns.findIndex((col: any) => col.key === this.mappingKeyColumn);
+    if (this.searchColumnIndex === -1) this.searchColumnIndex = 0;
+
+    // Prepare DataTable columns configuration
+    const dtColumns = columns.map((column: any) => ({
+      title: column.name,
+      data: column.key,
+      className: column.key === this.mappingKeyColumn ? 'mapping-key' : '',
+    }));
+
+    // Initialize DataTable
+    this.table = new (window as any).DataTable('#gene-data-table', {
+      data: data.rows,
+      columns: dtColumns,
+      columnDefs: [
+        {
+          targets: this.searchColumnIndex,
+          className: 'mapping-key-column',
+        },
+      ],
+      select: {
+        style: 'single',
+        className: 'selected',
+      },
+      buttons: [
+        {
+          text: 'Download Table as CSV',
+          action: () => {
+            this.downloadTableAsCSV();
+          },
+        },
+      ],
+      layout: {
+        bottomStart: 'buttons',
+      },
+      pageLength: 25,
+      lengthMenu: [10, 25, 50, 100, -1],
+      scrollX: true,
+      responsive: true,
+    });
+
+    // Add row selection handler
+    this.table.on('select', (e: any, dt: any, type: string, indexes: number[]) => {
+      if (type === 'row') {
+        const rowData = this.table.row(indexes[0]).data();
+        if (rowData && this.mappingKeyColumn) {
+          const mappingKeyValue = rowData[this.mappingKeyColumn];
+          this.model.set('selected_row_id', String(mappingKeyValue));
+          this.touch();
+        }
+      }
+    });
+
+    // Add custom CSS styles
+    this.addDataTableStyles();
+
+    // Hide loading spinner
+    const loadingElement = this.el.querySelector('.loader-text');
+    if (loadingElement) {
+      loadingElement.remove();
+    }
+  }
+
+  private downloadTableAsCSV(): void {
+    if (!this.table) return;
+
+    const data = this.table.data().toArray();
+    const columns = this.model.get('columns');
+
+    if (!data || !columns) return;
+
+    // Create CSV content
+    const headers = columns.map((col: any) => col.name);
+    let csvContent = headers.join(',') + '\n';
+
+    data.forEach((row: any) => {
+      const rowValues = columns.map((col: any) => {
+        const value = row[col.key] || '';
+        // Escape commas and quotes in CSV
+        return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+          ? `"${value.replace(/"/g, '""')}"`
+          : value;
+      });
+      csvContent += rowValues.join(',') + '\n';
+    });
+
+    // Download the CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'gene_data_table.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  private addDataTableStyles(): void {
     const style = document.createElement('style');
     style.textContent = `
       .data-table-widget {
         margin: 20px 0;
       }
       
-      .datatable-container {
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+      .data-table-widget table.dataTable {
+        border-collapse: collapse !important;
       }
       
-      .clickable tbody tr {
+      .data-table-widget .mapping-key-column {
+        font-weight: bold;
+        background-color: #f8f9fa !important;
+      }
+      
+      .data-table-widget .selected {
+        background-color: #e3f2fd !important;
+      }
+      
+      .data-table-widget .dt-button {
+        margin: 5px;
+        padding: 6px 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
         cursor: pointer;
       }
       
-      .clickable tbody tr:hover {
-        background-color: #f5f5f5;
+      .data-table-widget .dt-button:hover {
+        background-color: #0056b3;
       }
       
-      .clickable tbody tr.selected {
-        background-color: #e3f2fd;
-      }
-      
-      .mapping-key {
-        font-weight: bold;
-      }
-      
-      #gene-data-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      
-      #gene-data-table th,
-      #gene-data-table td {
-        padding: 8px 12px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      
-      #gene-data-table th {
-        background-color: #f8f9fa;
-        font-weight: bold;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      
-      #gene-data-table tbody tr:nth-child(even) {
-        background-color: #f9f9f9;
+      .loader-text {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #666;
       }
     `;
     document.head.appendChild(style);
   }
 
-  private async initializeTable() {
-    // Initialize with current data
-    this.updateTable();
-  }
+  private async loadDataTables(): Promise<any> {
+    return new Promise((resolve) => {
+      if ((window as any).DataTable) {
+        resolve((window as any).DataTable);
+      } else {
+        // Load CSS first
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = 'https://cdn.datatables.net/2.1.5/css/dataTables.dataTables.min.css';
+        document.head.appendChild(cssLink);
 
-  private updateTable() {
-    const data = this.model.get('data');
-    const columns = this.model.get('columns');
-    const mappingKeyColumn = this.model.get('mapping_key_column');
+        // Load DataTables CSS for buttons
+        const buttonsCssLink = document.createElement('link');
+        buttonsCssLink.rel = 'stylesheet';
+        buttonsCssLink.href = 'https://cdn.datatables.net/buttons/3.1.2/css/buttons.dataTables.min.css';
+        document.head.appendChild(buttonsCssLink);
 
-    if (!data || !data.rows || !columns || columns.length === 0) {
-      return;
-    }
+        // Load DataTables CSS for select
+        const selectCssLink = document.createElement('link');
+        selectCssLink.rel = 'stylesheet';
+        selectCssLink.href = 'https://cdn.datatables.net/select/2.1.0/css/select.dataTables.min.css';
+        document.head.appendChild(selectCssLink);
 
-    // Clear existing table
-    const tableElement = document.getElementById('gene-data-table');
-    if (!tableElement) return;
-
-    tableElement.innerHTML = '';
-
-    // Create table header
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-
-    columns.forEach((column: any) => {
-      const th = document.createElement('th');
-      th.textContent = column.name;
-      if (column.key === mappingKeyColumn) {
-        th.className = 'mapping-key';
+        // Load jQuery first
+        const jqueryScript = document.createElement('script');
+        jqueryScript.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+        jqueryScript.onload = () => {
+          // Load DataTables
+          const dtScript = document.createElement('script');
+          dtScript.src = 'https://cdn.datatables.net/2.1.5/js/dataTables.min.js';
+          dtScript.onload = () => {
+            // Load DataTables buttons
+            const buttonsScript = document.createElement('script');
+            buttonsScript.src = 'https://cdn.datatables.net/buttons/3.1.2/js/dataTables.buttons.min.js';
+            buttonsScript.onload = () => {
+              // Load DataTables select
+              const selectScript = document.createElement('script');
+              selectScript.src = 'https://cdn.datatables.net/select/2.1.0/js/dataTables.select.min.js';
+              selectScript.onload = () => {
+                resolve((window as any).DataTable);
+              };
+              document.head.appendChild(selectScript);
+            };
+            document.head.appendChild(buttonsScript);
+          };
+          document.head.appendChild(dtScript);
+        };
+        document.head.appendChild(jqueryScript);
       }
-      headerRow.appendChild(th);
     });
-
-    thead.appendChild(headerRow);
-    tableElement.appendChild(thead);
-
-    // Create table body
-    const tbody = document.createElement('tbody');
-
-    data.rows.forEach((row: any, rowIndex: number) => {
-      const tr = document.createElement('tr');
-      tr.dataset.rowIndex = rowIndex.toString();
-
-      columns.forEach((column: any) => {
-        const td = document.createElement('td');
-        const cellValue = row[column.key] || '';
-        td.textContent = cellValue;
-        td.title = cellValue; // Tooltip for truncated text
-
-        if (column.key === mappingKeyColumn) {
-          td.className = 'mapping-key';
-        }
-
-        tr.appendChild(td);
-      });
-
-      // Add click handler
-      tr.addEventListener('click', () => {
-        // Remove previous selection
-        tbody.querySelectorAll('tr.selected').forEach(selectedTr => {
-          selectedTr.classList.remove('selected');
-        });
-
-        // Add selection to clicked row
-        tr.classList.add('selected');
-
-        // Get the mapping key value
-        const mappingKeyIndex = columns.findIndex((col: any) => col.key === mappingKeyColumn);
-        if (mappingKeyIndex >= 0) {
-          const mappingKeyValue = row[mappingKeyColumn];
-          // Ensure the value is converted to string to match the Unicode trait expectation
-          this.model.set('selected_row_id', String(mappingKeyValue));
-          this.touch();
-        }
-      });
-
-      tbody.appendChild(tr);
-    });
-
-    tableElement.appendChild(tbody);
-
-    // Update info display
-    this.updateInfoDisplay(data.rows.length, data.total_rows || data.rows.length);
-  }
-
-  private updateInfoDisplay(filteredCount: number, totalCount: number) {
-    // Remove existing info display
-    const existingInfo = this.el.querySelector('.table-info');
-    if (existingInfo) {
-      existingInfo.remove();
-    }
-
-    // Create new info display
-    const infoDiv = document.createElement('div');
-    infoDiv.className = 'table-info';
-    infoDiv.style.margin = '10px 0';
-    infoDiv.style.fontSize = '14px';
-    infoDiv.style.color = '#666';
-
-    if (filteredCount === totalCount) {
-      infoDiv.textContent = `Showing ${totalCount} entries`;
-    } else {
-      infoDiv.textContent = `Showing ${filteredCount} of ${totalCount} entries (filtered)`;
-    }
-
-    this.el.appendChild(infoDiv);
   }
 }
