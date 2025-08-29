@@ -106,6 +106,13 @@ export class PathwayD3View extends DOMWidgetView {
   private readonly cellHeight = 700;
   private networkCreationTimer: number | null = null;
 
+  // Selection variables
+  private selecting = false;
+  private startPoint: [number, number] | null = null;
+  private lastTransform: d3.ZoomTransform | null = null;
+  private selectionRect: d3.Selection<SVGPathElement, unknown, HTMLElement, any> | null = null;
+  private mouseDownPoint: [number, number] | null = null;
+
   render() {
     this.el.classList.add('pathway-d3-widget');
 
@@ -155,9 +162,25 @@ export class PathwayD3View extends DOMWidgetView {
       event.preventDefault();
     });
 
+    this.svgElement.on('mousedown', (event) => {
+      this.mouseDownPoint = d3.pointer(event, this.svgElement!.node());
+    });
+
     this.svgElement.on('dblclick', () => {
       this.zoomToFit(400);
     });
+
+    // Create selection rectangle
+    this.selectionRect = this.svgElement
+      .append('path')
+      .style('fill', '#ADD8E6')
+      .style('stroke', '#ADD8E6')
+      .style('fill-opacity', 0.3)
+      .style('stroke-opacity', 0.7)
+      .style('stroke-width', 2)
+      .style('stroke-dasharray', '5, 5')
+      .attr('class', 'selection')
+      .attr('visibility', 'hidden');
   }
 
   private setupZoomAndPan(): void {
@@ -170,8 +193,53 @@ export class PathwayD3View extends DOMWidgetView {
 
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.1, 40])
+      .clickDistance(5)
+      .filter((event) => !event.button)
       .on('zoom', (event) => {
+        if (event.sourceEvent?.ctrlKey) {
+          event.sourceEvent.preventDefault();
+        }
+        if (this.selecting) {
+          this.moveSelection(this.startPoint!, d3.pointer(event.sourceEvent, this.svgElement!.node()));
+          return;
+        }
         graphic.attr('transform', event.transform);
+      })
+      .on('start', (event) => {
+        if (event.sourceEvent?.shiftKey) {
+          this.selecting = true;
+          this.startPoint = d3.pointer(event.sourceEvent, this.svgElement!.node());
+          this.lastTransform = event.transform;
+          this.startSelection(this.startPoint);
+        }
+      })
+      .on('end', (event) => {
+        if (event.sourceEvent) {
+          const mouseUpPoint = d3.pointer(event.sourceEvent, this.svgElement!.node());
+          if (this.selecting) {
+            this.selecting = false;
+            this.svgElement!.call(zoom.transform, this.lastTransform!);
+            this.endSelection(this.startPoint!, mouseUpPoint, event.sourceEvent);
+            this.propagateChangeOfSelectedNodes();
+          } else {
+            if (this.mouseDownPoint) {
+              const threshold = 5;
+              if (
+                Math.abs(this.mouseDownPoint[0] - mouseUpPoint[0]) < threshold &&
+                Math.abs(this.mouseDownPoint[1] - mouseUpPoint[1]) < threshold
+              ) {
+                // Only handle empty space clicks, not node clicks
+                const target = event.sourceEvent.target as Element;
+                if (target === this.svgElement!.node()) {
+                  this.endSelection(this.mouseDownPoint, mouseUpPoint, event.sourceEvent);
+                  this.propagateChangeOfSelectedNodes();
+                }
+              }
+            }
+          }
+        }
+        this.mouseDownPoint = null;
+
       });
 
     this.svgElement.call(zoom).on('dblclick.zoom', null);
@@ -731,13 +799,30 @@ export class PathwayD3View extends DOMWidgetView {
   }
 
   private onNodeClicked(node: PathwayNode, event: MouseEvent): void {
+    // Stop event propagation and prevent default to ensure no other handlers interfere
+    event.stopPropagation();
+    event.preventDefault();
+
+    console.log('Node clicked:', node.ID, 'Ctrl/Cmd:', event.ctrlKey || event.metaKey);
+
     const geneId = node.ID;
     const clickedNodes = this.nodes.filter((n) => n.ID === geneId);
 
     if (event.ctrlKey || event.metaKey) {
-      this.selectedNodes = this.selectedNodes.concat(clickedNodes);
+      // Check if node is already selected
+      const isAlreadySelected = this.selectedNodes.some(n => n.ID === geneId);
+      if (isAlreadySelected) {
+        // Remove from selection
+        this.selectedNodes = this.selectedNodes.filter(n => n.ID !== geneId);
+        console.log('Removed from selection. Current selection:', this.selectedNodes.map(n => n.ID));
+      } else {
+        // Add to selection
+        this.selectedNodes = this.selectedNodes.concat(clickedNodes);
+        console.log('Added to selection. Current selection:', this.selectedNodes.map(n => n.ID));
+      }
     } else {
       this.selectedNodes = clickedNodes;
+      console.log('Single selection. Current selection:', this.selectedNodes.map(n => n.ID));
     }
     this.propagateChangeOfSelectedNodes();
   }
@@ -794,6 +879,67 @@ export class PathwayD3View extends DOMWidgetView {
       URL.revokeObjectURL(svgUrl);
     };
     this.el.appendChild(button);
+  }
+
+  // Selection methods
+  private rect(x: number, y: number, w: number, h: number): string {
+    return `M${x},${y} l${w},0 l0,${h} l${-w},0 z`;
+  }
+
+  private startSelection(start: [number, number]): void {
+    if (!this.selectionRect) return;
+    this.selectionRect
+      .attr('d', this.rect(start[0], start[1], 0, 0))
+      .attr('visibility', 'visible');
+  }
+
+  private moveSelection(start: [number, number], moved: [number, number]): void {
+    if (!this.selectionRect) return;
+    this.selectionRect.attr(
+      'd',
+      this.rect(start[0], start[1], moved[0] - start[0], moved[1] - start[1])
+    );
+  }
+
+  private endSelection(start: [number, number], end: [number, number], sourceEvent?: Event): void {
+    if (!this.selectionRect || !this.svgElement) return;
+
+    this.selectionRect.attr('visibility', 'hidden');
+
+    const minX = Math.min(start[0], end[0]);
+    const minY = Math.min(start[1], end[1]);
+    const maxX = Math.max(start[0], end[0]);
+    const maxY = Math.max(start[1], end[1]);
+
+    // Fit the coordinates to the zoom transformation
+    const transform = d3.zoomTransform(this.svgElement.node()!);
+    const adjustedMinX = (minX - transform.x) / transform.k;
+    const adjustedMinY = (minY - transform.y) / transform.k;
+    const adjustedMaxX = (maxX - transform.x) / transform.k;
+    const adjustedMaxY = (maxY - transform.y) / transform.k;
+
+    const intersectingNodes = this.nodes.filter((node) => {
+      return (
+        adjustedMinX <= node.CenterX + node.Width / 2 &&
+        node.CenterX - node.Width / 2 <= adjustedMaxX &&
+        adjustedMinY <= node.CenterY + node.Height / 2 &&
+        node.CenterY - node.Height / 2 <= adjustedMaxY
+      );
+    });
+
+    // Check for Ctrl/Cmd key from various possible event sources
+    let isCtrlOrCmd = false;
+    if (sourceEvent) {
+      const event = sourceEvent as any;
+      isCtrlOrCmd = event.ctrlKey || event.metaKey ||
+        (event.sourceEvent && (event.sourceEvent.ctrlKey || event.sourceEvent.metaKey));
+    }
+
+    if (isCtrlOrCmd) {
+      this.selectedNodes = this.selectedNodes.concat(intersectingNodes);
+    } else {
+      this.selectedNodes = intersectingNodes;
+    }
   }
 }
 
