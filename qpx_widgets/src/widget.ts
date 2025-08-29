@@ -99,8 +99,8 @@ export class PathwayD3View extends DOMWidgetView {
   private nodes: PathwayNode[] = [];
   private selectedNodes: PathwayNode[] = [];
   private svgElement: d3.Selection<SVGSVGElement, unknown, HTMLElement, any> | null = null;
-  private nodeElements: d3.Selection<SVGRectElement, PathwayNode, SVGGElement, unknown> | null = null;
-  private nodeTextElements: d3.Selection<SVGTextElement, PathwayNode, SVGGElement, unknown> | null = null;
+  private nodeElements: d3.Selection<SVGRectElement, PathwayNode, SVGElement, unknown> | null = null;
+  private nodeTextElements: d3.Selection<SVGTextElement, PathwayNode, SVGElement, unknown> | null = null;
   private readonly defaultFont = `"Liberation Sans", Arial, sans-serif`;
   private readonly defaultFontSize = 12;
   private readonly cellHeight = 700;
@@ -269,7 +269,7 @@ export class PathwayD3View extends DOMWidgetView {
     });
   }
 
-  private addMarkers(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>): void {
+  private addMarkers(svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>): void {
     const markerBoxSize = 10;
     const refX = markerBoxSize;
     const refY = markerBoxSize / 2;
@@ -343,29 +343,201 @@ export class PathwayD3View extends DOMWidgetView {
 
   private drawLinks(links: PathwayLink[], svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>): void {
     if (!this.svgElement) return;
-
-    this.addMarkers(this.svgElement);
+    const markerBoxSize = 10;
 
     links.forEach((link) => {
-      const group = svg.append('g');
+      link.pointsAfterOffset = link.points.map((point) => {
+        return {
+          X: point.X + (point.RelX || 0),
+          Y: point.Y + (point.RelY || 0),
+        };
+      });
+      if (
+        link.points[0].ArrowHead === "mim-inhibition" ||
+        link.points[link.points.length - 1].ArrowHead === "mim-inhibition"
+      ) {
+        let length = Math.sqrt(
+          Math.pow(
+            link.points[link.points.length - 1].X - link.points[0].X,
+            2
+          ) +
+          Math.pow(
+            link.points[link.points.length - 1].Y - link.points[0].Y,
+            2
+          )
+        );
+        let cosine =
+          (link.points[link.points.length - 1].X - link.points[0].X) / length;
+        let sine =
+          (link.points[link.points.length - 1].Y - link.points[0].Y) / length;
 
-      for (let i = 0; i < link.points.length - 1; i++) {
-        const point1 = link.points[i];
-        const point2 = link.points[i + 1];
-
-        group
-          .append('line')
-          .attr('x1', point1.X + (point1.RelX || 0))
-          .attr('y1', point1.Y + (point1.RelY || 0))
-          .attr('x2', point2.X + (point2.RelX || 0))
-          .attr('y2', point2.Y + (point2.RelY || 0))
-          .attr('stroke', 'black')
-          .attr('marker-start', this.arrowHeadType(point1.ArrowHead))
-          .attr('marker-end', this.arrowHeadType(point2.ArrowHead))
-          .attr('stroke-dasharray', link.Graphics?.LineStyle === 'Broken' ? '5,5' : null)
-          .attr('fill', 'none');
+        if (link.points[0].ArrowHead === "mim-inhibition") {
+          link.pointsAfterOffset![0].X += (cosine * markerBoxSize) / 2;
+          link.pointsAfterOffset![0].Y += (sine * markerBoxSize) / 2;
+        } else {
+          link.pointsAfterOffset![link.points.length - 1].X -=
+            (cosine * markerBoxSize) / 2;
+          link.pointsAfterOffset![link.points.length - 1].Y -=
+            (sine * markerBoxSize) / 2;
+        }
       }
     });
+
+    const connectionSide = (relX?: number, relY?: number): string | null => {
+      if ((relX === null || relX === undefined) && (relY === null || relY === undefined)) {
+        return null;
+      }
+      if (Math.abs(relX || 0) > Math.abs(relY || 0)) {
+        if ((relX || 0) > 0) {
+          return "east";
+        } else {
+          return "west";
+        }
+      } else {
+        if ((relY || 0) > 0) {
+          return "south";
+        } else {
+          return "north";
+        }
+      }
+    };
+
+    const calculateWayPoints = (connectionPoints: PathwayPoint[]): PathwayPoint[] => {
+      let wayPoints: PathwayPoint[] = [];
+      const SEGMENT_OFFSET = 20; // 中継点のオフセット
+      let previousHorizontal = false;
+      for (let i = 0; i < connectionPoints.length - 1; i++) {
+        let point1 = connectionPoints[i];
+        let point2 = connectionPoints[i + 1];
+        let side1 = connectionSide(point1.RelX, point1.RelY);
+        let side2 = connectionSide(point2.RelX, point2.RelY);
+
+        let horizontal1 = side1 === "west" || side1 === "east";
+        let horizontal2 = side2 === "west" || side2 === "east";
+        wayPoints.push(point1);
+
+        if (side1 === null) {
+          // RelXやRelYから方向が決定できない場合
+          if (!previousHorizontal) {
+            // 直前と垂直な方向に曲げる
+            wayPoints.push({
+              X: point2.X,
+              Y: point1.Y,
+            });
+            previousHorizontal = true;
+          } else {
+            wayPoints.push({
+              X: point1.X,
+              Y: point2.Y,
+            });
+            previousHorizontal = false;
+          }
+        } else {
+          previousHorizontal = horizontal1;
+          if ((horizontal1 && horizontal2) || (!horizontal1 && !horizontal2)) {
+            // 中継点を挟む場合
+            if (horizontal1) {
+              wayPoints.push({
+                X:
+                  point1.X +
+                  SEGMENT_OFFSET * (point2.X - point1.X > 0 ? 1 : -1),
+                Y: point1.Y,
+              });
+              wayPoints.push({
+                X:
+                  point1.X +
+                  SEGMENT_OFFSET * (point2.X - point1.X > 0 ? 1 : -1),
+                Y: point2.Y,
+              });
+            } else {
+              wayPoints.push({
+                X: point1.X,
+                Y:
+                  point1.Y +
+                  SEGMENT_OFFSET * (point2.Y - point1.Y > 0 ? 1 : -1),
+              });
+              wayPoints.push({
+                X: point2.X,
+                Y:
+                  point1.Y +
+                  SEGMENT_OFFSET * (point2.Y - point1.Y > 0 ? 1 : -1),
+              });
+            }
+          } else {
+            // シンプルなL字型
+            if (horizontal1) {
+              wayPoints.push({
+                X: point2.X,
+                Y: point1.Y,
+              });
+            } else {
+              wayPoints.push({
+                X: point1.X,
+                Y: point2.Y,
+              });
+            }
+          }
+        }
+      }
+      wayPoints.push(connectionPoints[connectionPoints.length - 1]);
+      return wayPoints;
+    };
+
+    const drawLine = (
+      d3Selector: any,
+      point1: PathwayPoint,
+      point2: PathwayPoint,
+      lineStyle?: string,
+      startArrowHeadType?: string,
+      endArrowHeadType?: string
+    ): void => {
+      d3Selector
+        .append("line")
+        .attr("x1", point1.X)
+        .attr("y1", point1.Y)
+        .attr("x2", point2.X)
+        .attr("y2", point2.Y)
+        .attr("stroke", "black")
+        .attr("marker-start", startArrowHeadType || "")
+        .attr("marker-end", endArrowHeadType || "")
+        .attr("stroke-dasharray", lineStyle === "Broken" ? "5,5" : null)
+        .attr("fill", "none");
+    };
+
+    const self = this;
+    svg
+      .selectAll("line")
+      .data(links)
+      .enter()
+      .each(function (d) {
+        const currentSelection = d3.select(this as any);
+        if (d.Graphics?.ConnectorType === "Elbow") {
+          let wayPoints = calculateWayPoints(d.points);
+          for (let i = 0; i < wayPoints.length - 1; i++) {
+            drawLine(
+              currentSelection,
+              wayPoints[i],
+              wayPoints[i + 1],
+              d.Graphics?.LineStyle,
+              self.arrowHeadType(wayPoints[i].ArrowHead),
+              self.arrowHeadType(wayPoints[i + 1].ArrowHead)
+            );
+          }
+        } else if (d.pointsAfterOffset) {
+          for (let i = 0; i < d.pointsAfterOffset.length - 1; i++) {
+            drawLine(
+              currentSelection,
+              d.pointsAfterOffset[i],
+              d.pointsAfterOffset[i + 1],
+              d.Graphics?.LineStyle,
+              self.arrowHeadType(d.pointsAfterOffset[i].ArrowHead),
+              self.arrowHeadType(d.pointsAfterOffset[i + 1].ArrowHead)
+            );
+          }
+        }
+      });
+
+    this.addMarkers(svg);
   }
 
   private drawNodes(nodes: PathwayNode[], graphic: d3.Selection<SVGGElement, unknown, HTMLElement, any>): void {
@@ -482,7 +654,6 @@ export class PathwayD3View extends DOMWidgetView {
       .attr('fill', 'black')
       .attr('font-weight', 'bold')
       .text(`Name: ${pathway.Name}`);
-
     svg
       .append('text')
       .attr('x', 10)
