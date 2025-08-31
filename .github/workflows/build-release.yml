@@ -1,0 +1,64 @@
+name: Build and Release qpx_widgets
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
+
+      - name: Install Python dependencies
+        working-directory: qpx_widgets
+        run: |
+          python -m pip install --upgrade pip
+          pip install build hatch
+          pip install jupyterlab>=4.0.0
+
+      - name: Install Node dependencies
+        working-directory: qpx_widgets
+        run: |
+          npm install -g yarn
+          yarn install
+
+      - name: Build the extension
+        working-directory: qpx_widgets
+        run: |
+          yarn run build:prod
+          python -m build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: qpx_widgets-dist
+          path: qpx_widgets/dist/*
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: qpx_widgets/dist/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
