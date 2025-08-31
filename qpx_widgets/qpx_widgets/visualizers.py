@@ -20,7 +20,7 @@ from ipywidgets import interact, interactive, widgets
 from .pathway_d3_visualizer_widget import PathwayD3VisualizerWidget
 from .heatmap_visualizer_widget import HeatmapVisualizerWidget
 from .data_table_widget import DataTableWidget
-
+from .gpml_parser import GpmlParser
 
 class GpmlD3Visualizer:
     def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4):
@@ -55,12 +55,10 @@ class GpmlD3Visualizer:
 
         def visualize(gpml_file: str):
             # Import GpmlParser locally to avoid circular imports
-            from src.gpml_parser import GpmlParser
             self.visualizer_widget.pathway_data = json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, gpml_file)).data)
             display(self.visualizer_widget)
 
         # Import GpmlParser locally to avoid circular imports
-        from src.gpml_parser import GpmlParser
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})

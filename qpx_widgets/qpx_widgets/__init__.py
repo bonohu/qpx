@@ -8,6 +8,7 @@ from .pathway_d3_visualizer_widget import PathwayD3VisualizerWidget, PathwayD3Mo
 from .heatmap_visualizer_widget import HeatmapVisualizerWidget, HeatmapModel
 from .data_table_widget import DataTableWidget
 from .visualizers import GpmlD3Visualizer, GeneSearchForm
+from .gpml_parser import GpmlParser
 from ._version import __version__, version_info
 
 def _jupyter_labextension_paths():
