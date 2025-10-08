@@ -264,6 +264,7 @@ export class PathwayD3View extends DOMWidgetView {
     switch (gpmlArrowType) {
       case 'Arrow':
       case 'mim-conversion':
+      case 'mim-modification':
         return 'url(#marker-arrow)'; // -▶
       case 'mim-catalysis':
         return 'url(#marker-circle)';  // -◯
