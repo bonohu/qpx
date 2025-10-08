@@ -271,6 +271,9 @@ export class PathwayD3View extends DOMWidgetView {
         return 'url(#marker-pipe)';  // -┃
       case 'mim-modification':
         return 'url(#marker-open-arrow)';  // ->
+      case "mim-stimulation":
+      case "mim-necessary-stimulation":
+        return 'url(#marker-white-arrow)';  // -▷
       default:
         return '';
     }
@@ -406,6 +409,21 @@ export class PathwayD3View extends DOMWidgetView {
       .append('polyline')
       .attr('points', `0,0 ${markerBoxSize},${markerBoxSize / 2} 0,${markerBoxSize}`)
       .attr('fill', 'transparent')
+      .attr('stroke', '#000000');
+
+    // White arrow marker
+    defs
+      .append('marker')
+      .attr('id', 'marker-white-arrow')
+      .attr('viewBox', [0, 0, markerBoxSize, markerBoxSize])
+      .attr('refX', refX)
+      .attr('refY', refY)
+      .attr('markerWidth', markerBoxSize)
+      .attr('markerHeight', markerBoxSize)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', `M ${markerBoxSize} ${markerBoxSize / 2} L 0 ${markerBoxSize} L 0 0 z`)
+      .attr('fill', 'white')
       .attr('stroke', '#000000');
   }
 
