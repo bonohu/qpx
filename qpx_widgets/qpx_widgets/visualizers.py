@@ -25,19 +25,44 @@ from .gpml_parser import GpmlParser
 class GpmlD3Visualizer:
     def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4):
         self.gpml_dir_path = gpml_dir_path
-        temp_df = pl.read_csv(expression_data_path, separator='\t', n_rows=1)
-        columns = temp_df.columns
-        dtypes = {col: pl.Float64 for col in columns[expression_columns_index:]}  # 4列目以降を数値として指定
-        dtypes["xref_id"] = pl.Int64  # "xref_id"列を整数として指定
-        self.expression_data = pl.read_csv(expression_data_path, separator='\t', ignore_errors=True, dtypes=dtypes)
-        self.heatmap_widget = HeatmapVisualizerWidget(expression_data=open(expression_data_path).read(), expression_columns_index=expression_columns_index, filter_key=filter_key)
-        self.selected_expression_data = self.expression_data
         self.filter_key = filter_key
-        if filter_key not in self.expression_data.columns:
-            raise ValueError(f"Column {filter_key} not found in expression data")
+        self.expression_columns_index = expression_columns_index
+        
+        # Handle both single path (str) and multiple paths (list)
+        if isinstance(expression_data_path, str):
+            expression_data_paths = [expression_data_path]
+        else:
+            expression_data_paths = list(expression_data_path)
+        
+        # Load all expression data and create heatmap widgets
+        self.expression_data_list = []
+        self.heatmap_widgets = []
+        
+        for path in expression_data_paths:
+            temp_df = pl.read_csv(path, separator='\t', n_rows=1)
+            columns = temp_df.columns
+            dtypes = {col: pl.Float64 for col in columns[expression_columns_index:]}  # 4列目以降を数値として指定
+            dtypes["xref_id"] = pl.Int64  # "xref_id"列を整数として指定
+            expression_data = pl.read_csv(path, separator='\t', ignore_errors=True, dtypes=dtypes)
+            
+            # Validate filter_key
+            if filter_key not in expression_data.columns:
+                raise ValueError(f"Column {filter_key} not found in expression data at {path}")
+            
+            # Store expression data
+            self.expression_data_list.append(expression_data)
+            
+            # Create heatmap widget
+            heatmap_widget = HeatmapVisualizerWidget(
+                expression_data=open(path).read(),
+                expression_columns_index=expression_columns_index,
+                filter_key=filter_key
+            )
+            self.heatmap_widgets.append(heatmap_widget)
+        
+        self.selected_expression_data = self.expression_data_list[0]
         self.visualizer = None
         self.selected_gpml_file = None
-        self.expression_columns_index = expression_columns_index
     
 
     def show(self):
@@ -57,6 +82,10 @@ class GpmlD3Visualizer:
             # Import GpmlParser locally to avoid circular imports
             self.visualizer_widget.pathway_data = json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, gpml_file)).data)
             display(self.visualizer_widget)
+            
+            # Display all heatmap widgets
+            for heatmap_widget in self.heatmap_widgets:
+                display(heatmap_widget)
 
         # Import GpmlParser locally to avoid circular imports
         self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
@@ -71,11 +100,14 @@ class GpmlD3Visualizer:
                 gids = []
 
             if len(original_gids) > 0 and original_gids[0] != "":
-                selected_expression_data = self.expression_data.filter(pl.col('xref_id').is_in(gids))
+                selected_expression_data = self.expression_data_list[0].filter(pl.col('xref_id').is_in(gids))
             else:
-                selected_expression_data = self.expression_data                
+                selected_expression_data = self.expression_data_list[0]
             self.selected_expression_data = selected_expression_data
-            self.heatmap_widget.selected_gene_ids = original_gids
+            
+            # Update all heatmap widgets with the selected gene IDs
+            for heatmap_widget in self.heatmap_widgets:
+                heatmap_widget.selected_gene_ids = original_gids
 
         self.visualizer_widget.observe(on_gene_ids_change, names='value')
         
@@ -84,7 +116,7 @@ class GpmlD3Visualizer:
                 widgets.HBox([widgets.Label(value='Select GPML file:'), 
                     dropdown]),
                 self.interactive_visualizer,      
-                self.heatmap_widget
+                *self.heatmap_widgets
             ]
         )
 
