@@ -133,7 +133,7 @@ export class PathwayD3View extends DOMWidgetView {
 
     // Create container div
     const containerDiv = document.createElement('div');
-    containerDiv.id = 'd3DemoDiv';
+    containerDiv.id = `d3DemoDiv-${this.cid}`;
     this.el.appendChild(containerDiv);
 
     if (this.networkCreationTimer) {
@@ -164,11 +164,11 @@ export class PathwayD3View extends DOMWidgetView {
   }
 
   private createSVG(): void {
-    const container = d3.select('#d3DemoDiv');
+    const container = d3.select(`#d3DemoDiv-${this.cid}`);
 
     this.svgElement = container
       .append('svg')
-      .attr('id', 'svg2')
+      .attr('id', `svg2-${this.cid}`)
       .style('width', '100%')
       .style('height', `${this.cellHeight}px`)
       .style('background-color', '#fff');
@@ -878,7 +878,7 @@ export class PathwayD3View extends DOMWidgetView {
       bounds.height = Math.max(bounds.height, nodeBounds.y - bounds.y + nodeBounds.height);
     });
 
-    const svgElement = document.getElementById('svg2');
+    const svgElement = document.getElementById(`svg2-${this.cid}`);
     if (!svgElement) return;
 
     const fullWidth = svgElement.clientWidth;
@@ -973,7 +973,7 @@ export class PathwayD3View extends DOMWidgetView {
     const button = document.createElement('button');
     button.innerHTML = 'Download Pathway as SVG';
     button.onclick = () => {
-      const svg = document.getElementById('svg2');
+      const svg = document.getElementById(`svg2-${this.cid}`);
       if (!svg) return;
 
       const svgData = new XMLSerializer().serializeToString(svg);
@@ -1093,8 +1093,8 @@ export class HeatmapView extends DOMWidgetView {
 
     // Create table element
     const tableDiv = document.createElement('table');
-    tableDiv.id = 'heatmap-div';
-    tableDiv.className = 'row-border nowrap';
+    tableDiv.id = `heatmap-div-${this.cid}`;
+    tableDiv.className = 'heatmap-div row-border nowrap';
     this.el.appendChild(tableDiv);
 
     // Show loading spinner
@@ -1179,7 +1179,7 @@ export class HeatmapView extends DOMWidgetView {
       const defaultColor = [250, 250, 255];
 
       // Initialize DataTable
-      this.table = new DataTable('#heatmap-div', {
+      this.table = new DataTable(`#heatmap-div-${this.cid}`, {
         data: data,
         columns: headers.map((x: string) => ({ title: x })),
         columnDefs: [
@@ -1200,7 +1200,7 @@ export class HeatmapView extends DOMWidgetView {
           {
             text: 'Download Table as PNG',
             action: () => {
-              html2canvas(document.getElementById('heatmap-div')!, {
+              html2canvas(document.getElementById(`heatmap-div-${this.cid}`)!, {
                 scale: 2,
               }).then((canvas: HTMLCanvasElement) => {
                 const img = canvas.toDataURL('image/png');
@@ -1349,13 +1349,15 @@ export class DataTableView extends DOMWidgetView {
   private table: any = null;
   private mappingKeyColumn: string = '';
   private searchColumnIndex: number = 0;
+  private tableSelector: string = '';
 
   render() {
     this.el.classList.add('data-table-widget');
 
     // Create table element
     const tableDiv = document.createElement('table');
-    tableDiv.id = 'gene-data-table';
+    tableDiv.id = `gene-data-table-${this.cid}`;
+    this.tableSelector = `#gene-data-table-${this.cid}`;
     tableDiv.className = 'row-border nowrap';
     this.el.appendChild(tableDiv);
 
@@ -1411,7 +1413,7 @@ export class DataTableView extends DOMWidgetView {
     }
 
     // Clear table element
-    const tableElement = document.getElementById('gene-data-table');
+    const tableElement = document.getElementById(`gene-data-table-${this.cid}`);
     if (!tableElement) return;
     tableElement.innerHTML = '';
 
@@ -1427,7 +1429,7 @@ export class DataTableView extends DOMWidgetView {
     }));
 
     // Initialize DataTable
-    this.table = new (window as any).DataTable('#gene-data-table', {
+    this.table = new (window as any).DataTable(this.tableSelector, {
       data: data.rows,
       columns: dtColumns,
       columnDefs: [

@@ -60,10 +60,14 @@ class GpmlD3Visualizer:
             )
             self.heatmap_widgets.append(heatmap_widget)
         
-        self.selected_expression_data = self.expression_data_list[0]
+        self.selected_expression_data_list = self.expression_data_list
         self.visualizer = None
         self.selected_gpml_file = None
     
+    @property
+    def selected_expression_data(self):
+        """Return the first element of selected_expression_data_list"""
+        return self.selected_expression_data_list[0] if self.selected_expression_data_list else None
 
     def show(self):
         gpml_files = glob.glob("{}/*.gpml".format(self.gpml_dir_path))
@@ -100,10 +104,10 @@ class GpmlD3Visualizer:
                 gids = []
 
             if len(original_gids) > 0 and original_gids[0] != "":
-                selected_expression_data = self.expression_data_list[0].filter(pl.col('xref_id').is_in(gids))
+                selected_expression_data = [data.filter(pl.col('xref_id').is_in(gids)) for data in self.expression_data_list]
             else:
-                selected_expression_data = self.expression_data_list[0]
-            self.selected_expression_data = selected_expression_data
+                selected_expression_data = self.expression_data_list
+            self.selected_expression_data_list = selected_expression_data
             
             # Update all heatmap widgets with the selected gene IDs
             for heatmap_widget in self.heatmap_widgets:
@@ -116,7 +120,6 @@ class GpmlD3Visualizer:
                 widgets.HBox([widgets.Label(value='Select GPML file:'), 
                     dropdown]),
                 self.interactive_visualizer,      
-                *self.heatmap_widgets
             ]
         )
 
