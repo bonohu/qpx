@@ -816,7 +816,14 @@ export class PathwayD3View extends DOMWidgetView {
             .attr('font-size', '11px')
             .attr('font-weight', 'bold')
             .text(`${index + 1}. ${pub.title}`)
-            .style('cursor', pub.pubmed_id ? 'pointer' : 'default');
+            .style('cursor', pub.pubmed_id ? 'pointer' : 'default')
+            .on("mousedown", function (e) {
+              e.stopPropagation();
+            })
+            .style('user-select', 'text')
+            .style('-webkit-user-select', 'text')
+            .style('-moz-user-select', 'text')
+            .style('-ms-user-select', 'text');
           if (pub.pubmed_id) {
             svg
               .selectAll('text.publicationTitle')
@@ -836,7 +843,11 @@ export class PathwayD3View extends DOMWidgetView {
             .attr('class', 'publicationAuthors')
             .attr('fill', 'black')
             .attr('font-size', '11px')
-            .text(`Authors: ${pub.authors}`);
+            .text(`Authors: ${pub.authors}`)
+            .style('user-select', 'text')
+            .style('-webkit-user-select', 'text')
+            .style('-moz-user-select', 'text')
+            .style('-ms-user-select', 'text');
           yOffset += 15;
         }
         yOffset += 5; // Extra spacing between publications

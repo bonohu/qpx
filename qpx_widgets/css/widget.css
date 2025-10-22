@@ -52,3 +52,12 @@
 .pathway-d3-widget button:hover {
   background-color: #0056b3;
 }
+
+/* Publication text selection styles */
+.pathway-d3-widget text.publicationTitle,
+.pathway-d3-widget text.publicationAuthors {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
