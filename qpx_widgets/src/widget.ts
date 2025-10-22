@@ -58,6 +58,20 @@ interface PathwayInfo {
   Name: string;
   'Last-Modified'?: string;
   Organism: string;
+  Author?: string;
+  'Data-Source'?: string;
+  Version?: string;
+  Description?: string;
+}
+
+interface Publication {
+  id: string;
+  pubmed_id?: string;
+  database?: string;
+  title?: string;
+  source?: string;
+  year?: string;
+  authors: string[];
 }
 
 interface PathwayData {
@@ -66,6 +80,7 @@ interface PathwayData {
   groups: PathwayGroup[];
   shapes: any[];
   pathway: PathwayInfo;
+  publications: Publication[];
 }
 
 export class PathwayD3Model extends DOMWidgetModel {
@@ -257,7 +272,7 @@ export class PathwayD3View extends DOMWidgetView {
     this.drawNodes(this.nodes, secondLayer);
     this.drawArcs(secondLayer, pathwayData);
     this.drawNodeTexts(this.nodes, secondLayer);
-    this.drawHeader(this.svgElement, pathwayData.pathway);
+    this.drawHeader(this.svgElement, pathwayData.pathway, pathwayData.publications || []);
   }
 
   private arrowHeadType(gpmlArrowType?: string): string {
@@ -732,34 +747,101 @@ export class PathwayD3View extends DOMWidgetView {
       });
   }
 
-  private drawHeader(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>, pathway: PathwayInfo): void {
+  private drawHeader(svg: d3.Selection<SVGSVGElement, unknown, HTMLElement, any>, pathway: PathwayInfo, publications: Publication[]): void {
+    let yOffset = 10;
+    const lineHeight = 20;
+    const leftMargin = 10;
+
+    // Pathway Name
     svg
       .append('text')
-      .attr('x', 10)
-      .attr('y', 10)
+      .attr('x', leftMargin)
+      .attr('y', yOffset)
       .attr('class', 'pathwayName')
       .attr('fill', 'black')
       .attr('font-weight', 'bold')
-      .text(`Name: ${pathway.Name}`);
-    svg
-      .append('text')
-      .attr('x', 10)
-      .attr('y', 10)
-      .attr('dy', '1.5em')
-      .attr('class', 'pathwayVersion')
-      .attr('font-weight', 'bold')
-      .attr('fill', 'black')
-      .text(`Last Modified: ${pathway['Last-Modified'] || 'Unknown'}`);
+      .attr('font-size', '16px')
+      .text(`${pathway.Name}`);
+    yOffset += lineHeight;
 
+    // Organism
     svg
       .append('text')
-      .attr('x', 10)
-      .attr('y', 10)
-      .attr('dy', '3em')
+      .attr('x', leftMargin)
+      .attr('y', yOffset)
       .attr('class', 'pathwayOrganism')
-      .attr('font-weight', 'bold')
       .attr('fill', 'black')
+      .attr('font-size', '12px')
       .text(`Organism: ${pathway.Organism}`);
+    yOffset += lineHeight;
+
+    console.log({ pathway })
+
+    // Author
+    if (pathway.Author) {
+      svg
+        .append('text')
+        .attr('x', leftMargin)
+        .attr('y', yOffset)
+        .attr('class', 'pathwayAuthor')
+        .attr('fill', 'black')
+        .attr('font-size', '12px')
+        .text(`Authors: ${pathway.Author}`);
+      yOffset += lineHeight;
+    }
+
+    // Publications
+    if (publications && publications.length > 0) {
+      yOffset += 5;
+      svg
+        .append('text')
+        .attr('x', leftMargin)
+        .attr('y', yOffset)
+        .attr('class', 'publicationsTitle')
+        .attr('fill', 'black')
+        .attr('font-weight', 'bold')
+        .attr('font-size', '12px')
+        .text('Publications:');
+      yOffset += lineHeight;
+
+      publications.forEach((pub, index) => {
+        // Publication title with PubMed link
+        if (pub.title) {
+          svg
+            .append('text')
+            .attr('x', leftMargin + 10)
+            .attr('y', yOffset)
+            .attr('class', 'publicationTitle')
+            .attr('fill', pub.pubmed_id ? '#0066cc' : 'black')
+            .attr('font-size', '11px')
+            .attr('font-weight', 'bold')
+            .text(`${index + 1}. ${pub.title}`)
+            .style('cursor', pub.pubmed_id ? 'pointer' : 'default');
+          if (pub.pubmed_id) {
+            svg
+              .selectAll('text.publicationTitle')
+              .filter((d, i, nodes) => i === nodes.length - 1)
+              .on('click', () => {
+                const url = `https://pubmed.ncbi.nlm.nih.gov/${pub.pubmed_id}/`;
+                window.open(url, '_blank');
+              });
+          }
+          yOffset += 15;
+        }
+        if (pub.authors) {
+          svg
+            .append('text')
+            .attr('x', leftMargin + 20)
+            .attr('y', yOffset)
+            .attr('class', 'publicationAuthors')
+            .attr('fill', 'black')
+            .attr('font-size', '11px')
+            .text(`Authors: ${pub.authors}`);
+          yOffset += 15;
+        }
+        yOffset += 5; // Extra spacing between publications
+      });
+    }
   }
 
   private zoomToFit(duration: number = 0): void {
