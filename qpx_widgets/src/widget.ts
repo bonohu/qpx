@@ -136,6 +136,7 @@ export class PathwayD3View extends DOMWidgetView {
 
   // Comment tooltip variables
   private commentTooltip: HTMLElement | null = null;
+  private commentDisplayMode: 'always' | 'hover' | 'never' = 'hover';
 
   render() {
     this.el.classList.add('pathway-d3-widget');
@@ -145,6 +146,9 @@ export class PathwayD3View extends DOMWidgetView {
     containerDiv.id = `d3DemoDiv-${this.cid}`;
     this.el.appendChild(containerDiv);
 
+    // Create control panel for comment display options
+    this.createCommentDisplayOptions();
+
     if (this.networkCreationTimer) {
       clearTimeout(this.networkCreationTimer);
     }
@@ -153,6 +157,62 @@ export class PathwayD3View extends DOMWidgetView {
       this.createNetwork();
       this.addDownloadButton();
     }, 500);
+  }
+
+  private createCommentDisplayOptions(): void {
+    const controlPanel = document.createElement('div');
+    controlPanel.id = `comment-controls-${this.cid}`;
+    controlPanel.style.position = 'absolute';
+    controlPanel.style.top = '10px';
+    controlPanel.style.right = '10px';
+    controlPanel.style.zIndex = '1000';
+    controlPanel.style.backgroundColor = '#f5f5f5';
+    controlPanel.style.border = '1px solid #ddd';
+    controlPanel.style.borderRadius = '4px';
+    controlPanel.style.padding = '10px';
+    controlPanel.style.fontSize = '12px';
+    controlPanel.style.fontFamily = 'Arial, sans-serif';
+
+    const label = document.createElement('label');
+    label.style.display = 'block';
+    label.style.marginBottom = '5px';
+    label.style.fontWeight = 'bold';
+    label.textContent = 'Comments:';
+    controlPanel.appendChild(label);
+
+    const options = [
+      { value: 'always', label: 'Always Show' },
+      { value: 'hover', label: 'On Hover' },
+      { value: 'never', label: 'Hide' },
+    ];
+
+    options.forEach((option) => {
+      const radioContainer = document.createElement('div');
+      radioContainer.style.marginBottom = '3px';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = `comment-mode-${this.cid}`;
+      radio.value = option.value;
+      radio.checked = option.value === 'hover';
+      radio.style.marginRight = '5px';
+      radio.onchange = () => {
+        this.commentDisplayMode = option.value as 'always' | 'hover' | 'never';
+        this.updateCommentDisplay();
+      };
+
+      const radioLabel = document.createElement('label');
+      radioLabel.style.marginRight = '10px';
+      radioLabel.style.cursor = 'pointer';
+      radioLabel.textContent = option.label;
+      radioLabel.prepend(radio);
+
+      radioContainer.appendChild(radioLabel);
+      controlPanel.appendChild(radioContainer);
+    });
+
+    this.el.appendChild(controlPanel);
+    this.el.style.position = 'relative';
   }
 
   private createNetwork(): void {
@@ -165,7 +225,6 @@ export class PathwayD3View extends DOMWidgetView {
 
     const pathwayData: PathwayData = JSON.parse(pathwayDataStr);
     this.nodes = pathwayData.nodes;
-    console.log({ pathwayData });
 
     this.createSVG();
     this.setupZoomAndPan();
@@ -676,12 +735,14 @@ export class PathwayD3View extends DOMWidgetView {
         event.stopPropagation();
       })
       .on('mouseenter', (event, d) => {
-        if (d.Comments && d.Comments.length > 0) {
+        if (d.Comments && d.Comments.length > 0 && this.commentDisplayMode === 'hover') {
           this.showCommentTooltip(event, d);
         }
       })
       .on('mouseleave', () => {
-        this.hideCommentTooltip();
+        if (this.commentDisplayMode === 'hover') {
+          this.hideCommentTooltip();
+        }
       });
   }
 
@@ -721,12 +782,14 @@ export class PathwayD3View extends DOMWidgetView {
         event.stopPropagation();
       })
       .on('mouseenter', (event, d) => {
-        if (d.Comments && d.Comments.length > 0) {
+        if (d.Comments && d.Comments.length > 0 && this.commentDisplayMode === 'hover') {
           this.showCommentTooltip(event, d);
         }
       })
       .on('mouseleave', () => {
-        this.hideCommentTooltip();
+        if (this.commentDisplayMode === 'hover') {
+          this.hideCommentTooltip();
+        }
       });
   }
 
@@ -1071,6 +1134,57 @@ export class PathwayD3View extends DOMWidgetView {
       "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, (m) => map[m]);
+  }
+
+  private updateCommentDisplay(): void {
+    // Clear previous comment displays
+    const existingComments = this.svgElement?.selectAll('g.comments-group');
+    console.log('Updating comment display mode to:', existingComments);
+    if (existingComments && !existingComments.empty()) {
+      existingComments.remove();
+    }
+
+    if (this.commentDisplayMode === 'never') {
+      this.hideCommentTooltip();
+      return;
+    }
+
+    if (this.commentDisplayMode === 'always' && this.svgElement) {
+      // Display comments for all nodes with comments
+      const graphic = this.svgElement.select('#graphic-root');
+      if (!graphic.empty()) {
+        const commentsGroup = graphic.append('g').attr('class', 'comments-group');
+
+        this.nodes.forEach((node) => {
+          if (node.Comments && node.Comments.length > 0) {
+            let commentText = '';
+            node.Comments.forEach((comment, index) => {
+              if (comment.source) {
+                commentText += `[${comment.source}] ${comment.text}`;
+              } else {
+                commentText += comment.text;
+              }
+              if (index < node.Comments!.length - 1) {
+                commentText += '\n';
+              }
+            });
+
+            // Create comment text element
+            commentsGroup
+              .append('text')
+              .attr('x', node.CenterX)
+              .attr('y', node.CenterY + node.Height / 2 + 20)
+              .attr('class', `comment-text comment-${node.ID}`)
+              .style('font-size', '10px')
+              .style('fill', '#666')
+              .style('text-anchor', 'middle')
+              .style('pointer-events', 'none')
+              .style('white-space', 'pre-wrap')
+              .html(commentText.split('\n').map((line, i) => `<tspan x="${node.CenterX}" dy="${i === 0 ? 0 : 12}">${this.escapeHtml(line)}</tspan>`).join(''));
+          }
+        });
+      }
+    }
   }
 
   // Selection methods
