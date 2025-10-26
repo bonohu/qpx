@@ -23,10 +23,15 @@ from .data_table_widget import DataTableWidget
 from .gpml_parser import GpmlParser
 
 class GpmlD3Visualizer:
-    def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4):
+    def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4, comment_display_mode="hover"):
         self.gpml_dir_path = gpml_dir_path
         self.filter_key = filter_key
         self.expression_columns_index = expression_columns_index
+        self.comment_display_mode = comment_display_mode
+        
+        # Validate comment_display_mode
+        if comment_display_mode not in ("always", "hover", "never"):
+            raise ValueError(f"comment_display_mode must be 'always', 'hover', or 'never', got '{comment_display_mode}'")
         
         # Handle both single path (str) and multiple paths (list)
         if isinstance(expression_data_path, str):
@@ -92,7 +97,10 @@ class GpmlD3Visualizer:
                 display(heatmap_widget)
 
         # Import GpmlParser locally to avoid circular imports
-        self.visualizer_widget = PathwayD3VisualizerWidget(pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data))
+        self.visualizer_widget = PathwayD3VisualizerWidget(
+            pathway_data=json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, self.selected_gpml_file)).data),
+            comment_display_mode=self.comment_display_mode
+        )
 
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 

@@ -23,10 +23,12 @@ class PathwayD3Model(DOMWidget):
 
     value = traitlets.List([], help="Selected node IDs").tag(sync=True)
     pathway_data = Unicode('{}', help="JSON string of pathway data").tag(sync=True)
+    comment_display_mode = Unicode('hover', help="Comment display mode: 'always', 'hover', or 'never'").tag(sync=True)
     
-    def __init__(self, pathway_data='{}', **kwargs):
+    def __init__(self, pathway_data='{}', comment_display_mode='hover', **kwargs):
         super().__init__(**kwargs)
         self.pathway_data = pathway_data
+        self.comment_display_mode = comment_display_mode
 
     @property
     def selected_gene_ids(self):

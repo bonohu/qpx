@@ -101,6 +101,7 @@ export class PathwayD3Model extends DOMWidgetModel {
       _view_module_version: PathwayD3Model.view_module_version,
       value: [],
       pathway_data: '{}',
+      comment_display_mode: 'hover',
     };
   }
 
@@ -180,6 +181,10 @@ export class PathwayD3View extends DOMWidgetView {
     label.textContent = 'Comments:';
     controlPanel.appendChild(label);
 
+    // Get initial mode from model
+    const initialMode = (this.model.get('comment_display_mode') || 'hover') as 'always' | 'hover' | 'never';
+    this.commentDisplayMode = initialMode;
+
     const options = [
       { value: 'always', label: 'Always Show' },
       { value: 'hover', label: 'On Hover' },
@@ -194,7 +199,7 @@ export class PathwayD3View extends DOMWidgetView {
       radio.type = 'radio';
       radio.name = `comment-mode-${this.cid}`;
       radio.value = option.value;
-      radio.checked = option.value === 'hover';
+      radio.checked = option.value === initialMode;
       radio.style.marginRight = '5px';
       radio.onchange = () => {
         this.commentDisplayMode = option.value as 'always' | 'hover' | 'never';
@@ -230,6 +235,9 @@ export class PathwayD3View extends DOMWidgetView {
     this.setupZoomAndPan();
     this.drawPathway(pathwayData);
     this.zoomToFit();
+    if (this.commentDisplayMode === 'always') {
+      this.updateCommentDisplay();
+    }
   }
 
   private createSVG(): void {
@@ -1173,7 +1181,7 @@ export class PathwayD3View extends DOMWidgetView {
             commentsGroup
               .append('text')
               .attr('x', node.CenterX)
-              .attr('y', node.CenterY + node.Height / 2 + 20)
+              .attr('y', node.CenterY + node.Height / 2 + 10)
               .attr('class', `comment-text comment-${node.ID}`)
               .style('font-size', '10px')
               .style('fill', '#666')
