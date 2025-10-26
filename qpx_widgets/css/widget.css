@@ -1,0 +1,63 @@
+.custom-widget {
+  background-color: lightseagreen;
+  padding: 0px 2px;
+}
+
+.pathway-d3-widget {
+  width: 100%;
+  min-height: 700px;
+  border: 1px solid #ccc;
+  font-family: "Liberation Sans", Arial, sans-serif;
+}
+
+.pathway-d3-widget svg {
+  background-color: #fff;
+}
+
+.pathway-d3-widget .node-rect {
+  cursor: pointer;
+  stroke-width: 1px;
+}
+
+.pathway-d3-widget .node-rect:hover {
+  stroke-width: 2px;
+  stroke: #ff6600;
+}
+
+.pathway-d3-widget .group-rect {
+  fill: #f6f6ee;
+  stroke: gray;
+  stroke-width: 1px;
+}
+
+.pathway-d3-widget .selection {
+  fill: #ADD8E6;
+  stroke: #ADD8E6;
+  fill-opacity: 0.3;
+  stroke-opacity: 0.7;
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+}
+
+.pathway-d3-widget button {
+  margin: 10px 0;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pathway-d3-widget button:hover {
+  background-color: #0056b3;
+}
+
+/* Publication text selection styles */
+.pathway-d3-widget text.publicationTitle,
+.pathway-d3-widget text.publicationAuthors {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}

@@ -1,0 +1,116 @@
+[build-system]
+requires = [
+    "hatchling>=1.5.0",
+    "jupyterlab>=4.0.0,<5",
+    "hatch-nodejs-version>=0.3.2",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "qpx_widgets"
+description = "A Custom Jupyter Widget for visualizing WikiPathways pathways in Jupyter notebooks"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
+requires-python = ">=3.9"
+authors = [
+    { name = "bonohu", email = "bonohu@gmail.com" },
+]
+keywords = [
+    "IPython",
+    "Jupyter",
+    "Widgets",
+]
+classifiers = [
+    "Framework :: Jupyter",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "ipywidgets>=8.0.0",
+]
+version = "0.1.0.dev0"
+
+[project.optional-dependencies]
+docs = [
+    "jupyter_sphinx",
+    "nbsphinx",
+    "nbsphinx-link",
+    "pypandoc",
+    "pytest_check_links",
+    "recommonmark",
+    "sphinx>=1.5",
+    "sphinx_rtd_theme",
+]
+examples = []
+test = [
+    "nbval",
+    "pytest-cov",
+    "pytest>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/bonohu/qpx"
+
+[tool.hatch.build]
+artifacts = [
+    "qpx_widgets/nbextension/index.*",
+    "qpx_widgets/labextension/*.tgz",
+    "qpx_widgets/labextension",
+]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"qpx_widgets/nbextension" = "share/jupyter/nbextensions/qpx_widgets"
+"qpx_widgets/labextension" = "share/jupyter/labextensions/qpx_widgets"
+"./install.json" = "share/jupyter/labextensions/qpx_widgets/install.json"
+"./qpx_widgets.json" = "etc/jupyter/nbconfig/notebook.d/qpx_widgets.json"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".github",
+]
+
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+ensured-targets = [
+    "qpx_widgets/nbextension/index.js",
+    "qpx_widgets/labextension/package.json",
+]
+skip-if-exists = [
+    "qpx_widgets/nbextension/index.js",
+    "qpx_widgets/labextension/package.json",
+]
+dependencies = [
+    "hatch-jupyter-builder>=0.5",
+]
+
+[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
+path = "."
+build_cmd = "build:prod"
+npm = ["jlpm"]
+
+[tool.tbump]
+field = [
+    { name = "channel", default = "" },
+    { name = "release", default = "" },
+]
+file = [
+    { src = "pyproject.toml", version_template = "version = \"{major}.{minor}.{patch}{channel}{release}\"" },
+    { src = "qpx_widgets/_version.py" },
+]
+
+[tool.tbump.version]
+current = "0.1.0.dev0"
+regex = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)((?P<channel>a|b|rc|.dev)(?P<release>\\d+))?"
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"

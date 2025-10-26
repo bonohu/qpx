@@ -46,7 +46,7 @@ cd qpx
 docker compose up -d
 ```
 
-After launching, you can access http://localhost:8888/notebooks/work/qpx.ipynb and run each cell for visualization.
+After launching, you can access http://localhost:8888/lab/tree/qpx.ipynb and run each cell for visualization.
 If you want to increase the number of GPML files to be visualized, place the files with the extension `.gpml` in `gpml/` directory.
 
 If there are updates to the application, the container must be re-built after updating the local repository as follows.
@@ -57,28 +57,46 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
+### Quick Start with MyBinder
+
+For a quick demo without local installation, you can try QPX directly in your browser using MyBinder:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb)
+
+Simply click the badge above or visit the following URL:
+```
+https://mybinder.org/v2/gh/bonohu/qpx/main?urlpath=%2Fdoc%2Ftree%2Fqpx.ipynb
+```
+
+This will launch a live Jupyter environment with QPX pre-installed. Note that MyBinder sessions are temporary and any changes will be lost when the session ends.
+
 ### Additional note on operating environment
 
 - QPX is running on Jupyter Notebook started with docker compose.
-- We have also verified that applications on the notebook start up in a locally built Anaconda environment (some behavior is faulty).
-- If you are building the environment directly with Anaconda, install the Anaconda virtual environment and dependent libraries by specifying Python and library versions as follows.
+- We have also verified that applications on the notebook start up in a Python virtual environment.
+  - Only python version 3.9 or higher is supported.
 
 ```
-$ conda create -n qpx python=3.10
-$ conda activate qpx
-$ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
-$ conda install ipywidgets=7.6.5
-$ conda install pandas
-$ conda install itables
-$ conda install polars
+$ pip install jupyterlab polars # In Appli Sillicon, use "polars-lts-cpu" instead of "polars"
+$ source qpx_env/bin/activate
+$ cd qpx_widgets
+$ jlpm install
+$ jlpm run build
+$ pip install -e .
+$ jupyter labextension develop --overwrite .
+$ cd ../
 ```
 
-- The name of the environment to be built with Anaconda does not have to be qpx
-- Only python version 3.9 or 3.10 is supported
+- Start Jupyter Lab from the project root directory
+
+```
+$ jupyter lab
+```
+
 
 # About Major Components
 
-The following two components are both described in `qp.py`.
+The following two components are both described in `qpx_widgets/qpx_widgets/visualizers.py`
 
 ### GpmlD3Visualizer
 
@@ -88,7 +106,7 @@ The following two components are both described in `qp.py`.
 1. Pathway diagram
 2. Gene information table (including expression levels)
 
-   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `heatmap_view_widget_js`.
+   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `qpx_widgets/src/widgets.ts`.
 
    ```
          const highlightColor = [131, 146, 219];
@@ -106,7 +124,13 @@ Screen shot of GpmlD3Visualizer:
 - It consists of two components: a search box and a gene information table.
 - By passing an instance of Gpml3DVisualizer at initialization, the corresponding node of Gpml3DVisualizer can be made selected when a row in the gene information table is clicked.
 - The search box portion will be expanded to a more flexible query interface in the future.
-  ![gene_search_form](images/gene_search_form.png)
+
+- Example usage:
+```
+search_form = qpx_widgets.GeneSearchForm("data/red_perilla_anthocyanin_test.tsv", visualizer)
+search_form.show()
+```
+![gene_search_form](images/gene_search_form.png)
 
 # Todo
 

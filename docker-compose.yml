@@ -1,4 +1,3 @@
-version: "3.4"
 services:
   notebook:
     build: .
@@ -10,3 +9,4 @@ services:
       - 8888:8888
     volumes:
       - ".:/home/jovyan/work"
+      - "/home/jovyan/work/qpx_widgets/node_modules" # node_modulesを匿名ボリュームで除外

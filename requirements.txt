@@ -1,6 +1,0 @@
-notebook==6.5.4
-ipython==7.31.0
-ipywidgets==7.6.5
-jupyter_contrib_nbextensions==0.7.0
-jupyter_nbextensions_configurator==0.6.3
-itables==1.7.1 
