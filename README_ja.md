@@ -161,9 +161,5 @@ $ conda install pandas
 $ conda install polars
 ```
 
-- Anaconda で構築する環境名は qpx である必要はありません
+- conda で構築する環境名は qpx である必要はありません
 - python の version は 3.9 もしくは 3.10 のみ対応しています
-
-# Todo
-
-- Anaconda環境でノードを選択した際にテーブルが表示されないバグを修正する。
