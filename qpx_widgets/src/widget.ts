@@ -363,7 +363,7 @@ export class PathwayD3View extends DOMWidgetView {
         return 'url(#marker-circle)';  // -◯
       case 'mim-inhibition':
         return 'url(#marker-pipe)';  // -┃
-      case 'mim-modification':
+      case 'mim-binding':
         return 'url(#marker-open-arrow)';  // ->
       case "mim-stimulation":
       case "mim-necessary-stimulation":
@@ -453,7 +453,7 @@ export class PathwayD3View extends DOMWidgetView {
       .attr('orient', 'auto-start-reverse')
       .append('path')
       .attr('d', `M ${markerBoxSize} ${markerBoxSize / 2} L 0 ${markerBoxSize} L 0 0 z`)
-      .attr('fill', '#000000');
+      .attr('fill', 'context-stroke');
 
     // Circle marker
     const margin = 2;
@@ -470,7 +470,7 @@ export class PathwayD3View extends DOMWidgetView {
       .attr('cx', markerBoxSize / 2)
       .attr('cy', markerBoxSize / 2)
       .attr('r', markerBoxSize / 2 - margin / 2)
-      .attr('stroke', '#000000')
+      .attr('stroke', 'context-stroke')
       .attr('fill', 'white');
 
     // Pipe marker
@@ -488,7 +488,7 @@ export class PathwayD3View extends DOMWidgetView {
       .attr('y1', 0)
       .attr('x2', markerBoxSize)
       .attr('y2', markerBoxSize)
-      .attr('stroke', '#000000');
+      .attr('stroke', 'context-stroke');
 
     // Open arrow marker
     defs
@@ -503,7 +503,7 @@ export class PathwayD3View extends DOMWidgetView {
       .append('polyline')
       .attr('points', `0,0 ${markerBoxSize},${markerBoxSize / 2} 0,${markerBoxSize}`)
       .attr('fill', 'transparent')
-      .attr('stroke', '#000000');
+      .attr('stroke', 'context-stroke');
 
     // White arrow marker
     defs
@@ -518,7 +518,7 @@ export class PathwayD3View extends DOMWidgetView {
       .append('path')
       .attr('d', `M ${markerBoxSize} ${markerBoxSize / 2} L 0 ${markerBoxSize} L 0 0 z`)
       .attr('fill', 'white')
-      .attr('stroke', '#000000');
+      .attr('stroke', 'context-stroke');
   }
 
   private drawLinks(links: PathwayLink[], svg: d3.Selection<SVGGElement, unknown, HTMLElement, any>): void {
