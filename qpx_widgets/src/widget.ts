@@ -52,6 +52,7 @@ interface PathwayLink {
   Graphics?: {
     ConnectorType?: string;
     LineStyle?: string;
+    Color?: string;
   };
 }
 
@@ -667,6 +668,7 @@ export class PathwayD3View extends DOMWidgetView {
       point1: PathwayPoint,
       point2: PathwayPoint,
       lineStyle?: string,
+      lineColor?: string,
       startArrowHeadType?: string,
       endArrowHeadType?: string
     ): void => {
@@ -676,7 +678,7 @@ export class PathwayD3View extends DOMWidgetView {
         .attr("y1", point1.Y)
         .attr("x2", point2.X)
         .attr("y2", point2.Y)
-        .attr("stroke", "black")
+        .attr("stroke", lineColor ? `#${lineColor}` : "black")
         .attr("marker-start", startArrowHeadType || "")
         .attr("marker-end", endArrowHeadType || "")
         .attr("stroke-dasharray", lineStyle === "Broken" ? "5,5" : null)
@@ -698,6 +700,7 @@ export class PathwayD3View extends DOMWidgetView {
               wayPoints[i],
               wayPoints[i + 1],
               d.Graphics?.LineStyle,
+              d.Graphics?.Color,
               self.arrowHeadType(wayPoints[i].ArrowHead),
               self.arrowHeadType(wayPoints[i + 1].ArrowHead)
             );
@@ -709,6 +712,7 @@ export class PathwayD3View extends DOMWidgetView {
               d.pointsAfterOffset[i],
               d.pointsAfterOffset[i + 1],
               d.Graphics?.LineStyle,
+              d.Graphics?.Color,
               self.arrowHeadType(d.points[i].ArrowHead),
               self.arrowHeadType(d.points[i + 1].ArrowHead)
             );
