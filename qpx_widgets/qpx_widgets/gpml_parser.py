@@ -80,7 +80,19 @@ class GpmlParser:
                     #xref_data [attr] = "test"
                     node_data[attr] = case_insensitive_get(xref, attr)       
 
-                
+            # Comment情報の抽出
+            comments = []
+            for comment_element in node.findall('gpml:Comment', namespace):
+                comment_text = comment_element.text
+                comment_source = case_insensitive_get(comment_element, 'Source')
+                if comment_text:
+                    comments.append({
+                        'text': comment_text,
+                        'source': comment_source
+                    })
+            if comments:
+                node_data["Comments"] = comments
+            
             node_data["GroupRef"] = case_insensitive_get(node, "GroupRef")
             parsed_data['nodes'].append(node_data)
             
@@ -132,6 +144,20 @@ class GpmlParser:
                 for attr in float_attributes:
                     if shape_data[attr] is not None:
                         shape_data[attr] = float(shape_data[attr])
+                
+                # Comment情報の抽出
+                comments = []
+                for comment_element in shape.findall('gpml:Comment', namespace):
+                    comment_text = comment_element.text
+                    comment_source = case_insensitive_get(comment_element, 'Source')
+                    if comment_text:
+                        comments.append({
+                            'text': comment_text,
+                            'source': comment_source
+                        })
+                if comments:
+                    shape_data["Comments"] = comments
+                
                 parsed_data['shapes'].append(shape_data)
 
         # Biopax情報からPublication情報を抽出

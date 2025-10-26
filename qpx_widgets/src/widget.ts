@@ -14,6 +14,11 @@ import * as d3 from 'd3';
 import '../css/widget.css';
 
 // Interfaces for pathway data
+interface Comment {
+  text: string;
+  source?: string;
+}
+
 interface PathwayNode {
   ID: string;
   CenterX: number;
@@ -30,6 +35,7 @@ interface PathwayNode {
   FontDecoration?: string;
   FontStrikethru?: string;
   GroupRef?: string;
+  Comments?: Comment[];
 }
 
 interface PathwayPoint {
@@ -128,6 +134,9 @@ export class PathwayD3View extends DOMWidgetView {
   private selectionRect: d3.Selection<SVGPathElement, unknown, HTMLElement, any> | null = null;
   private mouseDownPoint: [number, number] | null = null;
 
+  // Comment tooltip variables
+  private commentTooltip: HTMLElement | null = null;
+
   render() {
     this.el.classList.add('pathway-d3-widget');
 
@@ -156,6 +165,7 @@ export class PathwayD3View extends DOMWidgetView {
 
     const pathwayData: PathwayData = JSON.parse(pathwayDataStr);
     this.nodes = pathwayData.nodes;
+    console.log({ pathwayData });
 
     this.createSVG();
     this.setupZoomAndPan();
@@ -664,6 +674,14 @@ export class PathwayD3View extends DOMWidgetView {
       .on('dblclick', (event) => {
         event.preventDefault();
         event.stopPropagation();
+      })
+      .on('mouseenter', (event, d) => {
+        if (d.Comments && d.Comments.length > 0) {
+          this.showCommentTooltip(event, d);
+        }
+      })
+      .on('mouseleave', () => {
+        this.hideCommentTooltip();
       });
   }
 
@@ -701,6 +719,14 @@ export class PathwayD3View extends DOMWidgetView {
       .on('dblclick', (event) => {
         event.preventDefault();
         event.stopPropagation();
+      })
+      .on('mouseenter', (event, d) => {
+        if (d.Comments && d.Comments.length > 0) {
+          this.showCommentTooltip(event, d);
+        }
+      })
+      .on('mouseleave', () => {
+        this.hideCommentTooltip();
       });
   }
 
@@ -774,8 +800,6 @@ export class PathwayD3View extends DOMWidgetView {
       .attr('font-size', '12px')
       .text(`Organism: ${pathway.Organism}`);
     yOffset += lineHeight;
-
-    console.log({ pathway })
 
     // Author
     if (pathway.Author) {
@@ -986,6 +1010,67 @@ export class PathwayD3View extends DOMWidgetView {
       URL.revokeObjectURL(svgUrl);
     };
     this.el.appendChild(button);
+  }
+
+  private showCommentTooltip(event: MouseEvent, node: PathwayNode): void {
+    if (!node.Comments || node.Comments.length === 0) return;
+
+    // Remove existing tooltip if any
+    this.hideCommentTooltip();
+
+    // Create tooltip element
+    this.commentTooltip = document.createElement('div');
+    this.commentTooltip.className = 'pathway-comment-tooltip';
+    this.commentTooltip.style.position = 'fixed';
+    this.commentTooltip.style.backgroundColor = '#f9f9f9';
+    this.commentTooltip.style.border = '1px solid #ccc';
+    this.commentTooltip.style.borderRadius = '4px';
+    this.commentTooltip.style.padding = '8px 12px';
+    this.commentTooltip.style.maxWidth = '300px';
+    this.commentTooltip.style.zIndex = '10000';
+    this.commentTooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    this.commentTooltip.style.fontSize = '12px';
+    this.commentTooltip.style.lineHeight = '1.4';
+    this.commentTooltip.style.wordWrap = 'break-word';
+
+    // Build comment content
+    let tooltipContent = '';
+    node.Comments.forEach((comment, index) => {
+      if (comment.source) {
+        tooltipContent += `<strong>${comment.source}:</strong> ${this.escapeHtml(comment.text)}`;
+      } else {
+        tooltipContent += this.escapeHtml(comment.text);
+      }
+      if (index < node.Comments!.length - 1) {
+        tooltipContent += '<br><br>';
+      }
+    });
+
+    this.commentTooltip.innerHTML = tooltipContent;
+    document.body.appendChild(this.commentTooltip);
+
+    // Position tooltip
+    const mouseEvent = event as MouseEvent;
+    this.commentTooltip.style.left = (mouseEvent.clientX + 10) + 'px';
+    this.commentTooltip.style.top = (mouseEvent.clientY + 10) + 'px';
+  }
+
+  private hideCommentTooltip(): void {
+    if (this.commentTooltip) {
+      this.commentTooltip.remove();
+      this.commentTooltip = null;
+    }
+  }
+
+  private escapeHtml(text: string): string {
+    const map: { [key: string]: string } = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
   }
 
   // Selection methods
