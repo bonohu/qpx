@@ -5,12 +5,40 @@ A Custom Jupyter Widget for visualizing WikiPathways pathways in Jupyter noteboo
 
 ## Installation
 
-You can install using `pip`:
+### Option 1: Quick Install from GitHub Releases (Recommended)
+Install the latest version directly from GitHub releases:
+
+```bash
+# Or manual install
+pip install https://github.com/bonohu/qp/releases/latest/download/qpx_widgets-0.1.0-py3-none-any.whl
+jupyter nbextension enable --py --sys-prefix qpx_widgets
+```
+
+### Option 2: Development Install
+
+For development purposes:
 
 ```bash
 cd <path_to_qpx_widgets>
-pip install  -e .
+pip install -e .
 jupyter nbextension enable --py [--sys-prefix|--user|--system] qpx_widgets
+```
+
+## Production Build
+
+To create a production build for distribution:
+
+```bash
+cd qpx_widgets
+./build_production.sh
+```
+
+This will create wheel and source distribution files in the `dist/` directory that can be uploaded to GitHub Releases.
+
+To create a versioned release:
+
+```bash
+./create_simple_release.sh 0.1.0  # Replace with your version
 ```
 
 ## Development Installation
