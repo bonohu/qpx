@@ -73,20 +73,26 @@ This will launch a live Jupyter environment with QPX pre-installed. Note that My
 ### Additional note on operating environment
 
 - QPX is running on Jupyter Notebook started with docker compose.
-- We have also verified that applications on the notebook start up in a locally built Anaconda environment (some behavior is faulty).
-- If you are building the environment directly with Anaconda, install the Anaconda virtual environment and dependent libraries by specifying Python and library versions as follows.
+- We have also verified that applications on the notebook start up in a Python virtual environment.
+  - Only python version 3.9 or higher is supported.
 
 ```
-$ conda create -n qpx python=3.10
-$ conda activate qpx
-$ conda install -c conda-forge ipython=7.31.0 notebook=6.5.4
-$ conda install ipywidgets=7.6.5
-$ conda install pandas
-$ conda install polars
+$ pip install jupyterlab polars # In Appli Sillicon, use "polars-lts-cpu" instead of "polars"
+$ source qpx_env/bin/activate
+$ cd qpx_widgets
+$ jlpm install
+$ jlpm run build
+$ pip install -e .
+$ jupyter labextension develop --overwrite .
+$ cd ../
 ```
 
-- The name of the environment to be built with Anaconda does not have to be qpx
-- Only python version 3.9 or 3.10 is supported
+- Start Jupyter Lab from the project root directory
+
+```
+$ jupyter lab
+```
+
 
 # About Major Components
 
@@ -124,7 +130,7 @@ Screen shot of GpmlD3Visualizer:
 search_form = qpx_widgets.GeneSearchForm("data/red_perilla_anthocyanin_test.tsv", visualizer)
 search_form.show()
 ```
-  ![gene_search_form](images/gene_search_form.png)
+![gene_search_form](images/gene_search_form.png)
 
 # Todo
 
