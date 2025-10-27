@@ -42,6 +42,7 @@ class GpmlD3Visualizer:
         # Load all expression data and create heatmap widgets
         self.expression_data_list = []
         self.heatmap_widgets = []
+        self.expression_data_paths = expression_data_paths  # Store paths for display
         
         for path in expression_data_paths:
             temp_df = pl.read_csv(path, separator='\t', n_rows=1)
@@ -92,8 +93,11 @@ class GpmlD3Visualizer:
             self.visualizer_widget.pathway_data = json.dumps(GpmlParser(os.path.join(self.gpml_dir_path, gpml_file)).data)
             display(self.visualizer_widget)
             
-            # Display all heatmap widgets
-            for heatmap_widget in self.heatmap_widgets:
+            # Display all heatmap widgets with file name labels
+            for i, heatmap_widget in enumerate(self.heatmap_widgets):
+                file_name = os.path.basename(self.expression_data_paths[i])
+                label = widgets.HTML(value=f"<h3 style='margin-top: 20px; margin-bottom: 10px;'>{file_name}</h3>")
+                display(label)
                 display(heatmap_widget)
 
         # Import GpmlParser locally to avoid circular imports
