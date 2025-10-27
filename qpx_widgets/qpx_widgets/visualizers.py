@@ -96,7 +96,7 @@ class GpmlD3Visualizer:
             # Display all heatmap widgets with file name labels
             for i, heatmap_widget in enumerate(self.heatmap_widgets):
                 file_name = os.path.basename(self.expression_data_paths[i])
-                label = widgets.HTML(value=f"<h3 style='margin-top: 20px; margin-bottom: 10px;'>{file_name}</h3>")
+                label = widgets.HTML(value=f"<h3 style='margin-top: 20px; margin-bottom: 0px;'>{file_name}</h3>")
                 display(label)
                 display(heatmap_widget)
 
