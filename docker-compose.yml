@@ -10,3 +10,4 @@ services:
     volumes:
       - ".:/home/jovyan/work"
       - "/home/jovyan/work/qpx_widgets/node_modules" # node_modulesを匿名ボリュームで除外
+      - "/home/jovyan/work/qpx_widgets/qpx_widgets/labextension" # labextensionのビルド成果物も匿名ボリュームで除外
