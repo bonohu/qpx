@@ -1691,8 +1691,8 @@ export class DataTableView extends DOMWidgetView {
       layout: {
         bottomStart: 'buttons',
       },
-      pageLength: 25,
-      lengthMenu: [10, 25, 50, 100, -1],
+      pageLength: 5,
+      lengthMenu: [5, 10, 25, 50, 100, -1],
       scrollX: true,
       responsive: true,
     });
