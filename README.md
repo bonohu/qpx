@@ -106,7 +106,19 @@ The following two components are both described in `qpx_widgets/qpx_widgets/visu
 1. Pathway diagram
 2. Gene information table (including expression levels)
 
-   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `qpx_widgets/src/widgets.ts`.
+   - Update: `expression_columns_index` now accepts `int`, `list`, or `tuple`.
+   - When a single `int` is given, the same column index is used for all expression tables.
+   - When a `list` or `tuple` is given, each value is applied to each expression table in order. This allows different relation-key column positions to be specified for multiple expression tables.
+
+   Example:
+   ```python
+   visualizer = qpx_widgets.GpmlD3Visualizer(
+       expression_data_path=["data/a.tsv", "data/b.tsv"],
+       expression_columns_index=[4, 6]
+   )
+   ```
+
+   - The expression amount part is colored as a heatmap, but if you want to change this color, just change the following RGB values in the `qpx_widgets/src/widget.ts`.
 
    ```
          const highlightColor = [131, 146, 219];
