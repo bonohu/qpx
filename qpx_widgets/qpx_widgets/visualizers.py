@@ -26,7 +26,6 @@ class GpmlD3Visualizer:
     def __init__(self, expression_data_path, filter_key="xref_id", gpml_dir_path="./gpml", expression_columns_index=4, comment_display_mode="hover"):
         self.gpml_dir_path = gpml_dir_path
         self.filter_key = filter_key
-        self.expression_columns_index = expression_columns_index
         self.comment_display_mode = comment_display_mode
         
         # Validate comment_display_mode
@@ -38,13 +37,24 @@ class GpmlD3Visualizer:
             expression_data_paths = [expression_data_path]
         else:
             expression_data_paths = list(expression_data_path)
+
+        if isinstance(expression_columns_index, int):
+            expression_columns_indexes = [expression_columns_index] * len(expression_data_paths)
+        else:
+            expression_columns_indexes = list(expression_columns_index)
+            if len(expression_columns_indexes) < len(expression_data_paths):
+                raise ValueError(
+                    "expression_columns_index must have at least as many values as expression_data_path entries"
+                )
+            expression_columns_indexes = expression_columns_indexes[:len(expression_data_paths)]
+        self.expression_columns_index = expression_columns_indexes
         
         # Load all expression data and create heatmap widgets
         self.expression_data_list = []
         self.heatmap_widgets = []
         self.expression_data_paths = expression_data_paths  # Store paths for display
         
-        for path in expression_data_paths:
+        for path, expression_columns_index in zip(expression_data_paths, expression_columns_indexes):
             temp_df = pl.read_csv(path, separator='\t', n_rows=1)
             columns = temp_df.columns
             dtypes = {col: pl.Float64 for col in columns[expression_columns_index:]}  # 4列目以降を数値として指定
