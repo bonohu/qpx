@@ -1298,6 +1298,8 @@ export class HeatmapView extends DOMWidgetView {
   private searchColumnIndex: number = 0;
   private maxExpressionValue: number = 0;
   private globalMaxExpressionValue: number = 0;
+  private readonly highlightColor = [131, 146, 219];
+  private readonly defaultColor = [250, 250, 255];
 
   render() {
     this.el.classList.add('heatmap-widget');
@@ -1386,9 +1388,6 @@ export class HeatmapView extends DOMWidgetView {
         (_, i) => i + expressionColumnsIndex
       );
 
-      const highlightColor = [131, 146, 219];
-      const defaultColor = [250, 250, 255];
-
       // Initialize DataTable
       this.table = new DataTable(`#heatmap-div-${this.cid}`, {
         data: data,
@@ -1397,13 +1396,7 @@ export class HeatmapView extends DOMWidgetView {
           {
             targets: targets,
             createdCell: (td: HTMLElement, cellData: any) => {
-              if (Number.isFinite(cellData)) {
-                const strength = cellData / this.maxExpressionValue;
-                const color = highlightColor
-                  .map((x, i) => x * strength + defaultColor[i] * (1 - strength))
-                  .join(',');
-                (td as HTMLElement).style.backgroundColor = `rgb(${color})`;
-              }
+              this.applyHeatmapColor(td, cellData);
             },
           },
         ],
@@ -1434,6 +1427,7 @@ export class HeatmapView extends DOMWidgetView {
 
         if (noSearchApplied) {
           this.maxExpressionValue = this.globalMaxExpressionValue;
+          this.recolorVisibleCells(targets);
           return;
         }
 
@@ -1448,6 +1442,8 @@ export class HeatmapView extends DOMWidgetView {
             }
           }
         }
+
+        this.recolorVisibleCells(targets);
       });
 
       // Hide loading spinner
@@ -1456,6 +1452,37 @@ export class HeatmapView extends DOMWidgetView {
         loadingElement.remove();
       }
     }, 10);
+  }
+
+  private applyHeatmapColor(td: HTMLElement, cellData: any): void {
+    if (!Number.isFinite(cellData) || this.maxExpressionValue <= 0) {
+      td.style.backgroundColor = '';
+      return;
+    }
+
+    const strength = Math.max(0, Math.min(1, cellData / this.maxExpressionValue));
+    const color = this.highlightColor
+      .map((x, i) => x * strength + this.defaultColor[i] * (1 - strength))
+      .join(',');
+    td.style.backgroundColor = `rgb(${color})`;
+  }
+
+  private recolorVisibleCells(targets: number[]): void {
+    if (!this.table) {
+      return;
+    }
+
+    const nodes = this.table.rows({ search: 'applied' }).nodes().toArray();
+    for (const rowNode of nodes) {
+      const cells = rowNode.cells;
+      for (const target of targets) {
+        const td = cells[target] as HTMLElement | undefined;
+        if (!td) {
+          continue;
+        }
+        this.applyHeatmapColor(td, this.table.cell(td).data());
+      }
+    }
   }
 
   private async loadPapaParse(): Promise<any> {
