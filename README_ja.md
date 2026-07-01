@@ -5,6 +5,20 @@ Jupyter notebook 環境で `qpx.ipynb` を開いて利用します。
 
 ## 使い方
 
+### 画面表示後のミニマムな使い方
+
+すでにJupyter Labを開いた状態である場合、`qpx.ipynb` ダブルクリックで開けて以下の手順でサンプルデータを表示・選択できます。
+
+1. `qpx.ipynb` の上から順にセルを実行していきます
+2. expresssion_data_pathに"data/Bmori_expression_transcript_matrix_repl-symb-with-geneid.txt", "data/Bmori_transcripts_expression-data_v02-modified.tsv"が設定されていることを確認し実行する
+3. `visualizer.show()` を含むセルを実行すると、サンプルのパスウェイ図と発現テーブルが表示される
+4. `Bmori_ecdysone_biosynthesis_gene.gpml`をドロップダウンメニューから選ぶ
+5. パスウェイ図上のノードをクリックすると、そのノードに対応する発現データが下のテーブルに表示されます
+   - 複数選択したい場合は、Shiftキーを押しながらドラッグするか、Ctrlキー（MacではCmdキー）を押しながらクリックします
+6. 選択した遺伝子のデータは、後続セルで `visualizer.selected_expression_data_list` から取得できます
+
+
+
 ### 前提条件
 
 - `docker` および `docker-compose` がインストールされていること
