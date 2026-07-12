@@ -16,6 +16,9 @@ USER jovyan
 WORKDIR /home/jovyan/work/qpx_widgets
 
 RUN npm install -g yarn
+# @jupyterlab/builder 4.4.6 requires Node.js ^20.19.0 || >=22.12.0, newer than the
+# v20.8.1 bundled in this base image.
+RUN mamba install -n base -c conda-forge "nodejs>=20.19" -y
 # Install Polars with the correct package for the target platform. Mainly for apple silicon.
 RUN POLARS_PACKAGE=$( \
     case ${TARGETPLATFORM} in \
