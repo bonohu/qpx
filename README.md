@@ -49,13 +49,7 @@ docker compose up -d
 After launching, you can access http://localhost:8888/lab/tree/qpx.ipynb and run each cell for visualization.
 If you want to increase the number of GPML files to be visualized, place the files with the extension `.gpml` in `gpml/` directory.
 
-If there are updates to the application, the container must be re-built after updating the local repository as follows.
-
-```
-docker compose down
-docker compose build --no-cache
-docker compose up -d
-```
+After updating the local repository, follow [Updating](#updating) to rebuild the application.
 
 ### Quick Start with MyBinder
 
@@ -148,3 +142,31 @@ search_form.show()
 # Todo
 
 - Fixed a bug that table is not displayed when selecting a node in Anaconda environment.
+
+## Updating
+
+Run these commands from the project root after updating the local repository.
+
+| Option | Effect |
+|---|---|
+| `build --no-cache` | Rebuilds the image without using the build cache. |
+| `up --force-recreate` | Recreates containers even if the image and configuration have not changed. It does not rebuild the image. |
+| `up --renew-anon-volumes` | Creates fresh anonymous volumes instead of reusing those from existing containers. |
+
+For normal application updates, including TypeScript or CSS changes:
+
+```sh
+docker compose build notebook
+docker compose up -d --force-recreate --renew-anon-volumes notebook
+```
+
+QPX stores `node_modules` and built `labextension` files in anonymous volumes. Renew them to prevent old build outputs from hiding the updated files in the image. Reload the Notebook page and restart its kernel after updating.
+
+If you suspect stale build cache, use the same procedure with `--no-cache`:
+
+```sh
+docker compose build --no-cache notebook
+docker compose up -d --force-recreate --renew-anon-volumes notebook
+```
+
+`--no-cache` is normally unnecessary: Docker detects changed source files. If you have already run `docker compose down`, the containers have been removed, so `--force-recreate` is unnecessary. Changes only to GPML or TSV files in the mounted project directory do not require a rebuild; rerun the relevant Notebook cells to load them.

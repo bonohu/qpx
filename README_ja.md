@@ -64,13 +64,7 @@ docker compose up -d
 起動後、http://localhost:8888/lab/tree/qpx.ipynb にアクセスして、各セルを実行することで可視化を行えます。
 可視化対象の GPML ファイルを増やしたい場合は、`gpml/` ディレクトリの中に、拡張子を `.gpml` にしたファイルを置いてください。
 
-アプリケーションに更新があった場合はローカルレポジトリを更新したあとにコンテナをビルドし直す必要があります。
-
-```
-docker compose down
-docker compose build --no-cache
-docker compose up -d
-```
+アプリケーションに更新があった場合は、ローカルレポジトリを更新したあとに[更新する場合](#更新する場合)の手順でビルドし直してください。
 
 ### MyBinderでクイックスタート
 
@@ -177,3 +171,31 @@ $ conda install polars
 
 - conda で構築する環境名は qpx である必要はありません
 - python の version は 3.9 もしくは 3.10 のみ対応しています
+
+## 更新する場合
+
+ローカルレポジトリを更新したあと、プロジェクトのルートで以下のコマンドを実行してください。
+
+| オプション | 動作 |
+|---|---|
+| `build --no-cache` | ビルドキャッシュを使わず、イメージを再構築する。 |
+| `up --force-recreate` | イメージや設定に変更がなくてもコンテナを作り直す。イメージのビルドは行わない。 |
+| `up --renew-anon-volumes` | 既存コンテナの匿名ボリュームを再利用せず、新しく作り直す。 |
+
+通常のアプリケーション更新（TypeScript・CSSの変更を含む）では、次を実行します。
+
+```sh
+docker compose build notebook
+docker compose up -d --force-recreate --renew-anon-volumes notebook
+```
+
+QPXでは`node_modules`とビルド済みの`labextension`を匿名ボリュームに保存しています。古い成果物が新しいイメージ内のファイルを隠さないよう、匿名ボリュームも作り直します。更新後はNotebookのページを再読み込みし、カーネルを再起動してください。
+
+ビルドキャッシュの影響が疑われる場合は、`--no-cache`を付けて実行します。
+
+```sh
+docker compose build --no-cache notebook
+docker compose up -d --force-recreate --renew-anon-volumes notebook
+```
+
+通常はソースの変更をDockerが検知するため、毎回の`--no-cache`は不要です。また、先に`docker compose down`した場合はコンテナが削除済みなので、`--force-recreate`は不要です。マウントされたプロジェクト内のGPML・TSVファイルだけを変更した場合は再ビルドせず、該当するNotebookのセルを再実行して読み込み直してください。

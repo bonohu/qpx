@@ -3,6 +3,21 @@
   padding: 0px 2px;
 }
 
+.heatmap-widget {
+  width: 100%;
+  container-type: inline-size;
+}
+
+.heatmap-widget table.dataTable .heatmap-description {
+  /* Keep a readable share of the visible area regardless of other columns. */
+  box-sizing: border-box;
+  width: 30cqw;
+  min-width: 30cqw;
+  max-width: 30cqw;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .pathway-d3-widget {
   width: 100%;
   min-height: 700px;

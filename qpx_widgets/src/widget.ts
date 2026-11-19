@@ -1391,7 +1391,12 @@ export class HeatmapView extends DOMWidgetView {
       // Initialize DataTable
       this.table = new DataTable(`#heatmap-div-${this.cid}`, {
         data: data,
-        columns: headers.map((x: string) => ({ title: x })),
+        // Let CSS cap description cells instead of sizing them to the longest value.
+        autoWidth: !headers.includes('description'),
+        columns: headers.map((x: string) => ({
+          title: x,
+          className: x === 'description' ? 'heatmap-description' : '',
+        })),
         columnDefs: [
           {
             targets: targets,
