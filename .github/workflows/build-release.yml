@@ -21,12 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y nodejs npm
+          node-version: "26.13.0"
 
       - name: Install Python dependencies
         working-directory: qpx_widgets

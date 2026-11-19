@@ -75,6 +75,7 @@ This will launch a live Jupyter environment with QPX pre-installed. Note that My
 - QPX is running on Jupyter Notebook started with docker compose.
 - We have also verified that applications on the notebook start up in a Python virtual environment.
   - Only python version 3.9 or higher is supported.
+  - Install Node.js 26.13.0 before building the widget extension locally. Docker and CI also use this version.
 
 ```
 $ pip install jupyterlab polars # In Appli Sillicon, use "polars-lts-cpu" instead of "polars"
