@@ -58,7 +58,10 @@ class GpmlD3Visualizer:
             temp_df = pl.read_csv(path, separator='\t', n_rows=1)
             columns = temp_df.columns
             dtypes = {col: pl.Float64 for col in columns[expression_columns_index:]}  # 4列目以降を数値として指定
-            dtypes["xref_id"] = pl.Int64  # "xref_id"列を整数として指定
+            # Identifiers may be numeric Gene IDs, RefSeq IDs, or gene labels.
+            for column in ("xref_id", filter_key):
+                if column in columns:
+                    dtypes[column] = pl.Utf8
             expression_data = pl.read_csv(path, separator='\t', ignore_errors=True, dtypes=dtypes)
             
             # Validate filter_key
@@ -69,8 +72,10 @@ class GpmlD3Visualizer:
             self.expression_data_list.append(expression_data)
             
             # Create heatmap widget
+            with open(path) as expression_file:
+                expression_text = expression_file.read()
             heatmap_widget = HeatmapVisualizerWidget(
-                expression_data=open(path).read(),
+                expression_data=expression_text,
                 expression_columns_index=expression_columns_index,
                 filter_key=filter_key
             )
@@ -119,21 +124,17 @@ class GpmlD3Visualizer:
         self.interactive_visualizer = widgets.interactive_output(visualize, {'gpml_file': dropdown})
 
         def on_gene_ids_change(change):
-            original_gids = gids = change["new"]
-            try:
-                gids = [int(gid) for gid in gids if gid != ""]
-            except:
-                gids = []
+            gids = [str(gid) for gid in change["new"] if gid is not None and gid != ""]
 
-            if len(original_gids) > 0 and original_gids[0] != "":
-                selected_expression_data = [data.filter(pl.col('xref_id').is_in(gids)) for data in self.expression_data_list]
+            if gids:
+                selected_expression_data = [data.filter(pl.col(self.filter_key).is_in(gids)) for data in self.expression_data_list]
             else:
                 selected_expression_data = self.expression_data_list
             self.selected_expression_data_list = selected_expression_data
             
             # Update all heatmap widgets with the selected gene IDs
             for heatmap_widget in self.heatmap_widgets:
-                heatmap_widget.selected_gene_ids = original_gids
+                heatmap_widget.selected_gene_ids = gids
 
         self.visualizer_widget.observe(on_gene_ids_change, names='value')
         
@@ -166,7 +167,7 @@ class GpmlD3Visualizer:
 
 class GeneSearchForm:
     def __init__(self, gene_data_path, gpml_d3_visualizer, search_target="Enzyme", mapping_key="xref_id"):
-        self.gene_data = pl.read_csv(gene_data_path, separator='\t')
+        self.gene_data = pl.read_csv(gene_data_path, separator='\t', dtypes={mapping_key: pl.Utf8})
         self.visualizer = gpml_d3_visualizer
         self.mapping_key = mapping_key
         self.search_target = search_target
